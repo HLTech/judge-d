@@ -1,0 +1,67 @@
+{
+  "configuration": {
+    "name": "Default",
+    "properties": {
+      "property": {
+        "name": "SERVER_BASE_DIR",
+        "value": "./log/contract-verifier/${env:HOSTNAME:-HOST_NAME_NOT_DEFINED}/logs"
+      }
+    },
+    "appenders": {
+      "Console": {
+        "name": "Console-Appender",
+        "target": "SYSTEM_OUT",
+        "follow": "true",
+        "PatternLayout": {
+          "pattern": "%d{yyyy-MM-dd HH:mm:ss.SSS}|%15.15t|%-40.40c{1.}|%p{WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}|%m%n%ex"
+        }
+      },
+      "RollingFile": {
+        "name": "Application-Appender",
+        "fileName": "${env:SERVER_BASE_DIR}/contract-verifier.app.log",
+        "filePattern": "${env:SERVER_BASE_DIR}/contract-verifier.app.%d{yyyy-MM-dd}.log.%i",
+        "JSONLayout": {
+          "complete": "false",
+          "compact": "true",
+          "eventEol": "true"
+        },
+        "Policies": {
+          "SizeBasedTriggeringPolicy": {
+            "size": "200MB"
+          }
+        },
+        "DefaultRolloverStrategy": {
+          "max": "100"
+        }
+      }
+    },
+    "loggers": {
+      "logger": [
+        {
+          "name": "dev.hltech.dredd",
+          "level": "debug",
+          "additivity": "false",
+          "appender-ref": [
+            {
+              "ref": "Console-Appender"
+            },
+            {
+              "ref": "Application-Appender"
+            }
+          ]
+        }
+      ],
+      "root": {
+        "level": "info",
+        "appender-ref": [
+          {
+            "ref": "Console-Appender"
+          },
+          {
+            "ref": "Application-Appender"
+          }
+        ]
+      }
+    }
+  }
+}
