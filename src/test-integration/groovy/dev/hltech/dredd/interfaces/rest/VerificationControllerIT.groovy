@@ -19,12 +19,6 @@ class VerificationControllerIT extends Specification {
     @Autowired
     ObjectMapper objectMapper
 
-    void setup() {
-    }
-
-    void cleanup() {
-    }
-
     def "verifyPacts test hits the URL and parses JSON output"() {
         when: 'rest verifyPacts url is hit'
             def response = mockMvc.perform(
