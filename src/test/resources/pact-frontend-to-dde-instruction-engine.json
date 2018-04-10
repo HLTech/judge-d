@@ -1,0 +1,41 @@
+{
+  "provider": {
+    "name": "instruction-gateway"
+  },
+  "consumer": {
+    "name": "frontend"
+  },
+  "interactions": [
+    {
+      "description": "a request for instruction details",
+      "request": {
+        "method": "GET",
+        "path": "/instructions/123456789012345678"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "amount": {
+            "currency": "GBP",
+            "value": 1000.12
+          },
+          "ddi_status": "SS",
+          "last_collection_date": "2018-03-15",
+          "name": "Account 1",
+          "next_collection_date": "2018-04-15",
+          "number": "12345678",
+          "reference": "123456789012345678",
+          "sort_code": "123456"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pact-specification": {
+      "version": "2.0.0"
+    },
+    "pact-jvm": {
+      "version": "3.5.14"
+    }
+  }
+}

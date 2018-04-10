@@ -1,0 +1,216 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "REST API documentation.",
+    "version": "1.0",
+    "title": "service"
+  },
+  "host": "service.hltech.dev",
+  "basePath": "/instruction-gateway/v1",
+  "paths": {
+    "/instructions/{reference_number}": {
+      "get": {
+        "summary": "Query details",
+        "operationId": "getDetailsUsingGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json;charset=UTF-8"
+        ],
+        "parameters": [
+          {
+            "name": "reference_number",
+            "in": "path",
+            "description": "Instruction reference number",
+            "required": true,
+            "type": "string",
+            "default": "123456789012345678"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instruction details retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/instruction_details"
+            }
+          },
+          "400": {
+            "description": "Request for Instruction details is invalid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            },
+            "headers": {
+              "X-Reasons": {
+                "type": "string",
+                "description": "Comma-separated list of error slugs"
+              }
+            }
+          },
+          "404": {
+            "description": "Instruction with provided identifier was not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            },
+            "headers": {
+              "X-Reasons": {
+                "type": "string",
+                "description": "Comma-separated list of error slugs"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ErrorResponse": {
+      "type": "object",
+      "required": [
+        "errors"
+      ],
+      "properties": {
+        "errors": {
+          "type": "array",
+          "description": "List of errors",
+          "items": {
+            "$ref": "#/definitions/error"
+          }
+        }
+      }
+    },
+    "error": {
+      "type": "object",
+      "required": [
+        "code"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "example": "invalid_ref_num",
+          "description": "Error code",
+          "enum": [
+            "internal_server_error",
+            "ddi_not_found",
+            "invalid_status_ac_as_sp_required",
+            "invalid_status_ac_required",
+            "invalid_status_ac_required_susp",
+            "invalid_status_as_required",
+            "invalid_new_ref_num",
+            "ddc_not_found",
+            "invalid_status_pd_required",
+            "invalid_status_pp_required",
+            "invalid_status_pc_required",
+            "invalid_status_pf_required",
+            "internal_engine_error",
+            "invalid_ref_num",
+            "invalid_seq_num",
+            "invalid_payment",
+            "invalid_account",
+            "invalid_direct_debit_type",
+            "invalid_amount",
+            "invalid_payment_day",
+            "invalid_payment_frequency",
+            "invalid_payment_type",
+            "invalid_currency",
+            "invalid_acct_name",
+            "invalid_acct_number",
+            "invalid_sort_code",
+            "invalid_bank",
+            "invalid_address",
+            "invalid_post_code",
+            "invalid_bank_name",
+            "invalid_request",
+            "malformed_request"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "example": "Invalid reference number",
+          "description": "Error message"
+        }
+      }
+    },
+    "instruction_details": {
+      "type": "object",
+      "required": [
+        "amount",
+        "ddi_status",
+        "last_collection_date",
+        "name",
+        "next_collection_date",
+        "number",
+        "reference",
+        "sort_code"
+      ],
+      "properties": {
+        "amount": {
+          "description": "Payment amount to be collected",
+          "$ref": "#/definitions/instruction_payment_amount"
+        },
+        "ddi_status": {
+          "type": "string",
+          "example": "SS",
+          "description": "Current status of instruction"
+        },
+        "last_collection_date": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2018-03-15",
+          "description": "Date of last collection"
+        },
+        "name": {
+          "type": "string",
+          "example": "Account 1",
+          "description": "Name of the account"
+        },
+        "next_collection_date": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2018-04-15",
+          "description": "Date of next collection"
+        },
+        "number": {
+          "type": "string",
+          "example": "12345678",
+          "description": "Number of the account"
+        },
+        "reference": {
+          "type": "string",
+          "example": "123456789012345678",
+          "description": "Reference number of instruction"
+        },
+        "sort_code": {
+          "type": "string",
+          "example": "123456",
+          "description": "Bank sort code in 121212 format"
+        }
+      }
+    },
+    "instruction_payment_amount": {
+      "type": "object",
+      "required": [
+        "currency",
+        "value"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "example": "GBP",
+          "description": "Payment amount currency"
+        },
+        "value": {
+          "type": "number",
+          "example": 1000.12,
+          "description": "Payment amount to be collected"
+        }
+      }
+    }
+  }
+}
