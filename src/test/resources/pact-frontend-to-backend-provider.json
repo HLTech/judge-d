@@ -1,0 +1,38 @@
+{
+  "provider": {
+    "name": "backend-provider"
+  },
+  "consumer": {
+    "name": "frontend"
+  },
+  "interactions": [
+    {
+      "description": "a request for details",
+      "request": {
+        "method": "GET",
+        "path": "/details/123456789012345678"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "amount": {
+            "currency": "GBP",
+            "value": 1000.12
+          },
+          "date": "2018-03-15",
+          "name": "Account 1",
+          "number": "12345678",
+          "reference": "123456789012345678"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pact-specification": {
+      "version": "2.0.0"
+    },
+    "pact-jvm": {
+      "version": "3.5.14"
+    }
+  }
+}
