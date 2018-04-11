@@ -1,30 +1,29 @@
 package dev.hltech.dredd.domain
 
-import dev.hltech.dredd.domain.environment.Environment
-import dev.hltech.dredd.domain.environment.MockServiceDiscovery
+import dev.hltech.dredd.domain.environment.StaticEnvironment
 import spock.lang.Specification
 
 import static au.com.dius.pact.model.PactReader.loadPact
 import static com.google.common.io.ByteStreams.toByteArray
 
-class ContractValidatorUT extends Specification {
+class PactValidatorUT extends Specification {
 
-    private ContractValidator verifier
+    private PactValidator validator
 
     void setup() {
-        def environment = new Environment(MockServiceDiscovery.builder()
+        def environment = StaticEnvironment.builder()
             .withProvider(
             "instruction-gateway",
             new String(toByteArray(getClass().getResourceAsStream("/dde-instruction-gateway-swagger.json"))))
-            .build())
-        verifier = new ContractValidator(environment)
+            .build()
+        validator = new PactValidator(environment)
     }
 
     def 'should verify all interactions from pact file'() {
         given:
             def pact = loadPact(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-engine.json"))
         when:
-            def validationReports = verifier.validate(pact)
+            def validationReports = validator.validate(pact)
         then:
             with(validationReports.get(0)) {
                 status == ValidationStatus.FAILED

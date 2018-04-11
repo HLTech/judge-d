@@ -7,18 +7,18 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * this is here only until someone implements proper Kubernetes-based service discovery tool. Then, it will be moved to test classes
+ * this is here only until someone implements proper Kubernetes-based or db-based one. Then, it will be moved to test classes
  */
-public class MockServiceDiscovery implements ServiceDiscovery {
+public class StaticEnvironment implements Environment {
 
     private Multimap<String, Service> availableServices = HashMultimap.create();
 
-    private MockServiceDiscovery(Multimap<String, Service> services) {
+    private StaticEnvironment(Multimap<String, Service> services) {
         this.availableServices.putAll(services);
     }
 
     @Override
-    public Collection<Service> find(String serviceName) {
+    public Collection<Service> findServices(String serviceName) {
         return availableServices.get(serviceName);
     }
 
@@ -32,10 +32,6 @@ public class MockServiceDiscovery implements ServiceDiscovery {
 
         public Builder withProvider(String name, String swagger){
             availableServices.put(name, new Service() {
-                @Override
-                public String name() {
-                    return name;
-                }
 
                 @Override
                 public Optional<Provider> asProvider() {
@@ -47,8 +43,8 @@ public class MockServiceDiscovery implements ServiceDiscovery {
         }
 
 
-        public MockServiceDiscovery build(){
-            return new MockServiceDiscovery(availableServices);
+        public StaticEnvironment build(){
+            return new StaticEnvironment(availableServices);
         }
 
     }
