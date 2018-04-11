@@ -35,7 +35,7 @@ class VerificationControllerIT extends Specification {
     def "verifySwagger test hits the URL and parses JSON output"() {
         when: 'rest verifySwagger url is hit'
             def response = mockMvc.perform(
-                post('/verification/getSwagger')
+                post('/verification/swagger')
                     .contentType("application/json")
                     .content(objectMapper.writeValueAsString(newSwaggerVerificationForm()))
             ).andReturn().getResponse()
