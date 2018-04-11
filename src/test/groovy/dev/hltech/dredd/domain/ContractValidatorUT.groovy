@@ -26,10 +26,11 @@ class ContractValidatorUT extends Specification {
         when:
             def validationReports = verifier.validate(pact)
         then:
-            validationReports.size() == 1
-            validationReports.get(0).getStatus() == ValidationStatus.FAILED
-            validationReports.get(0).getName().equalsIgnoreCase("a request for instruction details")
-            validationReports.get(0).getErrors().size() == 2
+            with(validationReports.get(0)) {
+                status == ValidationStatus.FAILED
+                name.equalsIgnoreCase("a request for instruction details")
+                errors.size() == 2
+            }
     }
 
 }

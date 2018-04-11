@@ -28,7 +28,7 @@ public class ContractValidator {
         String swaggerJson = environment.findServices(providerName)
             .iterator().next()
             .asProvider()
-            .map(Provider::swagger)
+            .map(Provider::getSwagger)
             .orElse("");// TODO: handle this situation properly
 
         return validateInteractions(swaggerJson, pact.getInteractions())
