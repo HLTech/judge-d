@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class PactVerificationForm {
+public class PactValidationForm {
 
     private List<JsonNode> pacts;
 
