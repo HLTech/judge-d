@@ -7,8 +7,8 @@ import java.util.List;
 
 @Data
 @Builder
-public class VerificationResultDto {
+public class ValidationResultDto {
 
-    List<ConsumerProviderVerificationResultDto> verificationResult;
+    List<ConsumerProviderValidationResultDto> verificationResult;
 
 }

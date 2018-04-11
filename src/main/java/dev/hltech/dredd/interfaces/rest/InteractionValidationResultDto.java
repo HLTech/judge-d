@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class InteractionVerificationResultDto {
+public class InteractionValidationResultDto {
 
     private String name;
     private String verificationResult;

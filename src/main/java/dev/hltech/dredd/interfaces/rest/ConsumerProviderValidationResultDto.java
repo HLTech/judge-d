@@ -7,13 +7,13 @@ import java.util.List;
 
 @Builder
 @Data
-public class ConsumerProviderVerificationResultDto {
+public class ConsumerProviderValidationResultDto {
 
     private String consumerName;
     private String consumerVersion;
     private String providerName;
     private String providerVersion;
 
-    private List<InteractionVerificationResultDto> interactions;
+    private List<InteractionValidationResultDto> interactions;
 
 }

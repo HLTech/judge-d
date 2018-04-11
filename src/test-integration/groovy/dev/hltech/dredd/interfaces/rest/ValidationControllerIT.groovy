@@ -9,9 +9,9 @@ import spock.lang.Specification
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 
-@WebMvcTest(VerificationController.class)
+@WebMvcTest(ValidationController.class)
 @ActiveProfiles("test")
-class VerificationControllerIT extends Specification {
+class ValidationControllerIT extends Specification {
 
     @Autowired
     MockMvc mockMvc
@@ -20,7 +20,7 @@ class VerificationControllerIT extends Specification {
     ObjectMapper objectMapper
 
     def "verifyPacts test hits the URL and parses JSON output"() {
-        when: 'rest verifyPacts url is hit'
+        when: 'rest validatePacts url is hit'
             def response = mockMvc.perform(
                 post('/verification/pacts')
                     .contentType("application/json")
@@ -29,11 +29,11 @@ class VerificationControllerIT extends Specification {
         then: 'controller returns validation response in json'
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), VerificationResultDto.class)
+            objectMapper.readValue(response.getContentAsString(), ValidationResultDto.class)
     }
 
     def "verifySwagger test hits the URL and parses JSON output"() {
-        when: 'rest verifySwagger url is hit'
+        when: 'rest validateSwagger url is hit'
             def response = mockMvc.perform(
                 post('/verification/swagger')
                     .contentType("application/json")
@@ -42,15 +42,15 @@ class VerificationControllerIT extends Specification {
         then: 'controller returns validation response in json'
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), VerificationResultDto.class)
+            objectMapper.readValue(response.getContentAsString(), ValidationResultDto.class)
     }
 
-    private SwaggerVerificationForm newSwaggerVerificationForm() {
-        new SwaggerVerificationForm()
+    private SwaggerValidationForm newSwaggerVerificationForm() {
+        new SwaggerValidationForm()
     }
 
-    private PactVerificationForm newPactVerificationForm() {
-        new PactVerificationForm()
+    private PactValidationForm newPactVerificationForm() {
+        new PactValidationForm()
     }
 
 
