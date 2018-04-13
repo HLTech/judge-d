@@ -6,10 +6,10 @@ import java.util.List;
 public class InteractionValidationReport {
 
     private final String name;
-    private final ValidationStatus status;
+    private final InteractionValidationStatus status;
     private final List<String> errors;
 
-    public InteractionValidationReport(String name, ValidationStatus status, List<String> errors) {
+    public InteractionValidationReport(String name, InteractionValidationStatus status, List<String> errors) {
         this.name = name;
         this.status = status;
         this.errors = errors;
@@ -19,11 +19,18 @@ public class InteractionValidationReport {
         return name;
     }
 
-    public ValidationStatus getStatus() {
+    public InteractionValidationStatus getStatus() {
         return status;
     }
 
     public List<String> getErrors() {
         return errors;
+    }
+
+    public enum InteractionValidationStatus {
+
+        OK,
+        FAILED
+
     }
 }

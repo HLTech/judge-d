@@ -17,6 +17,7 @@ public class BeanFactory {
         return StaticEnvironment.builder()
             .withProvider(
                 "dde-instruction-gateway",
+                "1.0",
                 new String(toByteArray(getClass().getResourceAsStream("/dde-instruction-gateway-swagger.json")))
             )
             .build();
