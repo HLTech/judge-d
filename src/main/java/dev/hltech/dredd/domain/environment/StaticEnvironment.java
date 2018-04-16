@@ -3,7 +3,9 @@ package dev.hltech.dredd.domain.environment;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -33,14 +35,17 @@ public class StaticEnvironment implements Environment {
 
         private Multimap<String, Service> availableServices = HashMultimap.create();
 
-        public Builder withProvider(String name, String version, String swaggerResource){
-            final String swagger;
-            try {
-                swagger = new String(toByteArray(getClass().getResourceAsStream(swaggerResource)));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        public Builder withProvider(String name, String version, InputStream inputStream) throws IOException {
+            return withProvider(name, version, new String(toByteArray(inputStream)));
+        }
+
+        public Builder withProvider(String name, String version, String swagger){
             availableServices.put(name, new Service() {
+
+                @Override
+                public String getName() {
+                    return name;
+                }
 
                 @Override
                 public String getVersion(){
@@ -50,10 +55,6 @@ public class StaticEnvironment implements Environment {
                 @Override
                 public Optional<Provider> asProvider() {
                     return Optional.of(new Provider() {
-                        @Override
-                        public String getVersion() {
-                            return version;
-                        }
 
                         @Override
                         public String getSwagger() {

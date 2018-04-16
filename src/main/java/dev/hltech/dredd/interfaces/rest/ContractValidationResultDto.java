@@ -1,13 +1,13 @@
 package dev.hltech.dredd.interfaces.rest;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 @Builder
-@Data
-public class ConsumerProviderValidationResultDto {
+public class ContractValidationResultDto {
 
     private String consumerName;
     private String consumerVersion;
@@ -16,4 +16,5 @@ public class ConsumerProviderValidationResultDto {
 
     private List<InteractionValidationResultDto> interactions;
 
+    private ContractValidationStatus validationStatus;
 }

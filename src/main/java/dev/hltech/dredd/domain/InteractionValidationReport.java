@@ -1,31 +1,18 @@
 package dev.hltech.dredd.domain;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.util.List;
 
+@Getter
+@AllArgsConstructor
 public class InteractionValidationReport {
 
     private final String name;
     private final InteractionValidationStatus status;
     private final List<String> errors;
-
-    public InteractionValidationReport(String name, InteractionValidationStatus status, List<String> errors) {
-        this.name = name;
-        this.status = status;
-        this.errors = errors;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public InteractionValidationStatus getStatus() {
-        return status;
-    }
-
-    public List<String> getErrors() {
-        return errors;
-    }
 
     public enum InteractionValidationStatus {
 
