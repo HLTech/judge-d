@@ -7,8 +7,8 @@ import java.util.List;
 
 @Getter
 @Builder
-public class AggregatedValidationResultDto {
+public class AggregatedValidationReportDto {
 
-    List<ContractValidationResultDto> validationResults;
+    List<ContractValidationReportDto> validationResults;
 
 }

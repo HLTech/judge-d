@@ -7,14 +7,15 @@ import java.util.List;
 
 @Getter
 @Builder
-public class ContractValidationResultDto {
+public class ContractValidationReportDto {
 
     private String consumerName;
     private String consumerVersion;
     private String providerName;
     private String providerVersion;
 
-    private List<InteractionValidationResultDto> interactions;
-
     private ContractValidationStatus validationStatus;
+
+    private List<InteractionValidationReportDto> interactions;
+
 }

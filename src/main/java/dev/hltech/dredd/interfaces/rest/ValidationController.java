@@ -21,8 +21,10 @@ import java.util.List;
 
 import static au.com.dius.pact.model.PactReader.loadPact;
 import static com.google.common.collect.Lists.newArrayList;
-import static dev.hltech.dredd.interfaces.rest.ContractValidationStatus.NO_SUCH_PROVIDER_ON_ENVIRONMENT;
-import static dev.hltech.dredd.interfaces.rest.ContractValidationStatus.OK;
+import static dev.hltech.dredd.domain.InteractionValidationReport.InteractionValidationResult.FAILED;
+import static dev.hltech.dredd.domain.InteractionValidationReport.InteractionValidationResult.OK;
+import static dev.hltech.dredd.interfaces.rest.ContractValidationStatus.FAILED_NO_SUCH_PROVIDER_ON_ENVIRONMENT;
+import static dev.hltech.dredd.interfaces.rest.ContractValidationStatus.PERFORMED;
 import static java.util.stream.Collectors.toList;
 
 @RestController
@@ -40,11 +42,11 @@ public class ValidationController {
     @PostMapping(value = "verification/pacts", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Verify pacts against providers from the environment", nickname = "Verify pats")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = AggregatedValidationResultDto.class),
+        @ApiResponse(code = 200, message = "Success", response = AggregatedValidationReportDto.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
-    public AggregatedValidationResultDto validatePacts(@RequestBody PactValidationForm pactValidationForm)  {
-            return new AggregatedValidationResultDto(
+    public AggregatedValidationReportDto validatePacts(@RequestBody PactValidationForm pactValidationForm)  {
+            return new AggregatedValidationReportDto(
                 pactValidationForm
                     .getPacts()
                     .stream()
@@ -61,64 +63,66 @@ public class ValidationController {
             );
     }
 
-    private List<ContractValidationResultDto> validatePact(RequestResponsePact a) {
+    private List<ContractValidationReportDto> validatePact(RequestResponsePact a) {
         try {
-            return pactValidator.validate(a).stream().map(this::toDto).collect(toList());
+            return pactValidator.validate(a).stream().map(ValidationController::toDto).collect(toList());
         } catch (ProviderNotAvailableException e) {
-            return newArrayList(ContractValidationResultDto.builder()
+            return newArrayList(ContractValidationReportDto.builder()
                     .consumerName(a.getConsumer().getName())
                     .providerName(a.getProvider().getName())
-                    .validationStatus(NO_SUCH_PROVIDER_ON_ENVIRONMENT)
+                    .validationStatus(FAILED_NO_SUCH_PROVIDER_ON_ENVIRONMENT)
                     .build());
         }
     }
 
-    private ContractValidationResultDto toDto(PactValidationReport input) {
-        return ContractValidationResultDto.builder()
+    public static ContractValidationReportDto toDto(PactValidationReport input) {
+        return ContractValidationReportDto.builder()
             .consumerName(input.getConsumerName())
             .providerName(input.getProviderName())
             .providerVersion(input.getProviderVersion())
-            .validationStatus(OK)
+            .validationStatus(PERFORMED)
             .interactions(input.getInteractionValidationReports()
                 .stream()
-                .map(this::toDto)
+                .map(ValidationController::toDto)
                 .collect(toList())
             )
             .build();
     }
 
-    private InteractionValidationResultDto toDto(InteractionValidationReport input) {
-        return InteractionValidationResultDto.builder()
-            .name(input.getName())
+    public static InteractionValidationReportDto toDto(InteractionValidationReport input) {
+        return InteractionValidationReportDto.builder()
+            .interactionName(input.getName())
+            .validationResult(input.getStatus())
+            .errors(input.getErrors())
             .build();
     }
 
     @PostMapping(value = "verification/swagger", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Verify swagger against consumers from the environment", nickname = "Verify swagger")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = AggregatedValidationResultDto.class),
+        @ApiResponse(code = 200, message = "Success", response = AggregatedValidationReportDto.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
-    public AggregatedValidationResultDto validateSwagger(SwaggerValidationForm swaggerValidationForm) {
+    public AggregatedValidationReportDto validateSwagger(SwaggerValidationForm swaggerValidationForm) {
         return createMockResponse();
     }
 
-    private AggregatedValidationResultDto createMockResponse() {
-        return AggregatedValidationResultDto.builder()
+    private AggregatedValidationReportDto createMockResponse() {
+        return AggregatedValidationReportDto.builder()
             .validationResults(newArrayList(
-                ContractValidationResultDto.builder()
+                ContractValidationReportDto.builder()
                     .consumerName("consumerName")
                     .consumerVersion("1.0")
                     .providerName("providerName")
                     .providerVersion("1.0")
                     .interactions(newArrayList(
-                        InteractionValidationResultDto.builder()
-                            .name("some verification")
-                            .verificationResult("OK")
+                        InteractionValidationReportDto.builder()
+                            .interactionName("some verification")
+                            .validationResult(OK)
                             .build(),
-                        InteractionValidationResultDto.builder()
-                            .name("some other verification")
-                            .verificationResult("FAIL")
+                        InteractionValidationReportDto.builder()
+                            .interactionName("some other verification")
+                            .validationResult(FAILED)
                             .errors(newArrayList("bad weather", "too cold"))
                             .build()
                     ))
