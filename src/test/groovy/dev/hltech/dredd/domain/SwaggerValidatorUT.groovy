@@ -17,7 +17,7 @@ class SwaggerValidatorUT extends Specification {
         when:
             def reports = new SwaggerValidator(environment).validate("instruction-gateway", swagger)
         then:
-            reports.size() == 0
+            reports.empty
     }
 
     def 'should return one report for each consumer when validate given multiple consumers were found'(){
@@ -31,8 +31,8 @@ class SwaggerValidatorUT extends Specification {
             def reports = new SwaggerValidator(environment).validate("instruction-gateway", swagger)
         then:
             reports.size() == 2
-            reports.find {it.consumerName == "frontend" && it.consumerVersion=="1.0"} != null
-            reports.find {it.consumerName == "frontend" && it.consumerVersion=="2.0"} != null
+            reports.find {it.consumerName == "frontend" && it.consumerVersion=="1.0"}
+            reports.find {it.consumerName == "frontend" && it.consumerVersion=="2.0"}
     }
 
     JsonNode loadJson(String location) {
