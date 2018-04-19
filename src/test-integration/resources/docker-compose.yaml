@@ -1,0 +1,4 @@
+dredd:
+  image: tools-registry.hltech.dev/contract-verifier
+  ports:
+    - 8080

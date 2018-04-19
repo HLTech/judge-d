@@ -8,6 +8,12 @@ public interface Service {
 
     String getVersion();
 
-    Optional<Provider> asProvider();
+    default Optional<Provider> asProvider() {
+        return Optional.empty();
+    }
+
+    default Optional<Consumer> asConsumer() {
+        return Optional.empty();
+    }
 
 }
