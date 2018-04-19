@@ -25,13 +25,17 @@ public class SwaggerValidator extends ContractValidator {
 
         return consumers
             .stream()
-            .map(consumer -> new SwaggerValidationReport(
-                consumer.getName(),
-                consumer.getVersion(),
-                providerName,
-                validate(consumer.asConsumer().get().getPact(providerName).get(), swagger.toString())
-            ))
+            .map(consumer -> validate(providerName, swagger, consumer))
             .collect(toList());
+    }
+
+    private SwaggerValidationReport validate(String providerName, ObjectNode swagger, Service consumer) {
+        return new SwaggerValidationReport(
+            consumer.getName(),
+            consumer.getVersion(),
+            providerName,
+            validate(consumer.asConsumer().get().getPact(providerName).get(), swagger.toString())
+        );
     }
 
 }
