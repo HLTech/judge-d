@@ -5,6 +5,8 @@ import dev.hltech.dredd.domain.PactValidator;
 import dev.hltech.dredd.domain.SwaggerValidator;
 import dev.hltech.dredd.domain.environment.Environment;
 import dev.hltech.dredd.domain.environment.StaticEnvironment;
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -45,4 +47,8 @@ public class BeanFactory {
         return new SwaggerValidator(environment);
     }
 
+    @Bean
+    public KubernetesClient kubernetesClient() {
+        return new DefaultKubernetesClient();
+    }
 }
