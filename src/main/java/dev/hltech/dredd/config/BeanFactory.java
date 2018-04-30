@@ -1,6 +1,7 @@
 package dev.hltech.dredd.config;
 
 import au.com.dius.pact.model.RequestResponsePact;
+import com.google.common.collect.Lists;
 import dev.hltech.dredd.domain.PactValidator;
 import dev.hltech.dredd.domain.SwaggerValidator;
 import dev.hltech.dredd.domain.environment.Environment;
@@ -9,6 +10,8 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 
@@ -51,4 +54,13 @@ public class BeanFactory {
     public KubernetesClient kubernetesClient() {
         return new DefaultKubernetesClient();
     }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        restTemplate.setMessageConverters(Lists.newArrayList(converter));
+        return restTemplate;
+    }
+
 }
