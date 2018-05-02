@@ -2,20 +2,12 @@ package dev.hltech.dredd;
 
 import dev.hltech.dredd.interfaces.rest.AggregatedValidationReportDto;
 import dev.hltech.dredd.interfaces.rest.PactValidationForm;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-
-@Produces(APPLICATION_JSON)
-@Consumes(APPLICATION_JSON)
 public interface DreddClient {
 
-    @POST
-    @Path("/verification/pacts")
+    @RequestMapping(value = "/verification/pacts", method = RequestMethod.GET)
     AggregatedValidationReportDto validate(PactValidationForm form);
 
 }

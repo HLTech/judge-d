@@ -77,7 +77,7 @@ class ValidationControllerUT extends Specification {
         when:
             def validationController = new ValidationController(new PactValidator(environment), new SwaggerValidator(environment), objectMapper)
             def form = new SwaggerValidationForm()
-                form.setProviderName("dde-instruction-gateway")
+                form.setProviderName("instruction-gateway")
                 form.setSwagger(swagger)
             def validationResult = validationController.validateSwagger(form)
         then:
@@ -86,7 +86,7 @@ class ValidationControllerUT extends Specification {
             validationResults.get(0).validationStatus == PERFORMED
             validationResults.get(0).consumerName == "frontend"
             validationResults.get(0).consumerVersion == "1.0"
-            validationResults.get(0).providerName == "dde-instruction-gateway"
+            validationResults.get(0).providerName == "instruction-gateway"
         }
     }
 }
