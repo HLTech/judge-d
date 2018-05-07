@@ -22,7 +22,7 @@ spec:
         env:
         ports:
         - name: api
-          containerPort: 8080
+          containerPort: 8090
           protocol: TCP
         resources:
           requests:
@@ -42,7 +42,7 @@ spec:
   ports:
   - name: api
     protocol: TCP
-    port: 8080
+    port: 8090
     targetPort: api
   selector:
     app: contract-verifier
