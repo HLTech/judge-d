@@ -2,8 +2,10 @@ package dev.hltech.dredd.domain.environment
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.google.common.collect.Lists
 import com.google.common.collect.Maps
+import dev.hltech.dredd.integration.pactbroker.PactBrokerClient
 import io.fabric8.kubernetes.api.model.Container
 import io.fabric8.kubernetes.api.model.ContainerPort
 import io.fabric8.kubernetes.api.model.ObjectMeta
@@ -17,13 +19,17 @@ import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 import spock.lang.Subject
 
+import static org.apache.tomcat.util.http.fileupload.util.Streams.asString
+
 class KubernetesEnvironmentUT extends Specification {
 
     def client = Mock(KubernetesClient)
     def restTemplate = Mock(RestTemplate)
+    def pactBrokerClient = Mock(PactBrokerClient)
+    def objectMapper = new ObjectMapper()
 
     @Subject
-    KubernetesEnvironment environment = new KubernetesEnvironment(client, restTemplate)
+    KubernetesEnvironment environment = new KubernetesEnvironment(client, restTemplate, pactBrokerClient, objectMapper)
 
     def 'should find 0 services when 0 pods found in kubernetes' () {
         given:
@@ -197,6 +203,11 @@ class KubernetesEnvironmentUT extends Specification {
             def swagger = "a swagger"
             restTemplate.getForObject(_, String.class) >> swagger
 
+        and:
+            def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))
+            def pact = objectMapper.readValue(pactString, ObjectNode.class)
+            pactBrokerClient.getPact(*_) >> pact
+
         when:
             Collection<Service> services = environment.getAllServices()
 
@@ -206,6 +217,7 @@ class KubernetesEnvironmentUT extends Specification {
             services[0].getVersion() == "a version"
             services[0].asProvider().isPresent()
             services[0].asProvider().get().getSwagger() == swagger
+            services[0].asConsumer().get().getPact("dde-instruction-gateway") != null
     }
 
     def 'should return the requested service' () {
@@ -256,6 +268,11 @@ class KubernetesEnvironmentUT extends Specification {
             def swagger = "a swagger"
             restTemplate.getForObject(_, String.class) >> swagger
 
+        and:
+            def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))
+            def pact = objectMapper.readValue(pactString, ObjectNode.class)
+            pactBrokerClient.getPact(*_) >> pact
+
         when:
             Collection<Service> services = environment.findServices("a service")
 
@@ -265,5 +282,7 @@ class KubernetesEnvironmentUT extends Specification {
             services[0].getVersion() == "a version"
             services[0].asProvider().isPresent()
             services[0].asProvider().get().getSwagger() == swagger
+            services[0].asConsumer().get().getPact("dde-instruction-gateway") != null
     }
+
 }
