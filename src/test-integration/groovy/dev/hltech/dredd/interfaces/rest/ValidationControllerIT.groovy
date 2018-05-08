@@ -4,11 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import dev.hltech.dredd.config.BeanFactory
 import dev.hltech.dredd.domain.Fixtures
 import dev.hltech.dredd.domain.environment.Environment
+import dev.hltech.dredd.integration.pactbroker.PactBrokerClient
+import io.fabric8.kubernetes.client.KubernetesClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 
 import static com.google.common.collect.Lists.newArrayList
@@ -63,15 +67,16 @@ class ValidationControllerIT extends Specification {
         return form
     }
 
-
-    @org.springframework.boot.test.context.TestConfiguration
-    static class TestConfiguration extends BeanFactory {
+    @TestConfiguration
+    static class TestConfig extends BeanFactory {
 
         @Bean
-        Environment hlEnvironment() throws IOException {
+        Environment hlEnvironment(KubernetesClient kubernetesClient,
+                                  RestTemplate restTemplate,
+                                  PactBrokerClient pactBrokerClient,
+                                  ObjectMapper objectMapper) throws IOException {
             return Fixtures.environment()
         }
-
     }
 
 }

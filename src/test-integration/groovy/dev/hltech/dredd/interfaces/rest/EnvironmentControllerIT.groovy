@@ -1,24 +1,23 @@
 package dev.hltech.dredd.interfaces.rest
 
-import au.com.dius.pact.model.RequestResponsePact
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.hltech.dredd.config.BeanFactory
 import dev.hltech.dredd.domain.Fixtures
 import dev.hltech.dredd.domain.environment.Environment
-import dev.hltech.dredd.domain.environment.StaticEnvironment
+import dev.hltech.dredd.integration.pactbroker.PactBrokerClient
 import dev.hltech.dredd.interfaces.rest.environment.EnvironmentController
 import dev.hltech.dredd.interfaces.rest.environment.ServiceDto
+import io.fabric8.kubernetes.client.KubernetesClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 
-import static au.com.dius.pact.model.PactReader.loadPact
-import static com.google.common.collect.Lists.newArrayList
-import static com.google.common.io.ByteStreams.toByteArray
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 
 @WebMvcTest(EnvironmentController.class)
@@ -43,14 +42,16 @@ class EnvironmentControllerIT extends Specification {
             objectMapper.readValue(response.getContentAsString(), new TypeReference<List<ServiceDto>>(){})
     }
 
-    @org.springframework.boot.test.context.TestConfiguration
-    static class TestConfiguration extends BeanFactory {
+    @TestConfiguration
+    static class TestConfig extends BeanFactory {
 
         @Bean
-        Environment hlEnvironment() throws IOException {
+        Environment hlEnvironment(KubernetesClient kubernetesClient,
+                                  RestTemplate restTemplate,
+                                  PactBrokerClient pactBrokerClient,
+                                  ObjectMapper objectMapper) throws IOException {
             return Fixtures.environment()
         }
-
     }
 
 }
