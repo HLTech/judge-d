@@ -79,6 +79,7 @@ public class KubernetesEnvironment implements Environment {
             String podIP = getPodIP(pod);
             Integer podPort = getPodPort(pod).orElse(DEFAULT_CONTAINER_PORT);
             String podVersion = getPodVersion(podIP, podPort);
+
             return new Service() {
                 @Override
                 public String getName() {
@@ -91,23 +92,24 @@ public class KubernetesEnvironment implements Environment {
                 }
 
                 @Override
-                public Optional<Provider> asProvider() {
-                    return Optional.of(new Provider() {
+                public Provider asProvider() {
+                    return new Provider() {
                         @Override
-                        public String getSwagger() {
+                        public Optional<String> getSwagger() {
                             try {
-                                return restTemplate.getForObject(
-                                    String.format(SWAGGER_ENDPOINT, podIP, podPort, podName), String.class);
+                                return Optional.ofNullable(restTemplate.getForObject(
+                                    String.format(SWAGGER_ENDPOINT, podIP, podPort, podName), String.class));
                             } catch (Exception ex) {
-                                throw new KubernetesEnvironmentException("Exception during pact resolution", ex);
+                                log.debug("Swagger not fetched, pod: name- %s, version - %s", podName, podVersion);
+                                return Optional.empty();
                             }
                         }
-                    });
+                    };
                 }
 
                 @Override
-                public Optional<Consumer> asConsumer() {
-                    return Optional.of(new Consumer() {
+                public Consumer asConsumer() {
+                    return new Consumer() {
                         @Override
                         public Optional<RequestResponsePact> getPact(String providerName) {
                             try {
@@ -115,10 +117,11 @@ public class KubernetesEnvironment implements Environment {
                                 return Optional.ofNullable(
                                     (RequestResponsePact) loadPact(objectMapper.writeValueAsString(pact)));
                             } catch (JsonProcessingException ex) {
-                                throw new KubernetesEnvironmentException("Exception during pact resolution", ex);
+                                log.debug("Pact not fetched, pod: name- %s, version - %s", podName, podVersion);
+                                return Optional.empty();
                             }
                         }
-                    });
+                    };
                 }
             };
         }

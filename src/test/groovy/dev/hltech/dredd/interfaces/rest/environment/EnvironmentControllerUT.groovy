@@ -7,34 +7,15 @@ class EnvironmentControllerUT extends Specification {
 
     def environmentController = new EnvironmentController(Fixtures.environment())
 
-    def 'should return all services available in environment'(){
+    def 'should return all services available in environment'() {
         when:
             def services = environmentController.getServices()
+
         then:
             services.size() == 2
+            services[0].name == "dde-instruction-gateway"
+            services[0].version == "1.0"
+            services[1].name == "frontend"
+            services[1].version == "1.0"
     }
-
-    def 'should return provider services marked as provider'(){
-        when:
-            def services = environmentController.getServices()
-        then:
-            with(services.find {it.isProvider()}) {
-                name == "dde-instruction-gateway"
-                version == "1.0"
-                consumer == false
-            }
-    }
-
-    def 'should return consumer services marked as consumer'(){
-        when:
-        def services = environmentController.getServices()
-        then:
-        with(services.find {it.isConsumer()}) {
-            name == "frontend"
-            version == "1.0"
-            provider == false
-        }
-    }
-
-
 }

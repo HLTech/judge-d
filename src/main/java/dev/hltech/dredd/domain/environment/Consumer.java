@@ -7,5 +7,4 @@ import java.util.Optional;
 public interface Consumer {
 
     Optional<RequestResponsePact> getPact(String providerName);
-
 }

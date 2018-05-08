@@ -1,7 +1,8 @@
 package dev.hltech.dredd.domain.environment;
 
+import java.util.Optional;
+
 public interface Provider {
 
-    String getSwagger();
-
+    Optional<String> getSwagger();
 }
