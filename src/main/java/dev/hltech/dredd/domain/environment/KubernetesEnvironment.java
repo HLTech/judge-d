@@ -1,6 +1,11 @@
 package dev.hltech.dredd.domain.environment;
 
+import au.com.dius.pact.model.RequestResponsePact;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import dev.hltech.dredd.integration.pactbroker.PactBrokerClient;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -13,6 +18,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static au.com.dius.pact.model.PactReader.loadPact;
+
 @Slf4j
 public class KubernetesEnvironment implements Environment {
 
@@ -22,10 +29,17 @@ public class KubernetesEnvironment implements Environment {
 
     private KubernetesClient kubernetesClient;
     private RestTemplate restTemplate;
+    private PactBrokerClient pactBrokerClient;
+    private ObjectMapper objectMapper;
 
-    public KubernetesEnvironment(KubernetesClient kubernetesClient, RestTemplate restTemplate) {
+    public KubernetesEnvironment(KubernetesClient kubernetesClient,
+                                 RestTemplate restTemplate,
+                                 PactBrokerClient pactBrokerClient,
+                                 ObjectMapper objectMapper) {
         this.kubernetesClient = kubernetesClient;
         this.restTemplate = restTemplate;
+        this.pactBrokerClient = pactBrokerClient;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -81,8 +95,28 @@ public class KubernetesEnvironment implements Environment {
                     return Optional.of(new Provider() {
                         @Override
                         public String getSwagger() {
-                            return restTemplate.getForObject(
-                                String.format(SWAGGER_ENDPOINT, podIP, podPort, podName), String.class);
+                            try {
+                                return restTemplate.getForObject(
+                                    String.format(SWAGGER_ENDPOINT, podIP, podPort, podName), String.class);
+                            } catch (Exception ex) {
+                                throw new KubernetesEnvironmentException("Exception during pact resolution", ex);
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public Optional<Consumer> asConsumer() {
+                    return Optional.of(new Consumer() {
+                        @Override
+                        public Optional<RequestResponsePact> getPact(String providerName) {
+                            try {
+                                ObjectNode pact = pactBrokerClient.getPact(providerName, podName, podVersion);
+                                return Optional.ofNullable(
+                                    (RequestResponsePact) loadPact(objectMapper.writeValueAsString(pact)));
+                            } catch (JsonProcessingException ex) {
+                                throw new KubernetesEnvironmentException("Exception during pact resolution", ex);
+                            }
                         }
                     });
                 }
