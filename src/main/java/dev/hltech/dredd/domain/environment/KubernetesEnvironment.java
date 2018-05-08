@@ -62,9 +62,9 @@ public class KubernetesEnvironment implements Environment {
     private Service createService(Pod pod) {
         try {
             String podName = getPodName(pod);
-            String podId = getPodIP(pod);
+            String podIP = getPodIP(pod);
             Integer podPort = getPodPort(pod).orElse(DEFAULT_CONTAINER_PORT);
-            String podVersion = getPodVersion(podId, podPort);
+            String podVersion = getPodVersion(podIP, podPort);
             return new Service() {
                 @Override
                 public String getName() {
@@ -82,7 +82,7 @@ public class KubernetesEnvironment implements Environment {
                         @Override
                         public String getSwagger() {
                             return restTemplate.getForObject(
-                                String.format(SWAGGER_ENDPOINT, podId, podPort, podName), String.class);
+                                String.format(SWAGGER_ENDPOINT, podIP, podPort, podName), String.class);
                         }
                     });
                 }
