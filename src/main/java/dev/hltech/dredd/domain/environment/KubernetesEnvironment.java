@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class KubernetesEnvironment implements Environment {
 
     private static final String VERSION_ENDPOINT = "http://%s:%d/info";
+    private static final String SWAGGER_ENDPOINT = "http://%s:%d/%s/documentation/api-docs";
     private static final Integer DEFAULT_CONTAINER_PORT = 9999;
 
     private KubernetesClient kubernetesClient;
@@ -61,7 +62,9 @@ public class KubernetesEnvironment implements Environment {
     private Service createService(Pod pod) {
         try {
             String podName = getPodName(pod);
-            String podVersion = getPodVersion(getPodIP(pod), getPodPort(pod).orElse(DEFAULT_CONTAINER_PORT));
+            String podId = getPodIP(pod);
+            Integer podPort = getPodPort(pod).orElse(DEFAULT_CONTAINER_PORT);
+            String podVersion = getPodVersion(podId, podPort);
             return new Service() {
                 @Override
                 public String getName() {
@@ -71,6 +74,17 @@ public class KubernetesEnvironment implements Environment {
                 @Override
                 public String getVersion() {
                     return podVersion;
+                }
+
+                @Override
+                public Optional<Provider> asProvider() {
+                    return Optional.of(new Provider() {
+                        @Override
+                        public String getSwagger() {
+                            return restTemplate.getForObject(
+                                String.format(SWAGGER_ENDPOINT, podId, podPort, podName), String.class);
+                        }
+                    });
                 }
             };
         }

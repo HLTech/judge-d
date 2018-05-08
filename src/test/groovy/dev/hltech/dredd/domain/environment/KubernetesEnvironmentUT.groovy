@@ -139,10 +139,6 @@ class KubernetesEnvironmentUT extends Specification {
                 }
             }
 
-            restTemplate.getForObject(*_) >> {
-                throw new RuntimeException()
-            }
-
         and:
             restTemplate.getForObject(*_) >> {
                 throw new RuntimeException()
@@ -195,7 +191,11 @@ class KubernetesEnvironmentUT extends Specification {
             version.put("version", "a version")
             JsonNode build = mapper.createObjectNode()
             build.set("build", version)
-            restTemplate.getForObject(*_) >> build
+            restTemplate.getForObject(_, JsonNode.class) >> build
+
+        and:
+            def swagger = "a swagger"
+            restTemplate.getForObject(_, String.class) >> swagger
 
         when:
             Collection<Service> services = environment.getAllServices()
@@ -204,6 +204,8 @@ class KubernetesEnvironmentUT extends Specification {
             services.size() == 1
             services[0].getName() == "a name"
             services[0].getVersion() == "a version"
+            services[0].asProvider().isPresent()
+            services[0].asProvider().get().getSwagger() == swagger
     }
 
     def 'should return the requested service' () {
@@ -248,7 +250,11 @@ class KubernetesEnvironmentUT extends Specification {
             version.put("version", "a version")
             JsonNode build = mapper.createObjectNode()
             build.set("build", version)
-            restTemplate.getForObject(*_) >> build
+            restTemplate.getForObject(_, JsonNode.class) >> build
+
+        and:
+            def swagger = "a swagger"
+            restTemplate.getForObject(_, String.class) >> swagger
 
         when:
             Collection<Service> services = environment.findServices("a service")
@@ -257,5 +263,7 @@ class KubernetesEnvironmentUT extends Specification {
             services.size() == 1
             services[0].getName() == "a name"
             services[0].getVersion() == "a version"
+            services[0].asProvider().isPresent()
+            services[0].asProvider().get().getSwagger() == swagger
     }
 }
