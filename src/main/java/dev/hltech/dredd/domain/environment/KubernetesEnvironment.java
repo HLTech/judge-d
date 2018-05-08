@@ -32,7 +32,7 @@ public class KubernetesEnvironment implements Environment {
         return getPods().stream()
             .map(pod -> {
                 try{
-                    return createService(pod);
+                   return createService(pod);
                 }
                 catch(KubernetesEnvironmentException exception) {
                     return null;

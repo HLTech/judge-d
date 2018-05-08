@@ -2,8 +2,11 @@ package dev.hltech.dredd.interfaces.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.hltech.dredd.config.BeanFactory
+import dev.hltech.dredd.domain.Fixtures
+import dev.hltech.dredd.domain.environment.Environment
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Bean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
@@ -63,6 +66,11 @@ class ValidationControllerIT extends Specification {
 
     @org.springframework.boot.test.context.TestConfiguration
     static class TestConfiguration extends BeanFactory {
+
+        @Bean
+        Environment hlEnvironment() throws IOException {
+            return Fixtures.environment()
+        }
 
     }
 
