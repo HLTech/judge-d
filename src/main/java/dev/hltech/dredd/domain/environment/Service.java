@@ -1,19 +1,13 @@
 package dev.hltech.dredd.domain.environment;
 
-import java.util.Optional;
-
 public interface Service {
 
     String getName();
 
     String getVersion();
 
-    default Optional<Provider> asProvider() {
-        return Optional.empty();
-    }
+    Provider asProvider();
 
-    default Optional<Consumer> asConsumer() {
-        return Optional.empty();
-    }
+    Consumer asConsumer();
 
 }

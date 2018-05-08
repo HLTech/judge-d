@@ -40,8 +40,6 @@ public class EnvironmentController {
         return ServiceDto.builder()
             .name(service.getName())
             .version(service.getVersion())
-            .provider(service.asProvider().isPresent())
-            .consumer(service.asConsumer().isPresent())
             .build();
     }
 

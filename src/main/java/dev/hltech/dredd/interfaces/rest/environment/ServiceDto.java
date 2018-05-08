@@ -9,7 +9,4 @@ public class ServiceDto {
 
     private String name;
     private String version;
-    private boolean provider;
-    private boolean consumer;
-
 }

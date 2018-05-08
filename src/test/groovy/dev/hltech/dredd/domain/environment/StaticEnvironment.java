@@ -62,13 +62,13 @@ public class StaticEnvironment implements Environment {
                 }
 
                 @Override
-                public Optional<Provider> asProvider() {
-                    return Optional.of(new Provider() {
-                        @Override
-                        public String getSwagger() {
-                            return swagger;
-                        }
-                    });
+                public Provider asProvider() {
+                    return () -> Optional.ofNullable(swagger);
+                }
+
+                @Override
+                public Consumer asConsumer() {
+                    return providerName -> Optional.empty();
                 }
             });
             return this;
@@ -92,15 +92,15 @@ public class StaticEnvironment implements Environment {
                 }
 
                 @Override
-                public Optional<Consumer> asConsumer(){
-                    return Optional.of(new Consumer() {
-
-                        @Override
-                        public Optional<RequestResponsePact> getPact(String providerName) {
-                            return pacts.stream().filter( pact -> pact.getProvider().getName().equals(providerName)).findFirst();
-                        }
-                    });
+                public Consumer asConsumer(){
+                    return providerName -> pacts.stream().filter(pact -> pact.getProvider().getName().equals(providerName)).findFirst();
                 }
+
+                @Override
+                public Provider asProvider() {
+                    return Optional::empty;
+                }
+
             });
             return this;
         }

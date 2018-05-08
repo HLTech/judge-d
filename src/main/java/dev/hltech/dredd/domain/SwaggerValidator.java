@@ -19,8 +19,7 @@ public class SwaggerValidator extends ContractValidator {
     public List<SwaggerValidationReport> validate(String providerName, ObjectNode swagger) {
         List<Service> consumers = environment.getAllServices()
             .stream()
-            .filter(service -> service.asConsumer().isPresent())
-            .filter(service -> service.asConsumer().get().getPact(providerName).isPresent())
+            .filter(service -> service.asConsumer().getPact(providerName).isPresent())
             .collect(toList());
 
         return consumers
@@ -34,7 +33,7 @@ public class SwaggerValidator extends ContractValidator {
             consumer.getName(),
             consumer.getVersion(),
             providerName,
-            validate(consumer.asConsumer().get().getPact(providerName).get(), swagger.toString())
+            validate(consumer.asConsumer().getPact(providerName).get(), swagger.toString())
         );
     }
 

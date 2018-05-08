@@ -18,7 +18,7 @@ public class PactValidator extends ContractValidator {
     public List<PactValidationReport> validate(RequestResponsePact pact) throws ProviderNotAvailableException {
         List<Service> providers = environment.findServices(pact.getProvider().getName())
             .stream()
-            .filter(service -> service.asProvider().isPresent())
+            .filter(service -> service.asProvider().getSwagger().isPresent())
             .collect(Collectors.toList());
 
         if (providers.isEmpty())
@@ -31,7 +31,7 @@ public class PactValidator extends ContractValidator {
                 pact.getConsumer().getName(),
                 service.getName(),
                 service.getVersion(),
-                validate(pact, service.asProvider().get().getSwagger())
+                validate(pact, service.asProvider().getSwagger().get())
             ))
             .collect(Collectors.toList());
     }

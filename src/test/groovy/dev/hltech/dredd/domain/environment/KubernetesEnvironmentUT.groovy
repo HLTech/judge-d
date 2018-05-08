@@ -215,9 +215,8 @@ class KubernetesEnvironmentUT extends Specification {
             services.size() == 1
             services[0].getName() == "a name"
             services[0].getVersion() == "a version"
-            services[0].asProvider().isPresent()
-            services[0].asProvider().get().getSwagger() == swagger
-            services[0].asConsumer().get().getPact("dde-instruction-gateway") != null
+            services[0].asProvider().getSwagger().get() == swagger
+            services[0].asConsumer().getPact("dde-instruction-gateway").get() != null
     }
 
     def 'should return the requested service' () {
@@ -280,9 +279,8 @@ class KubernetesEnvironmentUT extends Specification {
             services.size() == 1
             services[0].getName() == "a name"
             services[0].getVersion() == "a version"
-            services[0].asProvider().isPresent()
-            services[0].asProvider().get().getSwagger() == swagger
-            services[0].asConsumer().get().getPact("dde-instruction-gateway") != null
+            services[0].asProvider().getSwagger().get() == swagger
+            services[0].asConsumer().getPact("dde-instruction-gateway").get() != null
     }
 
 }
