@@ -116,7 +116,7 @@ public class KubernetesEnvironment implements Environment {
                                 ObjectNode pact = pactBrokerClient.getPact(providerName, podName, podVersion);
                                 return Optional.ofNullable(
                                     (RequestResponsePact) loadPact(objectMapper.writeValueAsString(pact)));
-                            } catch (JsonProcessingException ex) {
+                            } catch (Exception ex) {
                                 log.debug("Pact not fetched, pod: name- %s, version - %s", podName, podVersion);
                                 return Optional.empty();
                             }
