@@ -21,18 +21,18 @@ class PactBrokerClientIT extends Specification {
     def "should decode message as ObjectNode"() {
         given:
             stubFor(
-                get("/pacts/provider/instruction-gateway/consumer/frontend/1.0")
+                get("/pacts/provider/backend-provider/consumer/frontend/1.0")
                 .willReturn(
                     aResponse()
-                        .withBody(asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json")))
+                        .withBody(asString(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json")))
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                 )
             )
         when:
-            def pact = brokerClient.getPact("instruction-gateway", "frontend", "1.0")
+            def pact = brokerClient.getPact("backend-provider", "frontend", "1.0")
         then:
-            pact.findPath("provider").get("name").asText() == "instruction-gateway"
+            pact.findPath("provider").get("name").asText() == "backend-provider"
             pact.findPath("consumer").get("name").asText() == "frontend"
     }
 }

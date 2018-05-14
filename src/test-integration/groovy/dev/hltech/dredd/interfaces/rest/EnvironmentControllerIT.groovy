@@ -8,6 +8,7 @@ import dev.hltech.dredd.domain.environment.Environment
 import dev.hltech.dredd.integration.pactbroker.PactBrokerClient
 import dev.hltech.dredd.interfaces.rest.environment.EnvironmentController
 import dev.hltech.dredd.interfaces.rest.environment.ServiceDto
+import feign.Feign
 import io.fabric8.kubernetes.client.KubernetesClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -15,7 +16,6 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -47,9 +47,9 @@ class EnvironmentControllerIT extends Specification {
 
         @Bean
         Environment hlEnvironment(KubernetesClient kubernetesClient,
-                                  RestTemplate restTemplate,
                                   PactBrokerClient pactBrokerClient,
-                                  ObjectMapper objectMapper) throws IOException {
+                                  ObjectMapper objectMapper,
+                                  Feign feign) throws IOException {
             return Fixtures.environment()
         }
     }

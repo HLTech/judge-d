@@ -1,0 +1,17 @@
+{
+  "git":{
+    "commit":{
+      "time":"2018-05-09T10:50:37.000+0000",
+      "id":"1e8fcf6"
+    },
+    "branch":"HEAD"
+  },
+  "build":{
+    "version":"105-1e8fcf6",
+    "buildNumber":"105",
+    "artifact":"quartz",
+    "name":"quartz",
+    "group":"dev.hltech.dde",
+    "time":"2018-05-09T10:58:35.000+0000"
+  }
+}
