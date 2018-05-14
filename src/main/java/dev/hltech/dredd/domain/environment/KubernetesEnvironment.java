@@ -12,6 +12,7 @@ import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 import java.util.Collection;
@@ -47,7 +48,7 @@ public class KubernetesEnvironment implements Environment {
         return getPods().stream()
             .map(pod -> {
                 try{
-                   return createService(pod);
+                    return createService(pod);
                 }
                 catch(KubernetesEnvironmentException exception) {
                     return null;
@@ -102,7 +103,9 @@ public class KubernetesEnvironment implements Environment {
                                 PodClient podClient = feign.newInstance(
                                     new Target.HardCodedTarget<>(PodClient.class, "http://" + podIP + ":" + podApiPort));
 
-                                return Optional.ofNullable(podClient.getSwagger(URI.create(podName)));
+                                ResponseEntity<String> swaggerResponseEntity = podClient.getSwagger(URI.create(podName));
+
+                                return Optional.ofNullable(swaggerResponseEntity.getBody());
                             } catch (Exception ex) {
                                 log.debug("Swagger not fetched, pod: name- {}, version - {}", podName, podVersion);
                                 return Optional.empty();
@@ -117,7 +120,7 @@ public class KubernetesEnvironment implements Environment {
                         @Override
                         public Optional<RequestResponsePact> getPact(String providerName) {
                             try {
-                                ObjectNode pact = pactBrokerClient.getPact(providerName, podName, podVersion);
+                                ObjectNode pact = pactBrokerClient.getPact(providerName, podName, podVersion).getBody();
                                 return Optional.ofNullable(
                                     (RequestResponsePact) loadPact(objectMapper.writeValueAsString(pact)));
                             } catch (Exception ex) {
@@ -198,6 +201,6 @@ public class KubernetesEnvironment implements Environment {
         PodClient podClient = feign.newInstance(
             new Target.HardCodedTarget<>(PodClient.class, "http://" + podIP + ":" + podVersionPort));
 
-        return podClient.getInfo().get("build").get("version").asText();
+        return podClient.getInfo().getBody().get("build").get("version").asText();
     }
 }

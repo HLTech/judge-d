@@ -8,6 +8,7 @@ import dev.hltech.dredd.domain.environment.Environment;
 import dev.hltech.dredd.domain.environment.KubernetesEnvironment;
 import feign.Retryer;
 import feign.Target;
+import feign.codec.Decoder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import dev.hltech.dredd.integration.pactbroker.PactBrokerClient;
@@ -17,11 +18,13 @@ import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.cloud.netflix.feign.support.ResponseEntityDecoder;
 import org.springframework.cloud.netflix.feign.support.SpringDecoder;
 import org.springframework.cloud.netflix.feign.support.SpringEncoder;
 import org.springframework.cloud.netflix.feign.support.SpringMvcContract;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
@@ -99,18 +102,32 @@ public class BeanFactory {
     }
 
     @Bean
-    public Feign feign(ObjectFactory<HttpMessageConverters> messageConverters, Client client, Retryer retryer) {
+    public Feign feign(
+        ObjectFactory<HttpMessageConverters> messageConverters, Client client, Retryer retryer, Decoder decoder) {
         return Feign.builder()
             .client(client)
             .contract(new SpringMvcContract())
             .encoder(new SpringEncoder(messageConverters))
             .decoder(new SpringDecoder(messageConverters))
             .retryer(retryer)
+            .decoder(decoder)
             .build();
     }
 
     @Bean
     public Retryer retryer() {
         return Retryer.NEVER_RETRY;
+    }
+
+    @Bean
+    public Decoder feignDecoder(ObjectMapper objectMapper) {
+        HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter(objectMapper);
+        ObjectFactory<HttpMessageConverters> objectFactory = () -> new HttpMessageConverters(jacksonConverter);
+        return new ResponseEntityDecoder(new SpringDecoder(objectFactory));
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 }

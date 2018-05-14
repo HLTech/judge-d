@@ -32,7 +32,7 @@ class PactBrokerClientIT extends Specification {
         when:
             def pact = brokerClient.getPact("instruction-gateway", "frontend", "1.0")
         then:
-            pact.findPath("provider").get("name").asText() == "instruction-gateway"
-            pact.findPath("consumer").get("name").asText() == "frontend"
+            pact.getBody().findPath("provider").get("name").asText() == "instruction-gateway"
+            pact.getBody().findPath("consumer").get("name").asText() == "frontend"
     }
 }

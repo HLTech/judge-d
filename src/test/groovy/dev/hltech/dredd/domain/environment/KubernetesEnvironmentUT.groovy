@@ -17,8 +17,11 @@ import io.fabric8.kubernetes.api.model.PodSpec
 import io.fabric8.kubernetes.api.model.PodStatus
 import io.fabric8.kubernetes.client.KubernetesClient
 import io.fabric8.kubernetes.client.dsl.MixedOperation
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import spock.lang.Specification
 import spock.lang.Subject
+import unfiltered.response.Ok
 
 import static org.apache.tomcat.util.http.fileupload.util.Streams.asString
 
@@ -201,16 +204,16 @@ class KubernetesEnvironmentUT extends Specification {
             version.put("version", "a version")
             JsonNode build = mapper.createObjectNode()
             build.set("build", version)
-            podClient.getInfo() >> build
+            podClient.getInfo() >> new ResponseEntity<>(build, HttpStatus.OK)
 
         and:
             def swagger = "a swagger"
-            podClient.getSwagger(*_) >> swagger
+            podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, HttpStatus.OK)
 
         and:
             def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))
             def pact = objectMapper.readValue(pactString, ObjectNode.class)
-            pactBrokerClient.getPact(*_) >> pact
+            pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, HttpStatus.OK)
 
         when:
             Collection<Service> services = environment.getAllServices()
@@ -265,16 +268,16 @@ class KubernetesEnvironmentUT extends Specification {
             version.put("version", "a version")
             JsonNode build = mapper.createObjectNode()
             build.set("build", version)
-            podClient.getInfo() >> build
+            podClient.getInfo() >> new ResponseEntity<>(build, HttpStatus.OK)
 
         and:
             def swagger = "a swagger"
-            podClient.getSwagger(*_) >> swagger
+            podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, HttpStatus.OK)
 
         and:
             def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))
             def pact = objectMapper.readValue(pactString, ObjectNode.class)
-            pactBrokerClient.getPact(*_) >> pact
+            pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, HttpStatus.OK)
 
         when:
             Collection<Service> services = environment.findServices("a service")
