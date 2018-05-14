@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 public interface PactBrokerClient {
 
-    @RequestMapping(value = "/pacts/provider/{provider}/consumer/{consumer}/{consumerVersion}", method = RequestMethod.GET)
+    @RequestMapping(value = "/pacts/provider/{provider}/consumer/{consumer}/version/{consumerVersion}", method = RequestMethod.GET)
     ObjectNode getPact(
         @PathVariable("provider") String providerName,
         @PathVariable("consumer") String consumerName,

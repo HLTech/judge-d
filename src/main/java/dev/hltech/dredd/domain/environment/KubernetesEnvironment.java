@@ -1,7 +1,6 @@
 package dev.hltech.dredd.domain.environment;
 
 import au.com.dius.pact.model.RequestResponsePact;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.hltech.dredd.integration.kubernetes.PodClient;
@@ -25,7 +24,8 @@ import static au.com.dius.pact.model.PactReader.loadPact;
 @Slf4j
 public class KubernetesEnvironment implements Environment {
 
-    private static final Integer DEFAULT_CONTAINER_PORT = 9999;
+    private static final Integer DEFAULT_CONTAINER_VERSION_PORT = 9999;
+    private static final Integer DEFAULT_CONTAINER_API_PORT = 8080;
 
     private KubernetesClient kubernetesClient;
     private PactBrokerClient pactBrokerClient;
@@ -77,10 +77,8 @@ public class KubernetesEnvironment implements Environment {
         try {
             String podName = getPodName(pod);
             String podIP = getPodIP(pod);
-            Integer podPort = getPodPort(pod).orElse(DEFAULT_CONTAINER_PORT);
-            PodClient podClient = feign.newInstance(
-                new Target.HardCodedTarget<>(PodClient.class, "http://" + podIP + ":" + podPort));
-            String podVersion = getPodVersion(podClient);
+            Integer podVersionPort = getPodVersionPort(pod).orElse(DEFAULT_CONTAINER_VERSION_PORT);
+            String podVersion = getPodVersion(podIP, podVersionPort);
 
             return new Service() {
                 @Override
@@ -99,6 +97,11 @@ public class KubernetesEnvironment implements Environment {
                         @Override
                         public Optional<String> getSwagger() {
                             try {
+                                Integer podApiPort = getPodApiPort(pod).orElse(DEFAULT_CONTAINER_API_PORT);
+
+                                PodClient podClient = feign.newInstance(
+                                    new Target.HardCodedTarget<>(PodClient.class, "http://" + podIP + ":" + podApiPort));
+
                                 return Optional.ofNullable(podClient.getSwagger(URI.create(podName)));
                             } catch (Exception ex) {
                                 log.debug("Swagger not fetched, pod: name- {}, version - {}", podName, podVersion);
@@ -144,7 +147,7 @@ public class KubernetesEnvironment implements Environment {
         return pod.getStatus().getPodIP();
     }
 
-    private Optional<Integer> getPodPort(Pod pod) {
+    private Optional<Integer> getPodVersionPort(Pod pod) {
         Optional<Container> container = pod.getSpec().getContainers().stream()
             .filter(cont -> cont.getName().equals(getPodName(pod)))
             .findFirst();
@@ -164,6 +167,26 @@ public class KubernetesEnvironment implements Environment {
         return Optional.ofNullable(port.get().getContainerPort());
     }
 
+    private Optional<Integer> getPodApiPort(Pod pod) {
+        Optional<Container> container = pod.getSpec().getContainers().stream()
+            .filter(cont -> cont.getName().equals(getPodName(pod)))
+            .findFirst();
+
+        if (!container.isPresent()) {
+            return Optional.empty();
+        }
+
+        Optional<ContainerPort> port = container.get().getPorts().stream()
+            .filter(containerPort -> "api".equals(containerPort.getName()))
+            .findFirst();
+
+        if (!port.isPresent()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(port.get().getContainerPort());
+    }
+
     private String getPodName(Pod pod) {
         return pod
             .getMetadata()
@@ -171,8 +194,10 @@ public class KubernetesEnvironment implements Environment {
             .get("app");
     }
 
-    private String getPodVersion(PodClient podClient) {
-        JsonNode response = podClient.getInfo();
-        return response.get("build").get("version").asText();
+    private String getPodVersion(String podIP, Integer podVersionPort) {
+        PodClient podClient = feign.newInstance(
+            new Target.HardCodedTarget<>(PodClient.class, "http://" + podIP + ":" + podVersionPort));
+
+        return podClient.getInfo().get("build").get("version").asText();
     }
 }
