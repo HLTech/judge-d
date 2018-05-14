@@ -6,6 +6,8 @@ import dev.hltech.dredd.domain.PactValidator;
 import dev.hltech.dredd.domain.SwaggerValidator;
 import dev.hltech.dredd.domain.environment.Environment;
 import dev.hltech.dredd.domain.environment.KubernetesEnvironment;
+import feign.Retryer;
+import feign.Target;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import dev.hltech.dredd.integration.pactbroker.PactBrokerClient;
@@ -27,7 +29,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.io.IOException;
 import java.security.cert.X509Certificate;
 
 @Configuration
@@ -35,10 +36,10 @@ public class BeanFactory {
 
     @Bean
     public Environment hlEnvironment(KubernetesClient kubernetesClient,
-                                     RestTemplate restTemplate,
                                      PactBrokerClient pactBrokerClient,
-                                     ObjectMapper objectMapper) {
-        return new KubernetesEnvironment(kubernetesClient, restTemplate, pactBrokerClient, objectMapper);
+                                     ObjectMapper objectMapper,
+                                     Feign feign) {
+        return new KubernetesEnvironment(kubernetesClient, pactBrokerClient, objectMapper, feign);
     }
 
     @Bean
@@ -92,12 +93,24 @@ public class BeanFactory {
     }
 
     @Bean
-    public PactBrokerClient pactBrokerClient(ObjectFactory<HttpMessageConverters> messageConverters, Client client, @Value("${pactbroker.url}") String pactBrokerUrl) {
+    public PactBrokerClient pactBrokerClient(Feign feign,
+                                             @Value("${pactbroker.url}") String pactBrokerUrl) {
+        return feign.newInstance(new Target.HardCodedTarget<>(PactBrokerClient.class, pactBrokerUrl));
+    }
+
+    @Bean
+    public Feign feign(ObjectFactory<HttpMessageConverters> messageConverters, Client client, Retryer retryer) {
         return Feign.builder()
             .client(client)
             .contract(new SpringMvcContract())
             .encoder(new SpringEncoder(messageConverters))
             .decoder(new SpringDecoder(messageConverters))
-            .target(PactBrokerClient.class, pactBrokerUrl);
+            .retryer(retryer)
+            .build();
+    }
+
+    @Bean
+    public Retryer retryer() {
+        return Retryer.NEVER_RETRY;
     }
 }

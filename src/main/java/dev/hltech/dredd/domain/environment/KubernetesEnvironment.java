@@ -1,18 +1,20 @@
 package dev.hltech.dredd.domain.environment;
 
 import au.com.dius.pact.model.RequestResponsePact;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import dev.hltech.dredd.integration.kubernetes.PodClient;
 import dev.hltech.dredd.integration.pactbroker.PactBrokerClient;
+import feign.Feign;
+import feign.Target;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,23 +25,21 @@ import static au.com.dius.pact.model.PactReader.loadPact;
 @Slf4j
 public class KubernetesEnvironment implements Environment {
 
-    private static final String VERSION_ENDPOINT = "http://%s:%d/info";
-    private static final String SWAGGER_ENDPOINT = "http://%s:%d/%s/documentation/api-docs";
     private static final Integer DEFAULT_CONTAINER_PORT = 9999;
 
     private KubernetesClient kubernetesClient;
-    private RestTemplate restTemplate;
     private PactBrokerClient pactBrokerClient;
     private ObjectMapper objectMapper;
+    private Feign feign;
 
     public KubernetesEnvironment(KubernetesClient kubernetesClient,
-                                 RestTemplate restTemplate,
                                  PactBrokerClient pactBrokerClient,
-                                 ObjectMapper objectMapper) {
+                                 ObjectMapper objectMapper,
+                                 Feign feign) {
         this.kubernetesClient = kubernetesClient;
-        this.restTemplate = restTemplate;
         this.pactBrokerClient = pactBrokerClient;
         this.objectMapper = objectMapper;
+        this.feign = feign;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class KubernetesEnvironment implements Environment {
                     return createService(pod);
                 }
                 catch(KubernetesEnvironmentException exception) {
-                    log.debug("No service resolved for pod: {}", pod);
+                    log.debug("No service resolved for pod: {}", pod.getMetadata().getName());
                     return null;
                 }
             })
@@ -78,7 +78,9 @@ public class KubernetesEnvironment implements Environment {
             String podName = getPodName(pod);
             String podIP = getPodIP(pod);
             Integer podPort = getPodPort(pod).orElse(DEFAULT_CONTAINER_PORT);
-            String podVersion = getPodVersion(podIP, podPort);
+            PodClient podClient = feign.newInstance(
+                new Target.HardCodedTarget<>(PodClient.class, "http://" + podIP + ":" + podPort));
+            String podVersion = getPodVersion(podClient);
 
             return new Service() {
                 @Override
@@ -97,10 +99,9 @@ public class KubernetesEnvironment implements Environment {
                         @Override
                         public Optional<String> getSwagger() {
                             try {
-                                return Optional.ofNullable(restTemplate.getForObject(
-                                    String.format(SWAGGER_ENDPOINT, podIP, podPort, podName), String.class));
+                                return Optional.ofNullable(podClient.getSwagger(URI.create(podName)));
                             } catch (Exception ex) {
-                                log.debug("Swagger not fetched, pod: name- %s, version - %s", podName, podVersion);
+                                log.debug("Swagger not fetched, pod: name- {}, version - {}", podName, podVersion);
                                 return Optional.empty();
                             }
                         }
@@ -117,7 +118,7 @@ public class KubernetesEnvironment implements Environment {
                                 return Optional.ofNullable(
                                     (RequestResponsePact) loadPact(objectMapper.writeValueAsString(pact)));
                             } catch (Exception ex) {
-                                log.debug("Pact not fetched, pod: name- %s, version - %s", podName, podVersion);
+                                log.debug("Pact not fetched, pod: name- {}, version - {}", podName, podVersion);
                                 return Optional.empty();
                             }
                         }
@@ -126,7 +127,7 @@ public class KubernetesEnvironment implements Environment {
             };
         }
         catch(Exception exception) {
-            log.debug("Exception during service resolution for pod: {}", pod);
+            log.debug("Exception during service resolution for pod: {}", pod.getMetadata().getName());
             throw new KubernetesEnvironmentException("Exception during service resolution", exception);
         }
     }
@@ -170,8 +171,8 @@ public class KubernetesEnvironment implements Environment {
             .get("app");
     }
 
-    private String getPodVersion(String ip, Integer port) {
-        JsonNode response = restTemplate.getForObject(String.format(VERSION_ENDPOINT, ip, port), JsonNode.class);
+    private String getPodVersion(PodClient podClient) {
+        JsonNode response = podClient.getInfo();
         return response.get("build").get("version").asText();
     }
 }

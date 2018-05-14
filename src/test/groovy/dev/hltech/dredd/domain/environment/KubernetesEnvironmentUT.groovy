@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.google.common.collect.Lists
 import com.google.common.collect.Maps
+import dev.hltech.dredd.integration.kubernetes.PodClient
 import dev.hltech.dredd.integration.pactbroker.PactBrokerClient
+import feign.Feign
 import io.fabric8.kubernetes.api.model.Container
 import io.fabric8.kubernetes.api.model.ContainerPort
 import io.fabric8.kubernetes.api.model.ObjectMeta
@@ -15,7 +17,6 @@ import io.fabric8.kubernetes.api.model.PodSpec
 import io.fabric8.kubernetes.api.model.PodStatus
 import io.fabric8.kubernetes.client.KubernetesClient
 import io.fabric8.kubernetes.client.dsl.MixedOperation
-import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -24,12 +25,15 @@ import static org.apache.tomcat.util.http.fileupload.util.Streams.asString
 class KubernetesEnvironmentUT extends Specification {
 
     def client = Mock(KubernetesClient)
-    def restTemplate = Mock(RestTemplate)
     def pactBrokerClient = Mock(PactBrokerClient)
     def objectMapper = new ObjectMapper()
+    def podClient = Mock(PodClient)
+    def feign = Mock(Feign) {
+        newInstance(*_) >> podClient
+    }
 
     @Subject
-    KubernetesEnvironment environment = new KubernetesEnvironment(client, restTemplate, pactBrokerClient, objectMapper)
+    KubernetesEnvironment environment = new KubernetesEnvironment(client, pactBrokerClient, objectMapper, feign)
 
     def 'should find 0 services when 0 pods found in kubernetes' () {
         given:
@@ -100,7 +104,7 @@ class KubernetesEnvironmentUT extends Specification {
             }
 
         and:
-        restTemplate.getForObject(*_) >> {
+            podClient.getInfo() >> {
             throw new RuntimeException()
         }
 
@@ -146,7 +150,7 @@ class KubernetesEnvironmentUT extends Specification {
             }
 
         and:
-            restTemplate.getForObject(*_) >> {
+            podClient.getInfo() >> {
                 throw new RuntimeException()
             }
 
@@ -164,12 +168,12 @@ class KubernetesEnvironmentUT extends Specification {
             }
 
             def container = Mock(Container) {
-                getName() >> "a name"
+                getName() >> "name"
                 getPorts() >> Lists.newArrayList(containerPort)
             }
 
             Map<String, String> labelsMap = new HashMap<>()
-            labelsMap.put("app", "a name")
+            labelsMap.put("app", "name")
             def pod = Mock(Pod) {
                 getMetadata() >> Mock(ObjectMeta) {
                     getLabels() >> labelsMap
@@ -197,11 +201,11 @@ class KubernetesEnvironmentUT extends Specification {
             version.put("version", "a version")
             JsonNode build = mapper.createObjectNode()
             build.set("build", version)
-            restTemplate.getForObject(_, JsonNode.class) >> build
+            podClient.getInfo() >> build
 
         and:
             def swagger = "a swagger"
-            restTemplate.getForObject(_, String.class) >> swagger
+            podClient.getSwagger(*_) >> swagger
 
         and:
             def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))
@@ -213,7 +217,7 @@ class KubernetesEnvironmentUT extends Specification {
 
         then:
             services.size() == 1
-            services[0].getName() == "a name"
+            services[0].getName() == "name"
             services[0].getVersion() == "a version"
             services[0].asProvider().getSwagger().get() == swagger
             services[0].asConsumer().getPact("dde-instruction-gateway").get() != null
@@ -226,12 +230,12 @@ class KubernetesEnvironmentUT extends Specification {
             }
 
             def container = Mock(Container) {
-                getName() >> "a name"
+                getName() >> "name"
                 getPorts() >> Lists.newArrayList(containerPort)
             }
 
             Map<String, String> labelsMap = new HashMap<>()
-            labelsMap.put("app", "a name")
+            labelsMap.put("app", "name")
             def pod = Mock(Pod) {
                 getMetadata() >> Mock(ObjectMeta) {
                     getLabels() >> labelsMap
@@ -261,11 +265,11 @@ class KubernetesEnvironmentUT extends Specification {
             version.put("version", "a version")
             JsonNode build = mapper.createObjectNode()
             build.set("build", version)
-            restTemplate.getForObject(_, JsonNode.class) >> build
+            podClient.getInfo() >> build
 
         and:
             def swagger = "a swagger"
-            restTemplate.getForObject(_, String.class) >> swagger
+            podClient.getSwagger(*_) >> swagger
 
         and:
             def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))
@@ -277,7 +281,7 @@ class KubernetesEnvironmentUT extends Specification {
 
         then:
             services.size() == 1
-            services[0].getName() == "a name"
+            services[0].getName() == "name"
             services[0].getVersion() == "a version"
             services[0].asProvider().getSwagger().get() == swagger
             services[0].asConsumer().getPact("dde-instruction-gateway").get() != null
