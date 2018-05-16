@@ -50,6 +50,8 @@ public class ValidationController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
     public AggregatedValidationReportDto validatePacts(@RequestBody PactValidationForm pactValidationForm) {
+        log.info("Received request {}", pactValidationForm);
+
         return new AggregatedValidationReportDto(
             pactValidationForm
                 .getPacts()
@@ -74,6 +76,8 @@ public class ValidationController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
     public AggregatedValidationReportDto validateSwagger(@RequestBody SwaggerValidationForm swaggerValidationForm) {
+        log.info("Received request {}", swaggerValidationForm);
+
         return new AggregatedValidationReportDto(
             swaggerValidator.validate(swaggerValidationForm.getProviderName(), swaggerValidationForm.getSwagger())
                 .stream()
