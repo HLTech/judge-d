@@ -4,13 +4,19 @@ import au.com.dius.pact.model.RequestResponsePact;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.hltech.dredd.domain.*;
+import dev.hltech.dredd.domain.environment.KubernetesEnvironmentException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
@@ -23,6 +29,7 @@ import static dev.hltech.dredd.interfaces.rest.ContractValidationStatus.PERFORME
 import static java.util.stream.Collectors.toList;
 
 @RestController
+@Slf4j
 public class ValidationController {
 
     private final PactValidator pactValidator;
@@ -73,6 +80,13 @@ public class ValidationController {
                 .map(ValidationController::toDto)
                 .collect(toList())
         );
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(KubernetesEnvironmentException.class)
+    @ResponseBody
+    public void unfinishableVerification() {
+        log.error("Verification was not finished due to Kubernetes issues");
     }
 
     private List<ContractValidationReportDto> validatePact(RequestResponsePact a) {

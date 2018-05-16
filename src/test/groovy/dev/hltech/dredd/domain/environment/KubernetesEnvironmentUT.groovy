@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import spock.lang.Specification
 import spock.lang.Subject
+import spock.lang.Unroll
 import unfiltered.response.Ok
 
 import static org.apache.tomcat.util.http.fileupload.util.Streams.asString
@@ -76,26 +77,7 @@ class KubernetesEnvironmentUT extends Specification {
 
     def 'should not find a service when an exception is thrown during service recollection' () {
         given:
-            def containerPort = Mock(ContainerPort) {
-                getContainerPort() >> 1
-            }
-
-            def container = Mock(Container) {
-                getName() >> "a name"
-                getPorts() >> Lists.newArrayList(containerPort)
-            }
-
-            def pod = Mock(Pod) {
-                getMetadata() >> Mock(ObjectMeta) {
-                    getLabels() >> Maps.newHashMap().put("app", "a name")
-                }
-                getStatus() >> Mock(PodStatus) {
-                    getPodIP() >> "IP"
-                }
-                getSpec() >> Mock(PodSpec) {
-                    getContainers() >> Lists.newArrayList(container)
-                }
-            }
+            def pod = mockPod()
 
         and:
             client.pods() >> Mock(MixedOperation) {
@@ -120,26 +102,7 @@ class KubernetesEnvironmentUT extends Specification {
 
     def 'should not find defined service when an exception is thrown during service recollection' () {
         given:
-            def containerPort = Mock(ContainerPort) {
-                getContainerPort() >> 1
-            }
-
-            def container = Mock(Container) {
-                getName() >> "a name"
-                getPorts() >> Lists.newArrayList(containerPort)
-            }
-
-            def pod = Mock(Pod) {
-                getMetadata() >> Mock(ObjectMeta) {
-                    getLabels() >> Maps.newHashMap().put("app", "a name")
-                }
-                getStatus() >> Mock(PodStatus) {
-                    getPodIP() >> "IP"
-                }
-                getSpec() >> Mock(PodSpec) {
-                    getContainers() >> Lists.newArrayList(container)
-                }
-            }
+            def pod = mockPod()
 
         and:
             client.pods() >> Mock(MixedOperation) {
@@ -166,28 +129,7 @@ class KubernetesEnvironmentUT extends Specification {
 
     def 'should return all available services' () {
         given:
-            def containerPort = Mock(ContainerPort) {
-                getContainerPort() >> 1
-            }
-
-            def container = Mock(Container) {
-                getName() >> "name"
-                getPorts() >> Lists.newArrayList(containerPort)
-            }
-
-            Map<String, String> labelsMap = new HashMap<>()
-            labelsMap.put("app", "name")
-            def pod = Mock(Pod) {
-                getMetadata() >> Mock(ObjectMeta) {
-                    getLabels() >> labelsMap
-                }
-                getStatus() >> Mock(PodStatus) {
-                    getPodIP() >> "IP"
-                }
-                getSpec() >> Mock(PodSpec) {
-                    getContainers() >> Lists.newArrayList(container)
-                }
-            }
+            def pod = mockPod()
 
         and:
             client.pods() >> Mock(MixedOperation) {
@@ -199,12 +141,7 @@ class KubernetesEnvironmentUT extends Specification {
             }
 
         and:
-            ObjectMapper mapper = new ObjectMapper()
-            JsonNode version = mapper.createObjectNode()
-            version.put("version", "a version")
-            JsonNode build = mapper.createObjectNode()
-            build.set("build", version)
-            podClient.getInfo() >> new ResponseEntity<>(build, HttpStatus.OK)
+            podClient.getInfo() >> new ResponseEntity<>(createInfo(), HttpStatus.OK)
 
         and:
             def swagger = "a swagger"
@@ -228,28 +165,7 @@ class KubernetesEnvironmentUT extends Specification {
 
     def 'should return the requested service' () {
         given:
-            def containerPort = Mock(ContainerPort) {
-                getContainerPort() >> 1
-            }
-
-            def container = Mock(Container) {
-                getName() >> "name"
-                getPorts() >> Lists.newArrayList(containerPort)
-            }
-
-            Map<String, String> labelsMap = new HashMap<>()
-            labelsMap.put("app", "name")
-            def pod = Mock(Pod) {
-                getMetadata() >> Mock(ObjectMeta) {
-                    getLabels() >> labelsMap
-                }
-                getStatus() >> Mock(PodStatus) {
-                    getPodIP() >> "IP"
-                }
-                getSpec() >> Mock(PodSpec) {
-                    getContainers() >> Lists.newArrayList(container)
-                }
-            }
+            def pod = mockPod()
 
         and:
             client.pods() >> Mock(MixedOperation) {
@@ -263,12 +179,7 @@ class KubernetesEnvironmentUT extends Specification {
             }
 
         and:
-            ObjectMapper mapper = new ObjectMapper()
-            JsonNode version = mapper.createObjectNode()
-            version.put("version", "a version")
-            JsonNode build = mapper.createObjectNode()
-            build.set("build", version)
-            podClient.getInfo() >> new ResponseEntity<>(build, HttpStatus.OK)
+            podClient.getInfo() >> new ResponseEntity<>(createInfo(), HttpStatus.OK)
 
         and:
             def swagger = "a swagger"
@@ -288,6 +199,196 @@ class KubernetesEnvironmentUT extends Specification {
             services[0].getVersion() == "a version"
             services[0].asProvider().getSwagger().get() == swagger
             services[0].asConsumer().getPact("dde-instruction-gateway").get() != null
+    }
+
+    def 'a service should not be consumer if HTTP status code from pact broker client is 404' () {
+        given:
+            def pod = mockPod()
+
+        and:
+            client.pods() >> Mock(MixedOperation) {
+                inAnyNamespace() >> Mock(MixedOperation) {
+                    withLabel(_, _) >> Mock(MixedOperation) {
+                        list() >> Mock(PodList) {
+                            getItems() >> Lists.newArrayList(pod)
+                        }
+                    }
+                }
+            }
+
+        and:
+            podClient.getInfo() >> new ResponseEntity<>(createInfo(), HttpStatus.OK)
+
+        and:
+            def swagger = "a swagger"
+            podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, HttpStatus.OK)
+
+        and:
+            def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))
+            def pact = objectMapper.readValue(pactString, ObjectNode.class)
+            pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, HttpStatus.NOT_FOUND)
+
+        when:
+            Collection<Service> services = environment.findServices("a service")
+
+        then:
+            services.size() == 1
+            services[0].getName() == "name"
+            services[0].getVersion() == "a version"
+            services[0].asProvider().getSwagger().get() == swagger
+            !services[0].asConsumer().getPact("dde-instruction-gateway").isPresent()
+    }
+
+    def 'a service should not be provider if HTTP status code after swagger resolution is 404' () {
+        given:
+            def pod = mockPod()
+
+        and:
+            client.pods() >> Mock(MixedOperation) {
+                inAnyNamespace() >> Mock(MixedOperation) {
+                    withLabel(_, _) >> Mock(MixedOperation) {
+                        list() >> Mock(PodList) {
+                            getItems() >> Lists.newArrayList(pod)
+                        }
+                    }
+                }
+            }
+
+        and:
+            podClient.getInfo() >> new ResponseEntity<>(createInfo(), HttpStatus.OK)
+
+        and:
+            def swagger = "a swagger"
+            podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, HttpStatus.NOT_FOUND)
+
+        and:
+            def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))
+            def pact = objectMapper.readValue(pactString, ObjectNode.class)
+            pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, HttpStatus.OK)
+
+        when:
+            Collection<Service> services = environment.findServices("a service")
+
+        then:
+            services.size() == 1
+            services[0].getName() == "name"
+            services[0].getVersion() == "a version"
+            !services[0].asProvider().getSwagger().isPresent()
+            services[0].asConsumer().getPact("dde-instruction-gateway").get() != null
+    }
+
+    @Unroll
+    def 'exception should be thrown if HTTP status code from pact broker client is #httpStatus' () {
+        given:
+            def pod = mockPod()
+
+        and:
+            client.pods() >> Mock(MixedOperation) {
+                inAnyNamespace() >> Mock(MixedOperation) {
+                    withLabel(_, _) >> Mock(MixedOperation) {
+                        list() >> Mock(PodList) {
+                            getItems() >> Lists.newArrayList(pod)
+                        }
+                    }
+                }
+            }
+
+        and:
+            podClient.getInfo() >> new ResponseEntity<>(createInfo(), HttpStatus.OK)
+
+        and:
+            def swagger = "a swagger"
+            podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, HttpStatus.OK)
+
+        and:
+            def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))
+            def pact = objectMapper.readValue(pactString, ObjectNode.class)
+            pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, httpStatus)
+
+        when:
+            Collection<Service> services = environment.findServices("a service")
+            Service service = ++services.iterator()
+            service.asConsumer().getPact("a service")
+
+        then:
+            thrown KubernetesEnvironmentException
+
+        where:
+            httpStatus << [HttpStatus.METHOD_NOT_ALLOWED, HttpStatus.GATEWAY_TIMEOUT]
+    }
+
+    @Unroll
+    def 'exception should be thrown if HTTP status code after swagger resolution is #httpStatus' () {
+        given:
+            def pod = mockPod()
+
+        and:
+            client.pods() >> Mock(MixedOperation) {
+                inAnyNamespace() >> Mock(MixedOperation) {
+                    withLabel(_, _) >> Mock(MixedOperation) {
+                        list() >> Mock(PodList) {
+                            getItems() >> Lists.newArrayList(pod)
+                        }
+                    }
+                }
+            }
+
+        and:
+            podClient.getInfo() >> new ResponseEntity<>(createInfo(), HttpStatus.OK)
+
+        and:
+            def swagger = "a swagger"
+            podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, httpStatus)
+
+        and:
+            def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))
+            def pact = objectMapper.readValue(pactString, ObjectNode.class)
+            pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, HttpStatus.OK)
+
+        when:
+            Collection<Service> services = environment.findServices("a service")
+            Service service = ++services.iterator()
+            service.asProvider().getSwagger()
+
+        then:
+            thrown KubernetesEnvironmentException
+
+        where:
+            httpStatus << [HttpStatus.METHOD_NOT_ALLOWED, HttpStatus.GATEWAY_TIMEOUT]
+    }
+
+    Pod mockPod() {
+        def containerPort = Mock(ContainerPort) {
+            getContainerPort() >> 1
+        }
+
+        Container container = Mock(Container) {
+            getName() >> "name"
+            getPorts() >> Lists.newArrayList(containerPort)
+        }
+
+        Map<String, String> labelsMap = new HashMap<>()
+        labelsMap.put("app", "name")
+
+        Mock(Pod) {
+            getMetadata() >> Mock(ObjectMeta) {
+                getLabels() >> labelsMap
+            }
+            getStatus() >> Mock(PodStatus) {
+                getPodIP() >> "IP"
+            }
+            getSpec() >> Mock(PodSpec) {
+                getContainers() >> Lists.newArrayList(container)
+            }
+        }
+    }
+
+    JsonNode createInfo() {
+        ObjectMapper mapper = new ObjectMapper()
+        JsonNode version = mapper.createObjectNode()
+        version.put("version", "a version")
+        JsonNode build = mapper.createObjectNode()
+        build.set("build", version)
     }
 
 }

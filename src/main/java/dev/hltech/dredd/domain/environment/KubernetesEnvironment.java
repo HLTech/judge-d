@@ -12,7 +12,10 @@ import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.net.URI;
 import java.util.Collection;
@@ -105,10 +108,28 @@ public class KubernetesEnvironment implements Environment {
 
                                 ResponseEntity<String> swaggerResponseEntity = podClient.getSwagger(URI.create(podName));
 
+                                if(swaggerResponseEntity.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                                    return Optional.empty();
+                                }
+
+                                if(swaggerResponseEntity.getStatusCode().is4xxClientError()) {
+                                    log.error(String.format(
+                                        "Client request resulted in HTTP status code %d",
+                                        swaggerResponseEntity.getStatusCode().value()));
+                                    throw new HttpClientErrorException(swaggerResponseEntity.getStatusCode());
+                                }
+
+                                if(swaggerResponseEntity.getStatusCode().is5xxServerError()) {
+                                    log.error(String.format(
+                                        "Server request resulted in HTTP status code %d",
+                                        swaggerResponseEntity.getStatusCode().value()));
+                                    throw new HttpServerErrorException(swaggerResponseEntity.getStatusCode());
+                                }
+
                                 return Optional.ofNullable(swaggerResponseEntity.getBody());
                             } catch (Exception ex) {
                                 log.debug("Swagger not fetched, pod: name- {}, version - {}", podName, podVersion);
-                                return Optional.empty();
+                                throw new KubernetesEnvironmentException("Exception during swagger resolution", ex);
                             }
                         }
                     };
@@ -120,12 +141,31 @@ public class KubernetesEnvironment implements Environment {
                         @Override
                         public Optional<RequestResponsePact> getPact(String providerName) {
                             try {
-                                ObjectNode pact = pactBrokerClient.getPact(providerName, podName, podVersion).getBody();
+                                ResponseEntity<ObjectNode> pactResponseEntity = pactBrokerClient.getPact(providerName, podName, podVersion);
+
+                                if(pactResponseEntity.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                                    return Optional.empty();
+                                }
+
+                                if(pactResponseEntity.getStatusCode().is4xxClientError()) {
+                                    log.error(String.format(
+                                        "Client request resulted in HTTP status code %d",
+                                        pactResponseEntity.getStatusCode().value()));
+                                    throw new HttpClientErrorException(pactResponseEntity.getStatusCode());
+                                }
+
+                                if(pactResponseEntity.getStatusCode().is5xxServerError()) {
+                                    log.error(String.format(
+                                        "Server request resulted in HTTP status code %d",
+                                        pactResponseEntity.getStatusCode().value()));
+                                    throw new HttpServerErrorException(pactResponseEntity.getStatusCode());
+                                }
+
                                 return Optional.ofNullable(
-                                    (RequestResponsePact) loadPact(objectMapper.writeValueAsString(pact)));
+                                    (RequestResponsePact) loadPact(objectMapper.writeValueAsString(pactResponseEntity)));
                             } catch (Exception ex) {
                                 log.debug("Pact not fetched, pod: name- {}, version - {}", podName, podVersion);
-                                return Optional.empty();
+                                throw new KubernetesEnvironmentException("Exception during pact resolution", ex);
                             }
                         }
                     };
