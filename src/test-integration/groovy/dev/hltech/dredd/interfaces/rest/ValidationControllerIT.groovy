@@ -54,10 +54,28 @@ class ValidationControllerIT extends Specification {
             objectMapper.readValue(response.getContentAsString(), AggregatedValidationReportDto.class)
     }
 
+    def "verify HTTP 500 is returned in case of exception in consumer"() {
+        when: 'rest validateSwagger url is hit'
+            def response = mockMvc.perform(
+                post('/verification/swagger')
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(newFlawedSwaggerVerificationForm()))
+            ).andReturn().getResponse()
+        then: 'controller returns validation response in json'
+            response.getStatus() == 500
+    }
+
     private SwaggerValidationForm newSwaggerVerificationForm() {
         def form = new SwaggerValidationForm()
         form.setProviderName("backend-provider")
         form.setSwagger(objectMapper.readTree(getClass().getResourceAsStream("/backend-provider-swagger.json")))
+        return form
+    }
+
+    private SwaggerValidationForm newFlawedSwaggerVerificationForm() {
+        def form = new SwaggerValidationForm()
+        form.setProviderName(null)
+        form.setSwagger(objectMapper.readTree(getClass().getResourceAsStream("/dde-instruction-gateway-swagger.json")))
         return form
     }
 

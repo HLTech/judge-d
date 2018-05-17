@@ -15,9 +15,6 @@ import java.util.Optional;
 
 import static com.google.common.io.ByteStreams.toByteArray;
 
-/**
- * this is here only until someone implements proper Kubernetes-based or db-based one. Then, it will be moved to test classes
- */
 public class StaticEnvironment implements Environment {
 
     private Multimap<String, Service> availableServices = HashMultimap.create();
@@ -68,12 +65,16 @@ public class StaticEnvironment implements Environment {
 
                 @Override
                 public Consumer asConsumer() {
-                    return providerName -> Optional.empty();
+                    return providerName -> {
+                        if (null == providerName) {
+                            throw new KubernetesEnvironmentException("Wrong provider name");
+                        }
+                        return Optional.empty();
+                    };
                 }
             });
             return this;
         }
-
 
         public StaticEnvironment build(){
             return new StaticEnvironment(availableServices);
