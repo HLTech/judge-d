@@ -89,8 +89,8 @@ public class ValidationController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(KubernetesEnvironmentException.class)
     @ResponseBody
-    public void unfinishableVerification() {
-        log.error("Verification was not finished due to Kubernetes issues");
+    public void unfinishableValidation() {
+        log.error("Validation was not finished due to Kubernetes issues");
     }
 
     private List<ContractValidationReportDto> validatePact(RequestResponsePact a) {
