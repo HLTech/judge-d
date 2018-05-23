@@ -338,7 +338,7 @@ class KubernetesEnvironmentUT extends Specification {
 
         and:
             def swagger = "a swagger"
-            podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, httpStatus)
+            podClient.getSwagger(*_) >> new ResponseEntity<>(null, httpStatus)
 
         and:
             def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))

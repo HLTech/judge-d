@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.hltech.dredd.integration.kubernetes.PodClient;
 import dev.hltech.dredd.integration.pactbroker.PactBrokerClient;
 import feign.Feign;
+import feign.FeignException;
 import feign.Target;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerPort;
@@ -113,7 +114,13 @@ public class KubernetesEnvironment implements Environment {
 
                                 return Optional.ofNullable(swaggerResponse.getBody());
                             } catch (HttpStatusCodeException ex) {
-                                if(ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                                if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                                    return Optional.empty();
+                                }
+                                log.debug("Swagger not fetched, pod: name- {}, version - {}", podName, podVersion);
+                                throw new KubernetesEnvironmentException("Exception during swagger resolution", ex);
+                            } catch (FeignException ex) {
+                                if (ex.status() == HttpStatus.NOT_FOUND.value()) {
                                     return Optional.empty();
                                 }
                                 log.debug("Swagger not fetched, pod: name- {}, version - {}", podName, podVersion);
@@ -141,6 +148,12 @@ public class KubernetesEnvironment implements Environment {
                                     (RequestResponsePact) loadPact(objectMapper.writeValueAsString(pactResponse)));
                             } catch (HttpStatusCodeException ex) {
                                 if(ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                                    return Optional.empty();
+                                }
+                                log.debug("Pact not fetched, pod: name- {}, version - {}", podName, podVersion);
+                                throw new KubernetesEnvironmentException("Exception during pact resolution", ex);
+                            } catch (FeignException ex) {
+                                if (ex.status() == HttpStatus.NOT_FOUND.value()) {
                                     return Optional.empty();
                                 }
                                 log.debug("Pact not fetched, pod: name- {}, version - {}", podName, podVersion);
