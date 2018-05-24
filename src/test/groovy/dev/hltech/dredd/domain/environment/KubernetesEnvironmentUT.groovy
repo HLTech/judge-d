@@ -148,7 +148,7 @@ class KubernetesEnvironmentUT extends Specification {
             podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, HttpStatus.OK)
 
         and:
-            def pactString = asString(getClass().getResourceAsStream("/pact-broker-response.json"))
+            def pactString = asString(getClass().getResourceAsStream("/dde-instruction-gateway-swagger.json"))
             def pact = objectMapper.readValue(pactString, ObjectNode.class)
             pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, HttpStatus.OK)
 
@@ -186,7 +186,7 @@ class KubernetesEnvironmentUT extends Specification {
             podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, HttpStatus.OK)
 
         and:
-            def pactString = asString(getClass().getResourceAsStream("/pact-broker-response.json"))
+            def pactString = asString(getClass().getResourceAsStream("/dde-instruction-gateway-swagger.json"))
             def pact = objectMapper.readValue(pactString, ObjectNode.class)
             pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, HttpStatus.OK)
 
@@ -262,7 +262,7 @@ class KubernetesEnvironmentUT extends Specification {
             podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, HttpStatus.NOT_FOUND)
 
         and:
-            def pactString = asString(getClass().getResourceAsStream("/pact-broker-response.json"))
+            def pactString = asString(getClass().getResourceAsStream("/dde-instruction-gateway-swagger.json"))
             def pact = objectMapper.readValue(pactString, ObjectNode.class)
             pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, HttpStatus.OK)
 
