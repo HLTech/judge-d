@@ -144,8 +144,10 @@ public class KubernetesEnvironment implements Environment {
 
                                 validateResponseStatus(pactResponse.getStatusCode());
 
+                                ObjectNode pact = pactResponse.getBody();
+
                                 return Optional.ofNullable(
-                                    (RequestResponsePact) loadPact(objectMapper.writeValueAsString(pactResponse)));
+                                    (RequestResponsePact) loadPact(objectMapper.writeValueAsString(pact.get("body"))));
                             } catch (HttpStatusCodeException ex) {
                                 if(ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                                     return Optional.empty();
