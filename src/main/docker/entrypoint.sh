@@ -1,7 +1,10 @@
 #!/bin/sh
 
+pwd
+ls -al
+
 java \
 -XX:+UnlockExperimentalVMOptions \
 -XX:+UseCGroupMemoryLimitForHeap \
 -Dspring.profiles.active=sit \
-$* -jar contract-verifier.jar
+$* -jar judge-dredd.jar
