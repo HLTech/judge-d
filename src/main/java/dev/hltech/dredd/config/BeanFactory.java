@@ -108,7 +108,6 @@ public class BeanFactory {
             .client(client)
             .contract(new SpringMvcContract())
             .encoder(new SpringEncoder(messageConverters))
-            .decoder(new SpringDecoder(messageConverters))
             .retryer(retryer)
             .decoder(decoder)
             .build();

@@ -1,7 +1,6 @@
 FROM openjdk:8
 
-ARG JAR_FILE
-COPY ${JAR_FILE} contract-verifier.jar
+COPY judge-dredd.jar judge-dredd.jar
 
 COPY entrypoint.sh entrypoint.sh
 RUN chmod +x entrypoint.sh
