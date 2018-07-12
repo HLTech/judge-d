@@ -1,0 +1,51 @@
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+   http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="service-contracts-0.1" author="Tomasz Krzyżak">
+        <createTable tableName="service_contracts">
+            <column name="name" type="varchar(255)" >
+                <constraints primaryKey="true" />
+            </column>
+            <column name="version" type="varchar(255)" >
+                <constraints primaryKey="true" />
+            </column>
+        </createTable>
+
+        <createTable tableName="capabilities">
+            <column name="service_name" type="varchar(255)" >
+                <constraints primaryKey="true" />
+            </column>
+            <column name="service_version" type="varchar(255)" >
+                <constraints primaryKey="true" />
+            </column>
+            <column name="protocol" type="varchar(155)">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="value" type="varchar(65436)"/>
+        </createTable>
+
+        <createTable tableName="expectations">
+            <column name="service_name" type="varchar(255)" >
+                <constraints primaryKey="true" />
+            </column>
+            <column name="service_version" type="varchar(255)" >
+                <constraints primaryKey="true" />
+            </column>
+            <column name="provider" type="varchar(155)">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="protocol" type="varchar(155)">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="value" type="varchar(65436)"/>
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>
