@@ -8,8 +8,7 @@ import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
-@AutoConfigureWireMock(port = 0, httpsPort = 0)
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = [ "management.port=0" ])
 @ActiveProfiles("test-integration")
 class JpaServiceContractsRepositoryIT extends Specification {
 
@@ -21,8 +20,8 @@ class JpaServiceContractsRepositoryIT extends Specification {
             def serviceContracts = new ServiceContracts(
                 "provider",
                 "1.0",
-                ['reverse':'654321'],
-                ['some-other-provider': ['reverse' : '098765']]
+                ['ping':'654321'],
+                ['some-other-provider': ['ping' : '098765']]
             )
             repository.persist(serviceContracts)
         when:
@@ -30,8 +29,8 @@ class JpaServiceContractsRepositoryIT extends Specification {
         then:
             retrieved.isPresent() == true
             with (retrieved.get()) {
-                getCapabilities("reverse").get() == "654321"
-                getExpectations('some-other-provider', "reverse").get() == "098765"
+                getCapabilities("ping").get() == "654321"
+                getExpectations('some-other-provider', "ping").get() == "098765"
             }
     }
 

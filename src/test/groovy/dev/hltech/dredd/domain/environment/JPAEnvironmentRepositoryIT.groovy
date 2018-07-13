@@ -9,7 +9,7 @@ import static dev.hltech.dredd.domain.environment.EnvironmentAggregate.*
 import static org.apache.commons.lang.RandomStringUtils.*
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = [ "management.port=0" ])
 @ActiveProfiles("test-integration")
 class JPAEnvironmentRepositoryIT extends Specification {
 
