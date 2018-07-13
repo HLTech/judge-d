@@ -91,7 +91,6 @@ public class ServiceContracts implements Serializable {
         return result;
     }
 
-
     @Getter
     @Embeddable
     @AllArgsConstructor
