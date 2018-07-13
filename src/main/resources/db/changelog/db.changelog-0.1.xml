@@ -48,4 +48,24 @@
 
     </changeSet>
 
+    <changeSet id="environments-0.1" author="Tomasz Krzyżak">
+        <createTable tableName="environments">
+            <column name="name" type="varchar(255)">
+                <constraints primaryKey="true" />
+            </column>
+        </createTable>
+
+        <createTable tableName="service_versions">
+            <column name="environment_name" type="varchar(255)" >
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)" >
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="version" type="varchar(255)" >
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
