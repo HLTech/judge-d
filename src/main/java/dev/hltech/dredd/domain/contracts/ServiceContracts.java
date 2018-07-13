@@ -23,15 +23,15 @@ public class ServiceContracts implements Serializable {
     private ServiceContractsId id;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @MapKeyColumn(name="protocol")
-    @JoinTable(name="capabilities", joinColumns={
+    @MapKeyColumn(name = "protocol")
+    @JoinTable(name = "capabilities", joinColumns = {
         @JoinColumn(name = "service_name", referencedColumnName = "name"),
         @JoinColumn(name = "service_version", referencedColumnName = "version")
     })
     private Map<String, Contract> capabilitiesPerProtocol;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @JoinTable(name="expectations", joinColumns={
+    @JoinTable(name = "expectations", joinColumns = {
         @JoinColumn(name = "service_name", referencedColumnName = "name"),
         @JoinColumn(name = "service_version", referencedColumnName = "version")
     })
@@ -78,7 +78,7 @@ public class ServiceContracts implements Serializable {
         ));
     }
 
-    public Map<String, Map<String, String>> getExpectations(){
+    public Map<String, Map<String, String>> getExpectations() {
         HashMap<String, Map<String, String>> result = newHashMap();
         for (ProviderProtocol pp : this.expectations.keySet()) {
             Contract contract = expectations.get(pp);
@@ -90,7 +90,6 @@ public class ServiceContracts implements Serializable {
         }
         return result;
     }
-
 
 
     @Getter
