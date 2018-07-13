@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import dev.hltech.dredd.config.BeanFactory
 import dev.hltech.dredd.domain.Fixtures
 import dev.hltech.dredd.domain.environment.Environment
+import dev.hltech.dredd.domain.environment.EnvironmentRepository
+import dev.hltech.dredd.domain.environment.InMemoryEnvironmentRepository
 import dev.hltech.dredd.integration.pactbroker.PactBrokerClient
 import dev.hltech.dredd.interfaces.rest.environment.EnvironmentController
 import dev.hltech.dredd.interfaces.rest.environment.ServiceDto
@@ -51,6 +53,11 @@ class EnvironmentControllerIT extends Specification {
                                   ObjectMapper objectMapper,
                                   Feign feign) throws IOException {
             return Fixtures.environment()
+        }
+
+        @Bean
+        EnvironmentRepository environmentRepository(){
+            return new InMemoryEnvironmentRepository()
         }
     }
 
