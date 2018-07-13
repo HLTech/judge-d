@@ -3,9 +3,8 @@ package dev.hltech.dredd.interfaces.rest.contracts
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.hltech.dredd.config.BeanFactory
-import dev.hltech.dredd.domain.contacts.InMemoryServiceContractsRepository
+import dev.hltech.dredd.domain.contracts.InMemoryServiceContractsRepository
 import dev.hltech.dredd.domain.contracts.ServiceContractsRepository
-import dev.hltech.dredd.interfaces.rest.environment.ServiceDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
