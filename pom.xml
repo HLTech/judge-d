@@ -11,6 +11,8 @@
     <name>Judge-D</name>
 
     <modules>
+        <module>judge-d-core</module>
+        <module>judge-d-k8s-agent</module>
         <module>judge-d-server</module>
     </modules>
 
