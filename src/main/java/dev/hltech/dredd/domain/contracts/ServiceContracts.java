@@ -54,8 +54,8 @@ public class ServiceContracts {
 
             for (Entry<String, String> expectationsPerProtocolEntry : expectationsPerProtocol.entrySet()) {
                 String protocol = expectationsPerProtocolEntry.getKey();
-                String expectations = expectationsPerProtocolEntry.getValue();
-                this.expectations.put(new ProviderProtocol(provider, protocol), new Contract(expectations));
+                String protocolExpectation = expectationsPerProtocolEntry.getValue();
+                this.expectations.put(new ProviderProtocol(provider, protocol), new Contract(protocolExpectation));
             }
         }
     }
