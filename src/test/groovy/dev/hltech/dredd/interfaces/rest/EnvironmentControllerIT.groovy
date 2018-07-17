@@ -23,7 +23,7 @@ import spock.lang.Specification
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 
 @WebMvcTest(EnvironmentController.class)
-@ActiveProfiles("test")
+@ActiveProfiles("test-integration")
 class EnvironmentControllerIT extends Specification {
 
     @Autowired
