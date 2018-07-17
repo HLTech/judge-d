@@ -19,7 +19,7 @@ import static com.google.common.collect.Lists.newArrayList
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 
 @WebMvcTest(ValidationController.class)
-@ActiveProfiles("test")
+@ActiveProfiles("test-integration")
 class ValidationControllerIT extends Specification {
 
     @Autowired
