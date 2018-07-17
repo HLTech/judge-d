@@ -1,6 +1,7 @@
 package dev.hltech.dredd.interfaces.rest.environment;
 
 import dev.hltech.dredd.domain.environment.Environment;
+import dev.hltech.dredd.domain.environment.EnvironmentAggregate;
 import dev.hltech.dredd.domain.environment.EnvironmentRepository;
 import dev.hltech.dredd.domain.environment.Service;
 import io.swagger.annotations.ApiOperation;
@@ -8,9 +9,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
@@ -50,6 +49,18 @@ public class EnvironmentController {
             .map(sv -> new ServiceDto(sv.getName(), sv.getVersion()))
             .collect(toList());
     }
+
+    @PutMapping(value="environments/{name}")
+    @ApiOperation(value = "Update the environment", nickname = "update environment")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success"),
+        @ApiResponse(code = 500, message = "Failure")})
+    public void overwriteEnvironment(@PathVariable("name")String name, @RequestBody List<ServiceForm> services){
+        EnvironmentAggregate.EnvironmentAggregateBuilder builder = EnvironmentAggregate.builder(name);
+        services.stream().forEach(sf -> builder.withServiceVersion(sf.getName(), sf.getVersion()));
+        environmentRepository.persist(builder.build());
+    }
+
 
     @GetMapping(value = "environment/services", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get services from the environment", nickname = "Get Services")
