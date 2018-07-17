@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import static com.google.common.collect.Maps.newHashMap;
@@ -17,7 +18,7 @@ import static java.util.stream.Collectors.toMap;
 
 @Entity
 @Access(AccessType.FIELD)
-public class ServiceContracts implements Serializable {
+public class ServiceContracts {
 
     @EmbeddedId
     private ServiceContractsId id;
@@ -47,10 +48,14 @@ public class ServiceContracts implements Serializable {
             entry -> new Contract(entry.getValue())
         ));
         this.expectations = newHashMap();
-        for (String provider : expectationsPerProvider.keySet()) {
-            Map<String, String> expectationsPerProtocol = expectationsPerProvider.get(provider);
-            for (String protocol : expectationsPerProtocol.keySet()) {
-                this.expectations.put(new ProviderProtocol(provider, protocol), new Contract(expectationsPerProtocol.get(protocol)));
+        for (Entry<String, Map<String, String>> expectationsPerProviderEntry : expectationsPerProvider.entrySet()) {
+            String provider = expectationsPerProviderEntry.getKey();
+            Map<String, String> expectationsPerProtocol = expectationsPerProviderEntry.getValue();
+
+            for (Entry<String, String> expectationsPerProtocolEntry : expectationsPerProtocol.entrySet()) {
+                String protocol = expectationsPerProtocolEntry.getKey();
+                String expectations = expectationsPerProtocolEntry.getValue();
+                this.expectations.put(new ProviderProtocol(provider, protocol), new Contract(expectations));
             }
         }
     }
@@ -80,12 +85,12 @@ public class ServiceContracts implements Serializable {
 
     public Map<String, Map<String, String>> getExpectations() {
         HashMap<String, Map<String, String>> result = newHashMap();
-        for (ProviderProtocol pp : this.expectations.keySet()) {
-            Contract contract = expectations.get(pp);
+        for (Entry<ProviderProtocol, Contract> e : this.expectations.entrySet()) {
+            ProviderProtocol pp = e.getKey();
+            Contract contract = e.getValue();
             if (!result.containsKey(pp.provider)) {
                 result.put(pp.provider, newHashMap());
             }
-
             result.get(pp.getProvider()).put(pp.getProtocol(), contract.getValue());
         }
         return result;
