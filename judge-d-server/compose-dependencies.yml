@@ -1,5 +1,5 @@
 postgres:
-  container_name: postgres
+  container_name: judge-d-postgres
   image: postgres:9.5
   ports:
     - "5432:5432"
