@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class K8sLabelBasedServiceLocator implements ServiceLocator {
 
     private final KubernetesClient kubernetesClient;
-    private String requiredLabel;
+    private final String requiredLabel;
 
     public K8sLabelBasedServiceLocator(KubernetesClient kubernetesClient, String requiredLabel) {
         this.kubernetesClient = kubernetesClient;
