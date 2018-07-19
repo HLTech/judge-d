@@ -13,11 +13,21 @@ microservices.
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
 See deployment for notes on how to deploy the project on a live system.
 
+### Idea
+
+Judge D accepts REST calls with expectations of consumers of API and capabilities of providers of API. At the moment Judge D 
+is able to perform contract testing just for REST, in our roadmap there is space for adding other ways of communicating like
+SOAP or JMS. Judge D will know how to match expectations with capabilities and will generate report with results of contract test.
+
 ### Prerequisites
 
 For development you need:
 * [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-* [Maven](https://maven.apache.org/)
+* [PostgreSQL](https://www.postgresql.org/)
+
+You can use your local Maven distribution, but there is maven wrapper included in project. To use it just type `./mvnw {command}` 
+(for UNIX users) or `mvnw.cmd {command}` (for Windows users)
+
 
 ### Installing
 
@@ -28,6 +38,25 @@ mvn clean install
 ```
 
 After that jar files will appear in target directories.
+
+To run application on your local machine you have to go to judge-d-server package and run it using mvn task:
+```
+cd judge-d-server
+mvn spring-boot:run
+```
+
+or (preferably) use docker-compose:
+```
+docker-compose -f judge-d-server/compose-dependencies.yml up -d
+```
+to run postgres db in background, then
+```
+docker-compose -f judge-d-server/compose-judge-d.yml
+```
+to run app. 
+
+By default you have to create new database called judge_d for the application to start, but jdbc connection properties 
+can be defined in judge-d-server/compose-judge-d.yml file.
 
 ## Running the tests
 
@@ -50,11 +79,16 @@ Of course you can use jar file generated during installation as well and deploy 
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+Want to help? Have any problems or questions? Let us know!
+
+* create an issue...
+* ... or if it already exists comment on it
+* for detailed informations about contributing read our [Contribution guide](../blob/master/CONTRIBUTING.md)
+
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+TODO - Gitflow versioning in plans.
 
 ## Authors
 
@@ -66,10 +100,4 @@ See also the list of [contributors](https://github.com/HLTech/judge-d/contributo
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+TODO
