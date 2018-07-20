@@ -6,6 +6,8 @@ import dev.hltech.dredd.domain.validation.ExpectationsValidator;
 
 public class RestContractValidatorFactory implements ContractValidatorFactory {
 
+    public static final String COMMUNICATION_INTERFACE = "rest";
+
     @Override
     public ExpectationsValidator createExpectations(String expectations) {
         return new PactExpectationsValidator(expectations);
