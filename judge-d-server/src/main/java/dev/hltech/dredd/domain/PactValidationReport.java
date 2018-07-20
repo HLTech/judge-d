@@ -1,5 +1,6 @@
 package dev.hltech.dredd.domain;
 
+import dev.hltech.dredd.domain.validation.InteractionValidationReport;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

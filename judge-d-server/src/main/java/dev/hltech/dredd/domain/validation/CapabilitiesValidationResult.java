@@ -1,4 +1,4 @@
-package dev.hltech.dredd.domain;
+package dev.hltech.dredd.domain.validation;
 
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
