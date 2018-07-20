@@ -1,4 +1,4 @@
-package dev.hltech.dredd.domain;
+package dev.hltech.dredd.domain.validation.rest;
 
 import au.com.dius.pact.model.RequestResponseInteraction;
 import au.com.dius.pact.model.RequestResponsePact;
@@ -16,7 +16,7 @@ import static com.atlassian.oai.validator.pact.PactRequest.of;
 import static dev.hltech.dredd.domain.validation.InteractionValidationReport.InteractionValidationResult.FAILED;
 import static dev.hltech.dredd.domain.validation.InteractionValidationReport.InteractionValidationResult.OK;
 
-public class ContractValidator {
+public class RestContractValidator {
 
     protected List<InteractionValidationReport> validate(RequestResponsePact pact, String swagger) {
         SwaggerRequestResponseValidator swaggerValidator = SwaggerRequestResponseValidator.createFor(swagger).build();
