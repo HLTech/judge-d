@@ -5,6 +5,7 @@ import au.com.dius.pact.model.RequestResponsePact;
 import com.atlassian.oai.validator.SwaggerRequestResponseValidator;
 import com.atlassian.oai.validator.pact.PactResponse;
 import com.atlassian.oai.validator.report.ValidationReport;
+import dev.hltech.dredd.domain.validation.InteractionValidationReport;
 
 import java.util.List;
 import java.util.Map;
@@ -12,8 +13,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.atlassian.oai.validator.pact.PactRequest.of;
-import static dev.hltech.dredd.domain.InteractionValidationReport.InteractionValidationResult.FAILED;
-import static dev.hltech.dredd.domain.InteractionValidationReport.InteractionValidationResult.OK;
+import static dev.hltech.dredd.domain.validation.InteractionValidationReport.InteractionValidationResult.FAILED;
+import static dev.hltech.dredd.domain.validation.InteractionValidationReport.InteractionValidationResult.OK;
 
 public class ContractValidator {
 

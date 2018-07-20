@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.hltech.dredd.domain.*;
 import dev.hltech.dredd.domain.environment.KubernetesEnvironmentException;
+import dev.hltech.dredd.domain.validation.InteractionValidationReport;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
