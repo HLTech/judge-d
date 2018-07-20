@@ -1,8 +1,7 @@
 package dev.hltech.dredd.domain;
 
 import dev.hltech.dredd.domain.contracts.ServiceContracts;
-import dev.hltech.dredd.domain.validation.CapabilitiesValidator;
-import dev.hltech.dredd.domain.validation.ExpectationsValidator;
+import dev.hltech.dredd.domain.validation.*;
 import dev.hltech.dredd.domain.contracts.ServiceContractsRepository;
 import dev.hltech.dredd.domain.environment.EnvironmentAggregate.ServiceVersion;
 import dev.hltech.dredd.domain.environment.EnvironmentRepository;
@@ -14,7 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static dev.hltech.dredd.domain.InteractionValidationReport.InteractionValidationResult.FAILED;
+import static dev.hltech.dredd.domain.validation.InteractionValidationReport.InteractionValidationResult.FAILED;
 import static java.util.stream.Collectors.toList;
 
 

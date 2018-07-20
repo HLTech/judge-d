@@ -1,6 +1,5 @@
 package dev.hltech.dredd.domain.validation;
 
-import dev.hltech.dredd.domain.ExpectationValidationResult;
 import dev.hltech.dredd.domain.contracts.ServiceContracts;
 
 public interface ExpectationsValidator {

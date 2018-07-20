@@ -1,6 +1,6 @@
 package dev.hltech.dredd.domain.validation.rest;
 
-import dev.hltech.dredd.domain.CapabilitiesValidationResult;
+import dev.hltech.dredd.domain.validation.CapabilitiesValidationResult;
 import dev.hltech.dredd.domain.contracts.ServiceContracts;
 import dev.hltech.dredd.domain.validation.CapabilitiesValidator;
 

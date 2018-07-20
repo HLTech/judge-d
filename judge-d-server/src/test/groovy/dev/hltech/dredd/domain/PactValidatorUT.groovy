@@ -4,7 +4,7 @@ import dev.hltech.dredd.domain.environment.StaticEnvironment
 import spock.lang.Specification
 
 import static au.com.dius.pact.model.PactReader.loadPact
-import static dev.hltech.dredd.domain.InteractionValidationReport.InteractionValidationResult.FAILED
+import static dev.hltech.dredd.domain.validation.InteractionValidationReport.InteractionValidationResult.FAILED
 
 class PactValidatorUT extends Specification {
 

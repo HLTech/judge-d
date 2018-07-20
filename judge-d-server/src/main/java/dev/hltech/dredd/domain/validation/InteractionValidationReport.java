@@ -1,4 +1,4 @@
-package dev.hltech.dredd.domain;
+package dev.hltech.dredd.domain.validation;
 
 
 import lombok.AllArgsConstructor;

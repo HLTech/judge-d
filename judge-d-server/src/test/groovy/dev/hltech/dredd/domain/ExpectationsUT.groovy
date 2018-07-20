@@ -8,8 +8,8 @@ import dev.hltech.dredd.domain.validation.ping.PingContractValidatorFactory
 import spock.lang.Specification
 
 import static com.google.common.collect.Sets.newHashSet
-import static dev.hltech.dredd.domain.InteractionValidationReport.InteractionValidationResult.FAILED
-import static dev.hltech.dredd.domain.InteractionValidationReport.InteractionValidationResult.OK
+import static dev.hltech.dredd.domain.validation.InteractionValidationReport.InteractionValidationResult.FAILED
+import static dev.hltech.dredd.domain.validation.InteractionValidationReport.InteractionValidationResult.OK
 import static dev.hltech.dredd.domain.environment.EnvironmentAggregate.ServiceVersion
 
 class ExpectationsUT extends Specification{

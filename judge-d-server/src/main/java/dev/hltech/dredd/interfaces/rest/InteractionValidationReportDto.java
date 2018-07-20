@@ -1,6 +1,6 @@
 package dev.hltech.dredd.interfaces.rest;
 
-import dev.hltech.dredd.domain.InteractionValidationReport.InteractionValidationResult;
+import dev.hltech.dredd.domain.validation.InteractionValidationReport.InteractionValidationResult;
 import lombok.Builder;
 import lombok.Getter;
 
