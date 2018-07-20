@@ -1,9 +1,7 @@
 package dev.hltech.dredd.interfaces.rest.environment;
 
-import dev.hltech.dredd.domain.environment.Environment;
 import dev.hltech.dredd.domain.environment.EnvironmentAggregate;
 import dev.hltech.dredd.domain.environment.EnvironmentRepository;
-import dev.hltech.dredd.domain.environment.Service;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -20,12 +18,10 @@ import static java.util.stream.Collectors.toList;
 @RestController
 public class EnvironmentController {
 
-    private final Environment environment;
     private final EnvironmentRepository environmentRepository;
 
     @Autowired
-    public EnvironmentController(Environment environment, EnvironmentRepository environmentRepository) {
-        this.environment = environment;
+    public EnvironmentController(EnvironmentRepository environmentRepository) {
         this.environmentRepository = environmentRepository;
     }
 
@@ -60,25 +56,4 @@ public class EnvironmentController {
         services.stream().forEach(sf -> builder.withServiceVersion(sf.getName(), sf.getVersion()));
         environmentRepository.persist(builder.build());
     }
-
-
-    @GetMapping(value = "environment/services", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get services from the environment", nickname = "Get Services")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = ServiceDto.class, responseContainer = "list"),
-        @ApiResponse(code = 500, message = "Failure")})
-    public List<ServiceDto> getServices() {
-        return environment.getAllServices()
-            .stream()
-            .map(EnvironmentController::toDto)
-            .collect(Collectors.toList());
-    }
-
-    private static ServiceDto toDto(Service service) {
-        return ServiceDto.builder()
-            .name(service.getName())
-            .version(service.getVersion())
-            .build();
-    }
-
 }
