@@ -8,13 +8,13 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["management.port=0"])
 @ActiveProfiles(["test-integration", "kubernetes"])
-class AppTest extends Specification {
+class AppIT extends Specification {
 
     def test() {
         when:
-            def a = 2
+        def a = 2
         then:
-            a == 2
+        a == 2
     }
 
 }
