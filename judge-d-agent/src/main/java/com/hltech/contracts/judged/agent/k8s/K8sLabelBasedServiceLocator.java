@@ -29,7 +29,7 @@ public class K8sLabelBasedServiceLocator implements ServiceLocator {
                     String imageVersion = container.getImage().split(":")[1];
 
                     return Optional.of(new Service(
-                        imageName.contains("/") ? imageName.substring(imageName.lastIndexOf("/")+1) : imageName,
+                        imageName.contains("/") ? imageName.substring(imageName.lastIndexOf("/") + 1) : imageName,
                         imageVersion
                     ));
                 } else {
