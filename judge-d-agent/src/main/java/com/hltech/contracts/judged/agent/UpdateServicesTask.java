@@ -27,7 +27,7 @@ public class UpdateServicesTask {
         this.publisher = publisher;
     }
 
-    @Scheduled(fixedDelay = 5_000)
+    @Scheduled(fixedDelay = 5_000, initialDelay = 10_000)
     public void updateServices(){
         LOGGER.debug("Searching for available services...");
         Set<ServiceLocator.Service> serviceForms = serviceLocator.locateServices();

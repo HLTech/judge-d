@@ -5,47 +5,64 @@ import au.com.dius.pact.model.RequestResponsePact;
 import com.atlassian.oai.validator.SwaggerRequestResponseValidator;
 import com.atlassian.oai.validator.pact.PactResponse;
 import com.atlassian.oai.validator.report.ValidationReport;
-import dev.hltech.dredd.domain.validation.InteractionValidationReport;
+import dev.hltech.dredd.domain.validation.InterfaceContractValidator;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static au.com.dius.pact.model.PactReader.loadPact;
 import static com.atlassian.oai.validator.pact.PactRequest.of;
-import static dev.hltech.dredd.domain.validation.InteractionValidationReport.InteractionValidationResult.FAILED;
-import static dev.hltech.dredd.domain.validation.InteractionValidationReport.InteractionValidationResult.OK;
+import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationStatus.FAILED;
+import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationStatus.OK;
+import static java.util.function.Function.identity;
 
-public class RestContractValidator {
+@Component
+public class RestContractValidator extends InterfaceContractValidator<String, RequestResponsePact> {
 
-    protected List<InteractionValidationReport> validate(RequestResponsePact pact, String swagger) {
-        SwaggerRequestResponseValidator swaggerValidator = SwaggerRequestResponseValidator.createFor(swagger).build();
+    public static final String COMMUNICATION_INTERFACE = "rest";
+
+    public RestContractValidator() {
+        super(COMMUNICATION_INTERFACE);
+    }
+
+    public List<InteractionValidationResult> validate(RequestResponsePact pact, String capabilities) {
+        SwaggerRequestResponseValidator swaggerValidator = SwaggerRequestResponseValidator.createFor(capabilities).build();
 
         Map<RequestResponseInteraction, ValidationReport> validationReports = pact.getInteractions()
             .stream()
             .collect(Collectors.toMap(
-                Function.identity(),
+                identity(),
                 interaction -> swaggerValidator.validate(of(interaction.getRequest()), PactResponse.of(interaction.getResponse()))
             ));
 
-        List<InteractionValidationReport> collect = validationReports
+        List<InteractionValidationResult> collect = validationReports
             .entrySet()
             .stream()
-            .map(e -> createInteractionValidationReport(e.getKey(), e.getValue()))
+            .map(e -> {
+                ValidationReport validationReport = e.getValue();
+                return new InteractionValidationResult(
+                    e.getKey().getDescription(),
+                    validationReport.hasErrors() ? FAILED : OK,
+                    validationReport.getMessages().stream().map(
+                        message -> message.getMessage()
+                    ).collect(Collectors.toList())
+                );
+            })
             .collect(Collectors.toList());
 
         return collect;
     }
 
-    protected InteractionValidationReport createInteractionValidationReport(RequestResponseInteraction key, ValidationReport validationReport) {
-        return new InteractionValidationReport(
-            key.getDescription(),
-            validationReport.hasErrors() ? FAILED : OK,
-            validationReport.getMessages().stream().map(
-                message -> message.getMessage()
-            ).collect(Collectors.toList())
-        );
+    @Override
+    public String asCapabilities(String rawCapabilities) {
+        return rawCapabilities;
     }
 
+    @Override
+    public RequestResponsePact asExpectations(String rawExpectations) {
+        return (RequestResponsePact) loadPact(rawExpectations);
+    }
 
 }

@@ -4,27 +4,30 @@ import dev.hltech.dredd.domain.environment.InMemoryEnvironmentRepository
 import dev.hltech.dredd.domain.contracts.InMemoryServiceContractsRepository
 import dev.hltech.dredd.domain.contracts.ServiceContracts
 import dev.hltech.dredd.domain.environment.EnvironmentAggregate
-import dev.hltech.dredd.domain.validation.ping.PingContractValidatorFactory
+import dev.hltech.dredd.domain.validation.InterfaceContractValidator
+import dev.hltech.dredd.domain.validation.JudgeD
+import dev.hltech.dredd.domain.validation.ProviderNotAvailableException
+import dev.hltech.dredd.domain.validation.ping.PingContractValidator
 import spock.lang.Specification
 
 import static com.google.common.collect.Sets.newHashSet
-import static dev.hltech.dredd.domain.validation.InteractionValidationReport.InteractionValidationResult.FAILED
-import static dev.hltech.dredd.domain.validation.InteractionValidationReport.InteractionValidationResult.OK
+
 import static dev.hltech.dredd.domain.environment.EnvironmentAggregate.ServiceVersion
+import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationStatus.*
 
 class ExpectationsUT extends Specification{
 
     def servicesRepository = new InMemoryServiceContractsRepository()
     def environmentRepository = new InMemoryEnvironmentRepository()
-    def reverseContractFactory = new PingContractValidatorFactory();
+    def pingContractValidator = new PingContractValidator()
 
 
     def 'should throw ProviderNotFoundException when validate expectations agains env given required provider doesnt exist'() {
         given:
             def environment = environmentRepository.persist(new EnvironmentAggregate("SIT", newHashSet(new ServiceVersion("some-other-provider", "1"))))
-            def dredd = new Dredd(servicesRepository, environmentRepository)
+            def contractValidator = new JudgeD( environmentRepository, servicesRepository).createContractValidator(environment.name, pingContractValidator)
         when:
-            dredd.validate(environment.name,"provider", reverseContractFactory.createExpectations("123456"))
+            contractValidator.validateExpectations("provider", pingContractValidator.asExpectations("123456"))
         then:
             thrown ProviderNotAvailableException
     }
@@ -32,14 +35,14 @@ class ExpectationsUT extends Specification{
     def 'should return report with one invalid interaction when validate expectations given required provider exists on env but has not been registered'(){
         given:
             def environment = environmentRepository.persist(new EnvironmentAggregate("SIT", newHashSet(new ServiceVersion("provider", "1"))))
-            def dredd = new Dredd(servicesRepository, environmentRepository)
+            def contractValidator = new JudgeD( environmentRepository, servicesRepository).createContractValidator(environment.name,pingContractValidator)
         when:
-            def validationReport = dredd.validate(environment.name, "provider", reverseContractFactory.createExpectations("123456"))
+            def validationReport = contractValidator.validateExpectations("provider", pingContractValidator.asExpectations("123456"))
         then:
             validationReport.size() == 1
             with (validationReport.get(0)) {
-                interactionValidationReports.size() == 1
-                interactionValidationReports.get(0).status == FAILED
+                interactionValidationResults.size() == 1
+                interactionValidationResults.get(0).status == FAILED
             }
     }
 
@@ -55,17 +58,17 @@ class ExpectationsUT extends Specification{
                 "SIT",
                 newHashSet(new ServiceVersion(registeredProvider.name, registeredProvider.version))
             ))
-            def dredd = new Dredd(servicesRepository, environmentRepository)
+            def contractValidator = new JudgeD( environmentRepository, servicesRepository).createContractValidator(environment.name, pingContractValidator)
         when:
-            def validationReport = dredd.validate(environment.name, registeredProvider.getName(), reverseContractFactory.createExpectations("654321"))
+            def validationReport = contractValidator.validateExpectations(registeredProvider.getName(), pingContractValidator.asExpectations("654321"))
         then:
             validationReport.size() == 1
             with(validationReport.get(0)) {
                 providerName == registeredProvider.getName()
                 providerVersion == registeredProvider.getVersion()
 
-                interactionValidationReports.size() == 1
-                interactionValidationReports.get(0).status == OK
+                interactionValidationResults.size() == 1
+                interactionValidationResults.get(0).status == OK
             }
     }
 }
