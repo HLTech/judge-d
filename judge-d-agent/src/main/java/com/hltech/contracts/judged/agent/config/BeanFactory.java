@@ -1,14 +1,11 @@
 package com.hltech.contracts.judged.agent.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
 import com.hltech.contracts.judged.agent.JudgeDPublisher;
 import feign.Client;
 import feign.Feign;
 import feign.Retryer;
 import feign.Target;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +28,6 @@ import javax.net.ssl.X509TrustManager;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.util.Set;
 
 @Configuration
 public class BeanFactory {
@@ -40,21 +36,7 @@ public class BeanFactory {
 
     @Bean
     public JudgeDPublisher judgeDEnvironmentPublisher(Feign feign, @Value("${hltech.contracts.judge-d.baseUrl}") String baseUrl){
-        return new JudgeDPublisher() {
-
-            private Set<ServiceForm> previouslySentEnvironment;
-
-            @Override
-            public void publish(String environment, Set<ServiceForm> serviceForms) {
-                if (previouslySentEnvironment == null || !previouslySentEnvironment.equals(serviceForms)) {
-                    LOGGER.info("publishing services to Judge-D: "+serviceForms);
-                    feign.newInstance(new Target.HardCodedTarget<>(JudgeDPublisher.class, baseUrl));
-                    previouslySentEnvironment = Sets.newHashSet(serviceForms);
-                } else {
-                    LOGGER.debug("Services not changed since last update. Skipping update.");
-                }
-            }
-        };
+        return new CachingDelegatingDPublisher(feign.newInstance(new Target.HardCodedTarget<>(JudgeDPublisher.class, baseUrl)));
     }
 
     @Bean
@@ -95,4 +77,5 @@ public class BeanFactory {
             return null;
         }
     }
+
 }

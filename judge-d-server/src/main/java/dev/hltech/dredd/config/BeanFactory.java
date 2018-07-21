@@ -2,10 +2,6 @@ package dev.hltech.dredd.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import dev.hltech.dredd.domain.PactValidator;
-import dev.hltech.dredd.domain.SwaggerValidator;
-import dev.hltech.dredd.domain.environment.Environment;
-import dev.hltech.dredd.domain.environment.KubernetesEnvironment;
 import feign.Retryer;
 import feign.Target;
 import feign.codec.Decoder;
@@ -38,95 +34,8 @@ import java.security.cert.X509Certificate;
 public class BeanFactory {
 
     @Bean
-    public Environment hlEnvironment(KubernetesClient kubernetesClient,
-                                     PactBrokerClient pactBrokerClient,
-                                     ObjectMapper objectMapper,
-                                     Feign feign) {
-        return new KubernetesEnvironment(kubernetesClient, pactBrokerClient, objectMapper, feign);
-    }
-
-    @Bean
-    public PactValidator pactValidator(Environment environment){
-        return new PactValidator(environment);
-    }
-
-    @Bean
-    public SwaggerValidator swaggerValidator(Environment environment) {
-        return new SwaggerValidator(environment);
-    }
-
-    @Bean
-    public KubernetesClient kubernetesClient() {
-        return new DefaultKubernetesClient();
-    }
-
-    @Bean
-    public RestTemplate restTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        restTemplate.setMessageConverters(Lists.newArrayList(converter));
-        return restTemplate;
-    }
-
-    @Bean
-    public Client feignClient() {
-        try {
-            SSLContext ctx = SSLContext.getInstance("TLS");
-            ctx.init(null, new TrustManager[]{new X509TrustManager() {
-                @Override
-                public void checkClientTrusted(X509Certificate[] x509Certificates, String s) {}
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] x509Certificates, String s) {}
-
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }
-            }}, null);
-            SSLSocketFactory trustingSSLSocketFactory = ctx.getSocketFactory();
-
-            return new Client.Default(
-                trustingSSLSocketFactory,
-                new NoopHostnameVerifier()
-            );
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to create feign Client with ssl (trust-all) support", e);
-        }
-    }
-
-    @Bean
-    public PactBrokerClient pactBrokerClient(Feign feign,
-                                             @Value("${pactbroker.url}") String pactBrokerUrl) {
-        return feign.newInstance(new Target.HardCodedTarget<>(PactBrokerClient.class, pactBrokerUrl));
-    }
-
-    @Bean
-    public Feign feign(
-        ObjectFactory<HttpMessageConverters> messageConverters, Client client, Retryer retryer, Decoder decoder) {
-        return Feign.builder()
-            .client(client)
-            .contract(new SpringMvcContract())
-            .encoder(new SpringEncoder(messageConverters))
-            .retryer(retryer)
-            .decoder(decoder)
-            .build();
-    }
-
-    @Bean
-    public Retryer retryer() {
-        return Retryer.NEVER_RETRY;
-    }
-
-    @Bean
-    public Decoder feignDecoder(ObjectMapper objectMapper) {
-        HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter(objectMapper);
-        ObjectFactory<HttpMessageConverters> objectFactory = () -> new HttpMessageConverters(jacksonConverter);
-        return new ResponseEntityDecoder(new SpringDecoder(objectFactory));
-    }
-
-    @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
     }
+
 }

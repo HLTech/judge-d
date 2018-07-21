@@ -2,8 +2,7 @@ package dev.hltech.dredd.interfaces.rest.contracts;
 
 import dev.hltech.dredd.domain.contracts.ServiceContracts;
 import dev.hltech.dredd.domain.contracts.ServiceContractsRepository;
-import dev.hltech.dredd.interfaces.rest.AggregatedValidationReportDto;
-import dev.hltech.dredd.interfaces.rest.ResourceNotFoundException;
+import dev.hltech.dredd.interfaces.rest.validation.ResourceNotFoundException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -47,6 +46,7 @@ public class ContractsController {
     public ServiceContractsDto create(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version) {
         return toDto(serviceContractsRepository.find(provider, version).orElseThrow(() -> new ResourceNotFoundException()));
     }
+
     private ServiceContractsDto toDto(ServiceContracts serviceContracts) {
         ServiceContractsDto dto = new ServiceContractsDto();
         dto.setName(serviceContracts.getName());
