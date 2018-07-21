@@ -21,17 +21,17 @@ public class UpdateServicesTask {
     private JudgeDPublisher publisher;
 
     @Autowired
-    public UpdateServicesTask(@Value("${hltech.contracts.judge-d.environment}")String environment, ServiceLocator serviceLocator, JudgeDPublisher publisher) {
+    public UpdateServicesTask(@Value("${hltech.contracts.judge-d.environment}") String environment, ServiceLocator serviceLocator, JudgeDPublisher publisher) {
         this.environment = environment;
         this.serviceLocator = serviceLocator;
         this.publisher = publisher;
     }
 
     @Scheduled(fixedDelay = 5_000, initialDelay = 10_000)
-    public void updateServices(){
+    public void updateServices() {
         LOGGER.debug("Searching for available services...");
         Set<ServiceLocator.Service> serviceForms = serviceLocator.locateServices();
-        LOGGER.debug("Done - found following services: "+serviceForms);
+        LOGGER.debug("Done - found following services: " + serviceForms);
         publisher.publish(
             environment,
             serviceForms.stream().map(UpdateServicesTask::toForm).collect(Collectors.toSet())

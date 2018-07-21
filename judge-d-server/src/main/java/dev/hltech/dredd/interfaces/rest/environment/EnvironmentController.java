@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -39,19 +38,19 @@ public class EnvironmentController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = ServiceDto.class, responseContainer = "list"),
         @ApiResponse(code = 500, message = "Failure")})
-    public List<ServiceDto> getEnvironment(@PathVariable("name")String name) {
+    public List<ServiceDto> getEnvironment(@PathVariable("name") String name) {
         return environmentRepository.get(name).getAllServices()
             .stream()
             .map(sv -> new ServiceDto(sv.getName(), sv.getVersion()))
             .collect(toList());
     }
 
-    @PutMapping(value="environments/{name}")
+    @PutMapping(value = "environments/{name}")
     @ApiOperation(value = "Update the environment", nickname = "update environment")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success"),
         @ApiResponse(code = 500, message = "Failure")})
-    public void overwriteEnvironment(@PathVariable("name")String name, @RequestBody List<ServiceForm> services){
+    public void overwriteEnvironment(@PathVariable("name") String name, @RequestBody List<ServiceForm> services) {
         EnvironmentAggregate.EnvironmentAggregateBuilder builder = EnvironmentAggregate.builder(name);
         services.stream().forEach(sf -> builder.withServiceVersion(sf.getName(), sf.getVersion()));
         environmentRepository.persist(builder.build());

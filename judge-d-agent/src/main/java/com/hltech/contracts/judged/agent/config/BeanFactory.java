@@ -35,15 +35,15 @@ public class BeanFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(BeanFactory.class);
 
     @Bean
-    public JudgeDPublisher judgeDEnvironmentPublisher(Feign feign, @Value("${hltech.contracts.judge-d.baseUrl}") String baseUrl){
+    public JudgeDPublisher judgeDEnvironmentPublisher(Feign feign, @Value("${hltech.contracts.judge-d.baseUrl}") String baseUrl) {
         return new CachingDelegatingDPublisher(feign.newInstance(new Target.HardCodedTarget<>(JudgeDPublisher.class, baseUrl)));
     }
 
     @Bean
     public Feign feign(ObjectFactory<HttpMessageConverters> messageConverters, ObjectMapper objectMapper) throws KeyManagementException, NoSuchAlgorithmException {
-            SSLContext ctx = SSLContext.getInstance("TLS");
-            ctx.init(null, new TrustManager[]{new TrustAllX509TrustManager()}, null);
-            SSLSocketFactory trustingSSLSocketFactory = ctx.getSocketFactory();
+        SSLContext ctx = SSLContext.getInstance("TLS");
+        ctx.init(null, new TrustManager[]{new TrustAllX509TrustManager()}, null);
+        SSLSocketFactory trustingSSLSocketFactory = ctx.getSocketFactory();
 
         Client client = new Client.Default(
             trustingSSLSocketFactory,
@@ -64,13 +64,14 @@ public class BeanFactory {
     }
 
 
-
     private static class TrustAllX509TrustManager implements X509TrustManager {
         @Override
-        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) {}
+        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) {
+        }
 
         @Override
-        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) {}
+        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) {
+        }
 
         @Override
         public X509Certificate[] getAcceptedIssuers() {
