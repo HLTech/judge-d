@@ -29,11 +29,11 @@ public class JudgeD {
         this.serviceContractsRepository = serviceContractsRepository;
     }
 
-    public <C, E> ContractValidator<C,E> createContractValidator(String environment, InterfaceContractValidator<C,E> interfaceContractValidator){
+    public <C, E> ContractValidator<C, E> createContractValidator(String environment, InterfaceContractValidator<C, E> interfaceContractValidator) {
         return new ContractValidator(environment, interfaceContractValidator);
     }
 
-    public class ContractValidator<C,E> {
+    public class ContractValidator<C, E> {
 
         public final InterfaceContractValidator.InteractionValidationResult INTERACTION_VALIDATION_REPORT_4_NO_PROVIDER = new InterfaceContractValidator.InteractionValidationResult(
             "any",
@@ -42,14 +42,14 @@ public class JudgeD {
         );
 
         private String environment;
-        private InterfaceContractValidator<C,E> interfaceContractValidator;
+        private InterfaceContractValidator<C, E> interfaceContractValidator;
 
         public ContractValidator(String environment, InterfaceContractValidator<C, E> interfaceContractValidator) {
             this.environment = environment;
             this.interfaceContractValidator = interfaceContractValidator;
         }
 
-        public List<InterfaceContractValidator.CapabilitiesValidationResult> validateCapabilities(String providerName, C capabilities){
+        public List<InterfaceContractValidator.CapabilitiesValidationResult> validateCapabilities(String providerName, C capabilities) {
             Set<ServiceContracts> allRegisteredServices = environmentRepository.get(environment).getAllServices()
                 .stream()
                 .map(sv -> serviceContractsRepository.find(sv.getName(), sv.getVersion()))

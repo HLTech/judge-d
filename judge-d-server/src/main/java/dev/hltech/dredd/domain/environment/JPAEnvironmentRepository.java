@@ -1,10 +1,11 @@
 package dev.hltech.dredd.domain.environment;
 
-import static java.util.Optional.ofNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Set;
+
+import static java.util.Optional.ofNullable;
 
 @Repository
 public class JPAEnvironmentRepository implements EnvironmentRepository {

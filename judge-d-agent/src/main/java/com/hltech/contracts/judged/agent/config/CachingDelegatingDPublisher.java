@@ -20,7 +20,7 @@ public class CachingDelegatingDPublisher implements JudgeDPublisher {
     @Override
     public void publish(String environment, Set<ServiceForm> serviceForms) {
         if (previouslySentEnvironment == null || !previouslySentEnvironment.equals(serviceForms)) {
-            log.info("publishing services to Judge-D: "+serviceForms);
+            log.info("publishing services to Judge-D: " + serviceForms);
 
             judgeDPublisher.publish(environment, serviceForms);
 
