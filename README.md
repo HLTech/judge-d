@@ -92,11 +92,11 @@ Want to help? Have any problems or questions? Let us know!
 * for detailed informations about contributing read our [Contribution guide](../master/CONTRIBUTING.md)
 
 
-## Versioning
+### Versioning
 
 TODO - Gitflow versioning in plans.
 
-## Authors
+### Authors
 
 * **Tomasz Krzyżak** - *Development* - [krzyzy](https://github.com/krzyzy)
 * **Filip Łazarski** - *Development* - [Felipe444](https://github.com/Felipe444)
@@ -104,6 +104,6 @@ TODO - Gitflow versioning in plans.
 
 See also the list of [contributors](https://github.com/HLTech/judge-d/contributors) who participated in this project.
 
-## License
+### License
 
 TODO
