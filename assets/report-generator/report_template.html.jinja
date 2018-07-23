@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pact validation report</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container">
+    <h1>Pact validation result</h1>
+
+    {% if (validationResults is defined) and validationResults %}
+        <ul class="list-group list-group-flush">
+            {% for validation in validationResults %}
+            <li class="list-group-item">
+                {% if validation.validationStatus == "FAILED_NO_SUCH_PROVIDER_ON_ENVIRONMENT" %}
+                    <h3>
+                        Interaction between consumer {{ validation.consumerName }}
+                        and provider {{ validation.providerName }} was <b>not</b> performed due
+                        to lack of provider on environment
+                    </h3>
+                {% else %}
+                    <h3>
+                        Interaction between consumer {{ validation.consumerName }}
+                        and provider {{ validation.providerName }}
+                    </h3>
+                    <br/>
+                    Consumer version = {{ validation.consumerVersion }}<br/>
+                    Provider version = {{ validation.providerVersion }}
+                    <br/>
+                    <br/>
+                    <table class="table table-sm">
+                        <caption>interactions</caption>
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Interaction name</th>
+                            <th scope="col">Result</th>
+                            <th scope="col">Errors</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for interaction in validation.interactions %}
+                            {% if interaction.validationResult == "FAIL" %}
+                                {% set rowClass = "table-danger" %}
+                            {% else %}
+                                {% set rowClass = "table-success" %}
+                            {% endif %}
+                            <tr class={{ rowClass }}>
+                                <td>{{ interaction.interactionName }}</td>
+                                <td>{{ interaction.validationResult }}</td>
+                                <td>
+                                    {% if (interaction.errors is defined) and interaction.errors %}
+                                        {% for error in interaction.errors %}
+                                            {{ error }} <br/>
+                                        {% endfor %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        <tbody>
+                    </table>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        There were no interactions
+    {% endif %}
+</div>
+
+</body>
+</html>

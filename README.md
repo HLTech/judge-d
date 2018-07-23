@@ -77,13 +77,19 @@ Of course you can use jar file generated during installation as well and deploy 
 * [Maven](https://maven.apache.org/) - Dependency Management
 * [Docker](https://www.docker.com/) - Containerization engine
 
-## Contributing
+## Report generation
+
+The result of running validations in Judge D is json containing data result. Reading json files is not very human
+friendly so in assets/report-generator there is python script that generates nice HTML report. To use it you need installed
+python and jinja2 libs. You can also use Dockerfile located in this directory.
+
+### Contributing
 
 Want to help? Have any problems or questions? Let us know!
 
 * create an issue...
 * ... or if it already exists comment on it
-* for detailed informations about contributing read our [Contribution guide](../blob/master/CONTRIBUTING.md)
+* for detailed informations about contributing read our [Contribution guide](../master/CONTRIBUTING.md)
 
 
 ## Versioning
@@ -93,7 +99,7 @@ TODO - Gitflow versioning in plans.
 ## Authors
 
 * **Tomasz Krzyżak** - *Development* - [krzyzy](https://github.com/krzyzy)
-* **Filip Łazarski** - *Development*
+* **Filip Łazarski** - *Development* - [Felipe444](https://github.com/Felipe444)
 * **Adrian Michalik** - *Development* - [garlicsauce](https://github.com/garlicsauce)
 
 See also the list of [contributors](https://github.com/HLTech/judge-d/contributors) who participated in this project.
