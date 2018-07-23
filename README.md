@@ -58,14 +58,14 @@ to run app.
 By default you have to create new database called judge_d for the application to start, but jdbc connection properties 
 can be defined in judge-d-server/compose-judge-d.yml file.
 
-## Running the tests
+### Running the tests
 
 Tests are part of `mvn clean install` task - but if you'd like to only run tests (without building jar file) use
 ```
 mvn test
 ```
 
-## Deployment
+### Deployment
 
 Easiest way to run Judge D wherever you need is by using Docker - image is available in our 
 [Dockerhub](https://hub.docker.com/r/hltech/judge-d/).
@@ -83,7 +83,7 @@ The result of running validations in Judge D is json containing data result. Rea
 friendly so in assets/report-generator there is python script that generates nice HTML report. To use it you need installed
 python and jinja2 libs. You can also use Dockerfile located in this directory.
 
-### Contributing
+## Contributing
 
 Want to help? Have any problems or questions? Let us know!
 
@@ -92,11 +92,11 @@ Want to help? Have any problems or questions? Let us know!
 * for detailed informations about contributing read our [Contribution guide](../master/CONTRIBUTING.md)
 
 
-### Versioning
+## Versioning
 
 TODO - Gitflow versioning in plans.
 
-### Authors
+## Authors
 
 * **Tomasz Krzyżak** - *Development* - [krzyzy](https://github.com/krzyzy)
 * **Filip Łazarski** - *Development* - [Felipe444](https://github.com/Felipe444)
@@ -104,6 +104,6 @@ TODO - Gitflow versioning in plans.
 
 See also the list of [contributors](https://github.com/HLTech/judge-d/contributors) who participated in this project.
 
-### License
+## License
 
 TODO
