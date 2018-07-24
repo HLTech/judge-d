@@ -21,7 +21,7 @@ class PactBrokerClientIT extends Specification {
     def "should decode message as ObjectNode"() {
         given:
             stubFor(
-                get("/pacts/provider/backend-provider/consumer/frontend/1.0")
+                get("/pacts/provider/backend-provider/consumer/frontend/version/1.0")
                 .willReturn(
                     aResponse()
                         .withBody(asString(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json")))
