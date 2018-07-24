@@ -1,12 +1,13 @@
 package dev.hltech.dredd.integration.kubernetes
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.github.tomakehurst.wiremock.WireMockServer
 import feign.Feign
 import feign.Target
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
-import org.springframework.context.ApplicationContext
+import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 
@@ -27,7 +28,7 @@ class PodClientIT extends Specification {
     @Autowired
     WireMockServer server
 
-    def "should get info"() {
+    def "should get pod info"() {
         given:
             PodClient podClient = feign.newInstance(new Target.HardCodedTarget<PodClient>(PodClient.class, "http://localhost:" + server.port()))
         and:
@@ -42,11 +43,11 @@ class PodClientIT extends Specification {
             )
 
         when:
-            def info = podClient.getInfo()
+            ResponseEntity<JsonNode> info = podClient.getInfo()
 
         then:
-            info.get("build").get("name").asText() == "quartz"
-            info.get("build").get("version").asText() == "105-1e8fcf6"
+            info.getBody().get("build").get("name").asText() == "quartz"
+            info.getBody().get("build").get("version").asText() == "105-1e8fcf6"
     }
 
     def "should get swagger"() {
@@ -67,7 +68,7 @@ class PodClientIT extends Specification {
             def swagger = podClient.getSwagger(URI.create("backend-provider"))
 
         then:
-            swagger == "swagger"
+            swagger.getBody() == "swagger"
     }
 
 }
