@@ -17,9 +17,9 @@ public class BeanFactory {
     public Environment hlEnvironment() throws IOException {
         return StaticEnvironment.builder()
             .withProvider(
-                "dde-instruction-gateway",
+                "backend-provider",
                 "1.0",
-                new String(toByteArray(getClass().getResourceAsStream("/dde-instruction-gateway-swagger.json")))
+                new String(toByteArray(getClass().getResourceAsStream("/backend-provider-swagger.json")))
             )
             .build();
     }
