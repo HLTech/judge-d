@@ -13,15 +13,15 @@ class Fixtures {
     static Environment environment(){
         return StaticEnvironment.builder()
             .withProvider(
-            "dde-instruction-gateway",
+            "backend-provider",
             "1.0",
-            new String(toByteArray(getClass().getResourceAsStream("/dde-instruction-gateway-swagger.json")))
+            new String(toByteArray(getClass().getResourceAsStream("/backend-provider-swagger.json")))
         )
             .withConsumer(
             "frontend",
             "1.0",
             newArrayList(
-                (RequestResponsePact) loadPact(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))
+                (RequestResponsePact) loadPact(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json"))
             )
         )
             .build()

@@ -148,7 +148,7 @@ class KubernetesEnvironmentUT extends Specification {
             podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, HttpStatus.OK)
 
         and:
-            def pactString = asString(getClass().getResourceAsStream("/dde-instruction-gateway-swagger.json"))
+            def pactString = asString(getClass().getResourceAsStream("/backend-provider-swagger.json"))
             def pact = objectMapper.readValue(pactString, ObjectNode.class)
             pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, HttpStatus.OK)
 
@@ -160,7 +160,7 @@ class KubernetesEnvironmentUT extends Specification {
             services[0].getName() == "name"
             services[0].getVersion() == "a version"
             services[0].asProvider().getSwagger().get() == swagger
-            services[0].asConsumer().getPact("dde-instruction-gateway").get() != null
+            services[0].asConsumer().getPact("backend-provider").get() != null
     }
 
     def 'should return the requested service' () {
@@ -186,7 +186,7 @@ class KubernetesEnvironmentUT extends Specification {
             podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, HttpStatus.OK)
 
         and:
-            def pactString = asString(getClass().getResourceAsStream("/dde-instruction-gateway-swagger.json"))
+            def pactString = asString(getClass().getResourceAsStream("/backend-provider-swagger.json"))
             def pact = objectMapper.readValue(pactString, ObjectNode.class)
             pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, HttpStatus.OK)
 
@@ -198,7 +198,7 @@ class KubernetesEnvironmentUT extends Specification {
             services[0].getName() == "name"
             services[0].getVersion() == "a version"
             services[0].asProvider().getSwagger().get() == swagger
-            services[0].asConsumer().getPact("dde-instruction-gateway").get() != null
+            services[0].asConsumer().getPact("backend-provider").get() != null
     }
 
     def 'a service should not be consumer if HTTP status code from pact broker client is 404' () {
@@ -224,7 +224,7 @@ class KubernetesEnvironmentUT extends Specification {
             podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, HttpStatus.OK)
 
         and:
-            def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))
+            def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json"))
             def pact = objectMapper.readValue(pactString, ObjectNode.class)
             pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, HttpStatus.NOT_FOUND)
 
@@ -236,7 +236,7 @@ class KubernetesEnvironmentUT extends Specification {
             services[0].getName() == "name"
             services[0].getVersion() == "a version"
             services[0].asProvider().getSwagger().get() == swagger
-            !services[0].asConsumer().getPact("dde-instruction-gateway").isPresent()
+            !services[0].asConsumer().getPact("backend-provider").isPresent()
     }
 
     def 'a service should not be provider if HTTP status code after swagger resolution is 404' () {
@@ -262,7 +262,7 @@ class KubernetesEnvironmentUT extends Specification {
             podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, HttpStatus.NOT_FOUND)
 
         and:
-            def pactString = asString(getClass().getResourceAsStream("/dde-instruction-gateway-swagger.json"))
+            def pactString = asString(getClass().getResourceAsStream("/backend-provider-swagger.json"))
             def pact = objectMapper.readValue(pactString, ObjectNode.class)
             pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, HttpStatus.OK)
 
@@ -274,7 +274,7 @@ class KubernetesEnvironmentUT extends Specification {
             services[0].getName() == "name"
             services[0].getVersion() == "a version"
             !services[0].asProvider().getSwagger().isPresent()
-            services[0].asConsumer().getPact("dde-instruction-gateway").get() != null
+            services[0].asConsumer().getPact("backend-provider").get() != null
     }
 
     @Unroll
@@ -301,7 +301,7 @@ class KubernetesEnvironmentUT extends Specification {
             podClient.getSwagger(*_) >> new ResponseEntity<>(swagger, HttpStatus.OK)
 
         and:
-            def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))
+            def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json"))
             def pact = objectMapper.readValue(pactString, ObjectNode.class)
             pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, httpStatus)
 
@@ -341,7 +341,7 @@ class KubernetesEnvironmentUT extends Specification {
             podClient.getSwagger(*_) >> new ResponseEntity<>(null, httpStatus)
 
         and:
-            def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-dde-instruction-gateway.json"))
+            def pactString = asString(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json"))
             def pact = objectMapper.readValue(pactString, ObjectNode.class)
             pactBrokerClient.getPact(*_) >> new ResponseEntity<>(pact, HttpStatus.OK)
 

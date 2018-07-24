@@ -75,7 +75,7 @@ class ValidationControllerIT extends Specification {
     private SwaggerValidationForm newFlawedSwaggerVerificationForm() {
         def form = new SwaggerValidationForm()
         form.setProviderName(null)
-        form.setSwagger(objectMapper.readTree(getClass().getResourceAsStream("/dde-instruction-gateway-swagger.json")))
+        form.setSwagger(objectMapper.readTree(getClass().getResourceAsStream("/backend-provider-swagger.json")))
         return form
     }
 
