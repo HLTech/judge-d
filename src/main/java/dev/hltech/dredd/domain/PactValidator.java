@@ -26,11 +26,9 @@ public class PactValidator {
     }
 
     public List<PactValidationReport> validate(RequestResponsePact pact) throws ProviderNotAvailableException {
-        List<Provider> providers = environment.findServices(pact.getProvider().getName())
+        List<Service> providers = environment.findServices(pact.getProvider().getName())
             .stream()
-            .map(Service::asProvider)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
+            .filter(service -> service.asProvider().isPresent())
             .collect(Collectors.toList());
 
         if (providers.isEmpty())
@@ -39,12 +37,17 @@ public class PactValidator {
 
         return providers
             .stream()
-            .map( provider -> validate(pact, provider))
+            .map( service -> new PactValidationReport(
+                pact.getConsumer().getName(),
+                service.getName(),
+                service.getVersion(),
+                validate(pact, service.asProvider().get().getSwagger())
+            ))
             .collect(Collectors.toList());
     }
 
-    private PactValidationReport validate(RequestResponsePact pact, Provider provider) {
-        SwaggerRequestResponseValidator swaggerValidator = SwaggerRequestResponseValidator.createFor(provider.getSwagger()).build();
+    private List<InteractionValidationReport> validate(RequestResponsePact pact, String swagger) {
+        SwaggerRequestResponseValidator swaggerValidator = SwaggerRequestResponseValidator.createFor(swagger).build();
 
         Map<RequestResponseInteraction, ValidationReport> validationReports = pact.getInteractions()
             .stream()
@@ -59,7 +62,7 @@ public class PactValidator {
             .map(e -> createInteractionValidationReport(e.getKey(), e.getValue()))
             .collect(Collectors.toList());
 
-        return new PactValidationReport(pact.getConsumer().getName(), provider, collect);
+        return collect;
     }
 
     private InteractionValidationReport createInteractionValidationReport(RequestResponseInteraction key, ValidationReport validationReport) {

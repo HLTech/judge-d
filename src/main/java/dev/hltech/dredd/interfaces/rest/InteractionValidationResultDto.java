@@ -1,11 +1,11 @@
 package dev.hltech.dredd.interfaces.rest;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
-@Data
+@Getter
 @Builder
 public class InteractionValidationResultDto {
 

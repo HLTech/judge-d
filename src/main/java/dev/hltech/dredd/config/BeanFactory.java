@@ -1,5 +1,6 @@
 package dev.hltech.dredd.config;
 
+import dev.hltech.dredd.domain.PactValidator;
 import dev.hltech.dredd.domain.environment.Environment;
 import dev.hltech.dredd.domain.environment.StaticEnvironment;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,7 @@ import static com.google.common.io.ByteStreams.toByteArray;
 public class BeanFactory {
 
     @Bean
-    public Environment environment() throws IOException {
+    public Environment hlEnvironment() throws IOException {
         return StaticEnvironment.builder()
             .withProvider(
                 "dde-instruction-gateway",
@@ -21,6 +22,11 @@ public class BeanFactory {
                 new String(toByteArray(getClass().getResourceAsStream("/dde-instruction-gateway-swagger.json")))
             )
             .build();
+    }
+
+    @Bean
+    public PactValidator pactValidator(Environment environment){
+        return new PactValidator(environment);
     }
 
 }
