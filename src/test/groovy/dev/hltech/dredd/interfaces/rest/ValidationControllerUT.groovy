@@ -6,9 +6,8 @@ import dev.hltech.dredd.domain.environment.StaticEnvironment
 import spock.lang.Specification
 
 import static com.google.common.collect.Lists.newArrayList
-import static com.google.common.io.ByteStreams.toByteArray
-import static dev.hltech.dredd.interfaces.rest.ContractValidationStatus.NO_SUCH_PROVIDER_ON_ENVIRONMENT
-import static dev.hltech.dredd.interfaces.rest.ContractValidationStatus.OK
+import static dev.hltech.dredd.interfaces.rest.ContractValidationStatus.FAILED_NO_SUCH_PROVIDER_ON_ENVIRONMENT
+import static dev.hltech.dredd.interfaces.rest.ContractValidationStatus.PERFORMED
 
 class ValidationControllerUT extends Specification {
 
@@ -34,7 +33,7 @@ class ValidationControllerUT extends Specification {
         then:
             with(validationResult) {
                 validationResults.size() == 1
-                validationResults.get(0).validationStatus == NO_SUCH_PROVIDER_ON_ENVIRONMENT
+                validationResults.get(0).validationStatus == FAILED_NO_SUCH_PROVIDER_ON_ENVIRONMENT
             }
     }
 
@@ -54,7 +53,7 @@ class ValidationControllerUT extends Specification {
         then:
             with (validationResult) {
                 validationResults.size() == 1
-                validationResults.get(0).validationStatus == OK
+                validationResults.get(0).validationStatus == PERFORMED
                 validationResults.get(0).consumerName == "frontend"
                 validationResults.get(0).providerName == "backend-provider"
             }

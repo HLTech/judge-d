@@ -5,17 +5,17 @@ import au.com.dius.pact.model.RequestResponsePact;
 import com.atlassian.oai.validator.SwaggerRequestResponseValidator;
 import com.atlassian.oai.validator.report.ValidationReport;
 import dev.hltech.dredd.domain.environment.Environment;
-import dev.hltech.dredd.domain.environment.Provider;
 import dev.hltech.dredd.domain.environment.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.atlassian.oai.validator.pact.PactRequest.of;
 import static com.atlassian.oai.validator.pact.PactResponse.of;
+import static dev.hltech.dredd.domain.InteractionValidationReport.InteractionValidationResult.FAILED;
+import static dev.hltech.dredd.domain.InteractionValidationReport.InteractionValidationResult.OK;
 
 public class PactValidator {
 
@@ -68,7 +68,7 @@ public class PactValidator {
     private InteractionValidationReport createInteractionValidationReport(RequestResponseInteraction key, ValidationReport validationReport) {
         return new InteractionValidationReport(
             key.getDescription(),
-            validationReport.hasErrors() ? InteractionValidationReport.InteractionValidationStatus.FAILED : InteractionValidationReport.InteractionValidationStatus.OK,
+            validationReport.hasErrors() ? FAILED : OK,
             validationReport.getMessages().stream().map(
                 message -> message.getMessage()
             ).collect(Collectors.toList())

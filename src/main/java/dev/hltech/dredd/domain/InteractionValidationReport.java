@@ -11,10 +11,10 @@ import java.util.List;
 public class InteractionValidationReport {
 
     private final String name;
-    private final InteractionValidationStatus status;
+    private final InteractionValidationResult status;
     private final List<String> errors;
 
-    public enum InteractionValidationStatus {
+    public enum InteractionValidationResult {
 
         OK,
         FAILED

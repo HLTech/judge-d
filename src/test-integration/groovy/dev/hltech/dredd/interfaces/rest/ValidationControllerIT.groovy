@@ -31,7 +31,7 @@ class ValidationControllerIT extends Specification {
         then: 'controller returns validation response in json'
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), AggregatedValidationResultDto.class)
+            objectMapper.readValue(response.getContentAsString(), AggregatedValidationReportDto.class)
     }
 
     def "verifySwagger test hits the URL and parses JSON output"() {
@@ -44,7 +44,7 @@ class ValidationControllerIT extends Specification {
         then: 'controller returns validation response in json'
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), AggregatedValidationResultDto.class)
+            objectMapper.readValue(response.getContentAsString(), AggregatedValidationReportDto.class)
     }
 
     private SwaggerValidationForm newSwaggerVerificationForm() {

@@ -4,6 +4,7 @@ import dev.hltech.dredd.domain.environment.StaticEnvironment
 import spock.lang.Specification
 
 import static au.com.dius.pact.model.PactReader.loadPact
+import static dev.hltech.dredd.domain.InteractionValidationReport.InteractionValidationResult.FAILED
 
 class PactValidatorUT extends Specification {
 
@@ -32,7 +33,7 @@ class PactValidatorUT extends Specification {
             with(pactValidationReports.get(0)) {
                 consumerName == "frontend"
                 interactionValidationReports.size() == 1
-                interactionValidationReports.get(0).status == InteractionValidationReport.InteractionValidationStatus.FAILED
+                interactionValidationReports.get(0).status == FAILED
                 interactionValidationReports.get(0).name == "a request for details"
                 interactionValidationReports.get(0).errors.size() == 2
             }
@@ -41,8 +42,8 @@ class PactValidatorUT extends Specification {
     def 'should verify all interaction against all matching providers' (){
         given:
             def environment = StaticEnvironment.builder()
-                .withProvider("instruction-gateway", "1.0", getClass().getResourceAsStream("/backend-provider-swagger.json"))
-                .withProvider("instruction-gateway", "2.0", getClass().getResourceAsStream("/backend-provider-swagger.json"))
+                .withProvider("backend-provider", "1.0", getClass().getResourceAsStream("/backend-provider-swagger.json"))
+                .withProvider("backend-provider", "2.0", getClass().getResourceAsStream("/backend-provider-swagger.json"))
                 .build()
             def pact = loadPact(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json"))
         when:
@@ -52,14 +53,14 @@ class PactValidatorUT extends Specification {
             with(pactValidationReports.find {it.providerVersion == "1.0"}) {
                 consumerName == "frontend"
                 interactionValidationReports.size() == 1
-                interactionValidationReports.get(0).status == InteractionValidationReport.InteractionValidationStatus.FAILED
+                interactionValidationReports.get(0).status == FAILED
                 interactionValidationReports.get(0).name == "a request for details"
                 interactionValidationReports.get(0).errors.size() == 2
             }
             with(pactValidationReports.find {it.providerVersion == "2.0"}) {
                 consumerName == "frontend"
                 interactionValidationReports.size() == 1
-                interactionValidationReports.get(0).status == InteractionValidationReport.InteractionValidationStatus.FAILED
+                interactionValidationReports.get(0).status == FAILED
                 interactionValidationReports.get(0).name == "a request for details"
                 interactionValidationReports.get(0).errors.size() == 2
             }
