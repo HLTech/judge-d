@@ -6,9 +6,11 @@ import com.atlassian.oai.validator.SwaggerRequestResponseValidator;
 import com.atlassian.oai.validator.report.ValidationReport;
 import dev.hltech.dredd.domain.environment.Environment;
 import dev.hltech.dredd.domain.environment.Provider;
+import dev.hltech.dredd.domain.environment.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -23,33 +25,47 @@ public class PactValidator {
         this.environment = environment;
     }
 
-    public List<InteractionValidationReport> validate(RequestResponsePact pact) {
-        String providerName = pact.getProvider().getName();
-        String swaggerJson = environment.findServices(providerName)
-            .iterator().next()
-            .asProvider()
-            .map(Provider::getSwagger)
-            .orElse("");// TODO: handle this situation properly
-
-        return validateInteractions(swaggerJson, pact.getInteractions())
-            .entrySet()
+    public List<PactValidationReport> validate(RequestResponsePact pact) throws ProviderNotAvailableException {
+        List<Provider> providers = environment.findServices(pact.getProvider().getName())
             .stream()
-            .map(entry -> toValidationReport(entry.getKey(), entry.getValue()))
+            .map(Service::asProvider)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+
+        if (providers.isEmpty())
+            throw new ProviderNotAvailableException();
+
+
+        return providers
+            .stream()
+            .map( provider -> validate(pact, provider))
             .collect(Collectors.toList());
     }
 
-    private Map<RequestResponseInteraction, ValidationReport> validateInteractions(String swaggerJson, List<RequestResponseInteraction> interactions) {
-        SwaggerRequestResponseValidator swaggerValidator = SwaggerRequestResponseValidator.createFor(swaggerJson).build();
-        return interactions.stream().collect(Collectors.toMap(
-            Function.identity(),
-            o -> swaggerValidator.validate(of(o.getRequest()), of(o.getResponse()))
-        ));
+    private PactValidationReport validate(RequestResponsePact pact, Provider provider) {
+        SwaggerRequestResponseValidator swaggerValidator = SwaggerRequestResponseValidator.createFor(provider.getSwagger()).build();
+
+        Map<RequestResponseInteraction, ValidationReport> validationReports = pact.getInteractions()
+            .stream()
+            .collect(Collectors.toMap(
+                Function.identity(),
+                interaction -> swaggerValidator.validate(of(interaction.getRequest()), of(interaction.getResponse()))
+            ));
+
+        List<InteractionValidationReport> collect = validationReports
+            .entrySet()
+            .stream()
+            .map(e -> createInteractionValidationReport(e.getKey(), e.getValue()))
+            .collect(Collectors.toList());
+
+        return new PactValidationReport(pact.getConsumer().getName(), provider, collect);
     }
 
-    private InteractionValidationReport toValidationReport(RequestResponseInteraction interaction, ValidationReport validationReport) {
+    private InteractionValidationReport createInteractionValidationReport(RequestResponseInteraction key, ValidationReport validationReport) {
         return new InteractionValidationReport(
-            interaction.getDescription(),
-            validationReport.hasErrors() ? ValidationStatus.FAILED : ValidationStatus.OK,
+            key.getDescription(),
+            validationReport.hasErrors() ? InteractionValidationReport.InteractionValidationStatus.FAILED : InteractionValidationReport.InteractionValidationStatus.OK,
             validationReport.getMessages().stream().map(
                 message -> message.getMessage()
             ).collect(Collectors.toList())
