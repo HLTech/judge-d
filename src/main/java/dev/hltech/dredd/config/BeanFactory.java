@@ -1,11 +1,11 @@
 package dev.hltech.dredd.config;
 
-import au.com.dius.pact.model.RequestResponsePact;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import dev.hltech.dredd.domain.PactValidator;
 import dev.hltech.dredd.domain.SwaggerValidator;
 import dev.hltech.dredd.domain.environment.Environment;
-import dev.hltech.dredd.domain.environment.StaticEnvironment;
+import dev.hltech.dredd.domain.environment.KubernetesEnvironment;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import dev.hltech.dredd.integration.pactbroker.PactBrokerClient;
@@ -30,29 +30,15 @@ import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
 
-import static au.com.dius.pact.model.PactReader.loadPact;
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.io.ByteStreams.toByteArray;
-
 @Configuration
 public class BeanFactory {
 
     @Bean
-    public Environment hlEnvironment() throws IOException {
-        return StaticEnvironment.builder()
-            .withProvider(
-                "backend-provider",
-                "1.0",
-                new String(toByteArray(getClass().getResourceAsStream("/backend-provider-swagger.json")))
-            )
-            .withConsumer(
-                "frontend",
-                "1.0",
-                newArrayList(
-                    (RequestResponsePact) loadPact(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json"))
-                )
-            )
-            .build();
+    public Environment hlEnvironment(KubernetesClient kubernetesClient,
+                                     RestTemplate restTemplate,
+                                     PactBrokerClient pactBrokerClient,
+                                     ObjectMapper objectMapper) {
+        return new KubernetesEnvironment(kubernetesClient, restTemplate, pactBrokerClient, objectMapper);
     }
 
     @Bean
