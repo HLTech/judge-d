@@ -4,8 +4,6 @@ import java.util.Optional;
 
 public interface Service {
 
-    String name();
-
     Optional<Provider> asProvider();
 
 }

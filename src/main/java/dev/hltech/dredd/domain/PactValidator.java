@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 import static com.atlassian.oai.validator.pact.PactRequest.of;
 import static com.atlassian.oai.validator.pact.PactResponse.of;
 
-public class ContractValidator {
+public class PactValidator {
 
     private final Environment environment;
 
-    public ContractValidator(Environment environment) {
+    public PactValidator(Environment environment) {
         this.environment = environment;
     }
 
@@ -38,7 +38,7 @@ public class ContractValidator {
             .collect(Collectors.toList());
     }
 
-    public Map<RequestResponseInteraction, ValidationReport> validateInteractions(String swaggerJson, List<RequestResponseInteraction> interactions) {
+    private Map<RequestResponseInteraction, ValidationReport> validateInteractions(String swaggerJson, List<RequestResponseInteraction> interactions) {
         SwaggerRequestResponseValidator swaggerValidator = SwaggerRequestResponseValidator.createFor(swaggerJson).build();
         return interactions.stream().collect(Collectors.toMap(
             Function.identity(),

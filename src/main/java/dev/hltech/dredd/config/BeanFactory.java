@@ -1,8 +1,7 @@
 package dev.hltech.dredd.config;
 
 import dev.hltech.dredd.domain.environment.Environment;
-import dev.hltech.dredd.domain.environment.MockServiceDiscovery;
-import dev.hltech.dredd.domain.environment.ServiceDiscovery;
+import dev.hltech.dredd.domain.environment.StaticEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,13 +13,8 @@ import static com.google.common.io.ByteStreams.toByteArray;
 public class BeanFactory {
 
     @Bean
-    public Environment environment(ServiceDiscovery serviceDiscovery){
-        return new Environment(serviceDiscovery);
-    }
-
-    @Bean
-    public ServiceDiscovery serviceDiscovery() throws IOException {
-        return  MockServiceDiscovery.builder()
+    public Environment environment() throws IOException {
+        return StaticEnvironment.builder()
             .withProvider(
                 "dde-instruction-gateway",
                 new String(toByteArray(getClass().getResourceAsStream("/dde-instruction-gateway-swagger.json")))
