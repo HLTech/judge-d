@@ -17,7 +17,6 @@ public interface JudgeDPublisher {
 
     @Getter
     @AllArgsConstructor
-    @ToString
     @EqualsAndHashCode
     class ServiceForm {
 

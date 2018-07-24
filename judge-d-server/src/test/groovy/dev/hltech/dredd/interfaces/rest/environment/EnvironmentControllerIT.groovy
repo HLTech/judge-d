@@ -3,13 +3,9 @@ package dev.hltech.dredd.interfaces.rest.environment
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.hltech.dredd.config.BeanFactory
-import dev.hltech.dredd.domain.Fixtures
-import dev.hltech.dredd.domain.environment.Environment
+
 import dev.hltech.dredd.domain.environment.EnvironmentRepository
 import dev.hltech.dredd.domain.environment.InMemoryEnvironmentRepository
-import dev.hltech.dredd.integration.pactbroker.PactBrokerClient
-import feign.Feign
-import io.fabric8.kubernetes.client.KubernetesClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -35,13 +31,13 @@ class EnvironmentControllerIT extends Specification {
     def "getServices test hits the URL and parses JSON output"() {
         when: 'rest validatePacts url is hit'
             def response = mockMvc.perform(
-                get('/environment/services')
+                get('/environments/SIT')
                     .accept("application/json")
             ).andReturn().getResponse()
         then: 'controller returns validation response in json'
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<ServiceDto>>(){})
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<ServiceDto>>(){}) != null
     }
 
     def 'update environment hits the url and receives 200'(){
@@ -63,14 +59,6 @@ class EnvironmentControllerIT extends Specification {
 
     @TestConfiguration
     static class TestConfig extends BeanFactory {
-
-        @Bean
-        Environment hlEnvironment(KubernetesClient kubernetesClient,
-                                  PactBrokerClient pactBrokerClient,
-                                  ObjectMapper objectMapper,
-                                  Feign feign) throws IOException {
-            return Fixtures.environment()
-        }
 
         @Bean
         EnvironmentRepository environmentRepository(){
