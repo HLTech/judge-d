@@ -3,6 +3,7 @@ package dev.hltech.dredd.domain.environment
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.collect.Lists
+import com.google.common.collect.Maps
 import io.fabric8.kubernetes.api.model.Container
 import io.fabric8.kubernetes.api.model.ContainerPort
 import io.fabric8.kubernetes.api.model.ObjectMeta
@@ -12,7 +13,6 @@ import io.fabric8.kubernetes.api.model.PodSpec
 import io.fabric8.kubernetes.api.model.PodStatus
 import io.fabric8.kubernetes.client.KubernetesClient
 import io.fabric8.kubernetes.client.dsl.MixedOperation
-import jersey.repackaged.com.google.common.collect.Maps
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 import spock.lang.Subject
