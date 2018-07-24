@@ -2,9 +2,11 @@ package dev.hltech.dredd.interfaces.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.hltech.dredd.domain.PactValidator
+import dev.hltech.dredd.domain.SwaggerValidator
 import dev.hltech.dredd.domain.environment.StaticEnvironment
 import spock.lang.Specification
 
+import static au.com.dius.pact.model.PactReader.loadPact
 import static com.google.common.collect.Lists.newArrayList
 import static dev.hltech.dredd.interfaces.rest.ContractValidationStatus.FAILED_NO_SUCH_PROVIDER_ON_ENVIRONMENT
 import static dev.hltech.dredd.interfaces.rest.ContractValidationStatus.PERFORMED
@@ -17,7 +19,7 @@ class ValidationControllerUT extends Specification {
         this.objectMapper = new ObjectMapper()
     }
 
-    def 'should return provider-not-found message in response when provider doesnt exist in environment' (){
+    def 'should return provider-not-found message in response when validate pact given provider doesnt exist in environment' (){
         given:
             def pact = objectMapper.readTree(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json"))
             def environment = StaticEnvironment.builder()
@@ -27,8 +29,10 @@ class ValidationControllerUT extends Specification {
                 "{}"
             ).build()
         when:
-            def controller = new ValidationController(new PactValidator(environment), objectMapper)
-            def validationResult = controller.validatePacts(new PactValidationForm(newArrayList((Object)pact)))
+            def controller = new ValidationController(new PactValidator(environment), new SwaggerValidator(environment), objectMapper)
+            def form = new PactValidationForm()
+            form.setPacts(newArrayList((Object) pact))
+            def validationResult = controller.validatePacts(form)
 
         then:
             with(validationResult) {
@@ -37,7 +41,7 @@ class ValidationControllerUT extends Specification {
             }
     }
 
-    def 'should return validation result with all interactions' (){
+    def 'should return validation result with all interactions when validate pact given provider is available' (){
         given:
             def pact = objectMapper.readTree(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json"))
             def environment = StaticEnvironment.builder()
@@ -48,8 +52,10 @@ class ValidationControllerUT extends Specification {
                 ).build()
 
         when:
-            def validationController = new ValidationController(new PactValidator(environment), objectMapper)
-            def validationResult = validationController.validatePacts(new PactValidationForm(newArrayList((Object)pact)))
+            def validationController = new ValidationController(new PactValidator(environment), new SwaggerValidator(environment), objectMapper)
+            def form = new PactValidationForm()
+            form.setPacts(newArrayList((Object)pact))
+            def validationResult = validationController.validatePacts(form)
         then:
             with (validationResult) {
                 validationResults.size() == 1
@@ -57,5 +63,30 @@ class ValidationControllerUT extends Specification {
                 validationResults.get(0).consumerName == "frontend"
                 validationResults.get(0).providerName == "backend-provider"
             }
+    }
+
+    def 'should return validation result with all interactions when validate swagger given consumer is available' (){
+        given:
+            def swagger = objectMapper.readTree(getClass().getResourceAsStream("/backend-provider-swagger.json"))
+            def environment = StaticEnvironment.builder()
+                .withConsumer(
+                "frontend",
+                "1.0",
+                newArrayList(loadPact(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json")))
+            ).build()
+        when:
+            def validationController = new ValidationController(new PactValidator(environment), new SwaggerValidator(environment), objectMapper)
+            def form = new SwaggerValidationForm()
+                form.setProviderName("backend-provider")
+                form.setSwagger(swagger)
+            def validationResult = validationController.validateSwagger(form)
+        then:
+        with (validationResult) {
+            validationResults.size() == 1
+            validationResults.get(0).validationStatus == PERFORMED
+            validationResults.get(0).consumerName == "frontend"
+            validationResults.get(0).consumerVersion == "1.0"
+            validationResults.get(0).providerName == "backend-provider"
+        }
     }
 }

@@ -1,7 +1,6 @@
 package dev.hltech.dredd.interfaces.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.common.collect.Lists
 import dev.hltech.dredd.config.BeanFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -9,6 +8,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 
+import static com.google.common.collect.Lists.newArrayList
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 
 @WebMvcTest(ValidationController.class)
@@ -23,7 +23,7 @@ class ValidationControllerIT extends Specification {
 
     def "verifyPacts test hits the URL and parses JSON output"() {
         when: 'rest validatePacts url is hit'
-        def response = mockMvc.perform(
+            def response = mockMvc.perform(
                 post('/verification/pacts')
                     .contentType("application/json")
                     .content(objectMapper.writeValueAsString(newPactVerificationForm()))
@@ -48,11 +48,16 @@ class ValidationControllerIT extends Specification {
     }
 
     private SwaggerValidationForm newSwaggerVerificationForm() {
-        new SwaggerValidationForm()
+        def form = new SwaggerValidationForm()
+        form.setProviderName("backend-provider")
+        form.setSwagger(objectMapper.readTree(getClass().getResourceAsStream("/backend-provider-swagger.json")))
+        return form
     }
 
     private PactValidationForm newPactVerificationForm() {
-        return new PactValidationForm(Lists.newArrayList((Object)objectMapper.readTree(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json"))))
+        def form = new PactValidationForm()
+        form.setPacts(newArrayList((Object)objectMapper.readTree(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json"))))
+        return form
     }
 
 
