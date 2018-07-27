@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Optional.ofNullable;
@@ -61,23 +62,38 @@ public class ServiceContracts {
     }
 
     public String getName() {
-        return id.getName();
+        return this.id.getName();
     }
 
     public String getVersion() {
-        return id.getVersion();
+        return this.id.getVersion();
     }
 
-    public Optional<String> getCapabilities(String protocol) {
-        return ofNullable(capabilitiesPerProtocol.get(protocol)).map(Contract::getValue);
+
+    public <C> Optional<C> getCapabilities(String communicationInterface, Function<String, C> deserializer) {
+        return ofNullable(this.capabilitiesPerProtocol.get(communicationInterface))
+            .map(Contract::getValue)
+            .map(deserializer);
     }
 
-    public Optional<String> getExpectations(String providerName, String protocol) {
-        return ofNullable(expectations.get(new ProviderProtocol(providerName, protocol))).map(Contract::getValue);
+    public <E> Optional<E> getExpectations(String providerName, String communicationInterface, Function<String, E> deserializer) {
+        return ofNullable(this.expectations.get(new ProviderProtocol(providerName, communicationInterface)))
+            .map(Contract::getValue)
+            .map(deserializer);
+    }
+
+    public <E> Map<String, E> getExpectations(String communicationInterface, Function<String, E> deserializer) {
+        return this.expectations.entrySet()
+            .stream()
+            .filter(expectationsEntry -> expectationsEntry.getKey().getProtocol().equals(communicationInterface))
+            .collect(toMap(
+                e -> e.getKey().getProvider(),
+                e -> deserializer.apply(e.getValue().getValue())
+            ));
     }
 
     public Map<String, String> getCapabilities() {
-        return capabilitiesPerProtocol.entrySet().stream().collect(toMap(
+        return this.capabilitiesPerProtocol.entrySet().stream().collect(toMap(
             e -> e.getKey(),
             e -> e.getValue().getValue()
         ));

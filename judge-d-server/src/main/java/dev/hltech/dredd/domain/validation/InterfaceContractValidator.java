@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationStatus.FAILED;
@@ -19,8 +21,10 @@ public abstract class InterfaceContractValidator<C, E> {
     }
 
     public CapabilitiesValidationResult validate(ServiceContracts consumer, String providerName, C capabilities) {
-        List<InteractionValidationResult> validatedInteractions = consumer.getExpectations(providerName, communicationInterface)
-            .map(expectations -> validate(asExpectations(expectations), capabilities))
+        Optional<E> expectationsOptional = consumer.getExpectations(providerName, this.communicationInterface, this::asExpectations);
+
+        List<InteractionValidationResult> validatedInteractions = expectationsOptional
+            .map(expectations -> validate(expectations, capabilities))
             .orElse(emptyList());
 
         return new CapabilitiesValidationResult(
@@ -31,13 +35,14 @@ public abstract class InterfaceContractValidator<C, E> {
     }
 
     public ExpectationValidationResult validate(ServiceContracts provider, E expectations) {
-        List<InteractionValidationResult> validatedInteractions = provider.getCapabilities(communicationInterface)
-            .map(capabilities -> validate(expectations, asCapabilities(capabilities)))
+        List<InteractionValidationResult> validatedInteractions = provider
+            .getCapabilities(this.communicationInterface, this::asCapabilities)
+            .map(capabilities -> validate(expectations, capabilities))
             .orElseGet(() -> newArrayList(
                 new InteractionValidationResult(
                     "any",
                     FAILED,
-                    newArrayList("provider was registered without any '" + communicationInterface + "' capabilities")
+                    newArrayList("provider was registered without any '" + this.communicationInterface + "' capabilities")
                 )
             ));
 
@@ -53,6 +58,14 @@ public abstract class InterfaceContractValidator<C, E> {
     public abstract E asExpectations(String rawExpectations);
 
     public abstract List<InteractionValidationResult> validate(E expectations, C capabilities);
+
+    public Optional<C> getCapabilities(ServiceContracts serviceContracts) {
+        return serviceContracts.getCapabilities(this.communicationInterface, this::asCapabilities);
+    }
+
+    public Map<String, E> getExpectations(ServiceContracts testedServiceContracts) {
+        return testedServiceContracts.getExpectations(this.communicationInterface, this::asExpectations);
+    }
 
     public enum InteractionValidationStatus {
 
@@ -70,7 +83,7 @@ public abstract class InterfaceContractValidator<C, E> {
         private List<InteractionValidationResult> interactionValidationResults;
 
         public boolean isEmpty() {
-            return interactionValidationResults.isEmpty();
+            return this.interactionValidationResults.isEmpty();
         }
 
     }
