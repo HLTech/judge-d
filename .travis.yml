@@ -12,4 +12,7 @@ jobs:
       - mvn clean verify jacoco:report coveralls:report
     - stage: build & publish docker image for server
       script:
-      - mvn docker:build@build-docker -P docker-app
+      - mvn docker:build@build-docker -P docker-app -f ./judge-d-server/pom.xml
+    - stage: build & publish docker image for agent
+      script:
+      - mvn docker:build@build-docker -P docker-app -f ./judge-d-agent/pom.xml
