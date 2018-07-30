@@ -5,4 +5,11 @@ cache:
   directories:
   - $HOME/.m2
 
-script: "mvn clean verify jacoco:report coveralls:report"
+jobs:
+  include:
+    - stage: build with maven & generate reporrts
+      script:
+      - mvn clean verify jacoco:report coveralls:report
+    - stage: build & publish docker image for server
+      script:
+      - mvn docker:build@build-docker -P docker-app
