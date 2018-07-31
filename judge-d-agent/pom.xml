@@ -131,7 +131,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${springBootVersion}</version>
                 <configuration>
-                    <mainClass>dev.hltech.dredd.App</mainClass>
+                    <mainClass>com.hltech.contracts.judged.agent.App</mainClass>
                 </configuration>
                 <executions>
                     <execution>
