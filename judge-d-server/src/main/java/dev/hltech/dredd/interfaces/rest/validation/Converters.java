@@ -12,6 +12,9 @@ import static com.google.common.collect.Maps.newHashMap;
 
 public class Converters {
 
+    private Converters() {
+    }
+
     public static List<ContractValidationReportDto> toDtos(List<EnvironmentValidatorResult> validationResults, String serviceName, String serviceVersion) {
         Map<ConsumerAndProviderDto, ContractValidationReportDto> result = newHashMap();
         validationResults
