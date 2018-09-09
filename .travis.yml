@@ -11,11 +11,13 @@ jobs:
       script:
       - mvn clean verify jacoco:report coveralls:report
     - stage: build & publish docker image for server
+      if: branch = master
       script:
       - mvn docker:build@build-docker -P docker-app -f ./judge-d-server/pom.xml
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       - docker push hltech/judge-d
     - stage: build & publish docker image for agent
+      if: branch = master
       script:
       - mvn docker:build@build-docker -P docker-app -f ./judge-d-agent/pom.xml
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
