@@ -38,7 +38,7 @@ public class ValidationController {
         this.validators = validators;
     }
 
-    @GetMapping(value = "/validation-report/environment/{environment}/service/{serviceName}:{serviceVersion:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/environment-compatibility-report/{environment}/{serviceName}:{serviceVersion:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get validation report for contract between given service and given environment", nickname = "Validate against environment")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),

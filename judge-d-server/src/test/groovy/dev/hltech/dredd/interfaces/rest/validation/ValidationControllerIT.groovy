@@ -45,7 +45,7 @@ class ValidationControllerIT extends Specification {
             ))
         when: 'rest validatePacts url is hit'
             def response = mockMvc.perform(
-                get(new URI('/validation-report/environment/SIT/service/service-name:1.0'))
+                get(new URI('/environment-compatibility-report/SIT/service-name:1.0'))
                     .accept("application/json")
             ).andReturn().getResponse()
         then: 'controller returns validation response in json'
