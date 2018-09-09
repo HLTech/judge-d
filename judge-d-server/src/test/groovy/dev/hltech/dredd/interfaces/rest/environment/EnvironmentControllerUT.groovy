@@ -9,10 +9,10 @@ import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic
 
 class EnvironmentControllerUT extends Specification {
 
-    def environmentRepository = new InMemoryEnvironmentRepository();
+    def environmentRepository = new InMemoryEnvironmentRepository()
     def environmentController = new EnvironmentController(environmentRepository)
 
-    def 'should return names of created environments'(){
+    def 'should return names of created environments'() {
         given:
             def environment = new EnvironmentAggregate(
                 randomAlphabetic(10),
@@ -25,14 +25,14 @@ class EnvironmentControllerUT extends Specification {
             names == [environment.name] as Set
     }
 
-    def 'should return empty list of services when get services giveen no such environment was saved before'(){
+    def 'should return empty list of services when get services giveen no such environment was saved before'() {
         when:
             def services = environmentController.getEnvironment("some-environment")
         then:
             services.isEmpty()
     }
 
-    def 'should return list of services from and evironment given it was saved before'(){
+    def 'should return list of services from and evironment given it was saved before'() {
         def serviceVersion = new EnvironmentAggregate.ServiceVersion("service", "version")
         given:
             def environment = new EnvironmentAggregate(

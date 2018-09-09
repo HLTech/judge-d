@@ -1,16 +1,20 @@
 package dev.hltech.dredd.domain.validation;
 
 import dev.hltech.dredd.domain.contracts.ServiceContracts;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationStatus.FAILED;
+import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationStatus.OK;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 public abstract class InterfaceContractValidator<C, E> {
 
@@ -20,10 +24,23 @@ public abstract class InterfaceContractValidator<C, E> {
         this.communicationInterface = communicationInterface;
     }
 
-    public CapabilitiesValidationResult validate(ServiceContracts consumer, String providerName, C capabilities) {
-        Optional<E> expectationsOptional = consumer.getExpectations(providerName, this.communicationInterface, this::asExpectations);
+    public String getCommunicationInterface() {
+        return this.communicationInterface;
+    }
 
-        List<InteractionValidationResult> validatedInteractions = expectationsOptional
+    public List<CapabilitiesValidationResult> validateCapabilities(ServiceContracts provider, List<ServiceContracts> allConsumers) {
+        return extractCapabilities(provider)
+            .map(capabilities -> allConsumers
+                .stream()
+                .map(consumer -> validateCapabilities(capabilities, provider.getName(), consumer))
+                .filter(validationResult -> !validationResult.getInteractionValidationResults().isEmpty())
+                .collect(toList())
+            ).orElse(emptyList());
+    }
+
+    private CapabilitiesValidationResult validateCapabilities(C capabilities, String providerName, ServiceContracts consumer) {
+        List<InteractionValidationResult> validatedInteractions = consumer
+            .getExpectations(providerName, this.communicationInterface, this::asExpectations)
             .map(expectations -> validate(expectations, capabilities))
             .orElse(emptyList());
 
@@ -34,7 +51,29 @@ public abstract class InterfaceContractValidator<C, E> {
         );
     }
 
-    public ExpectationValidationResult validate(ServiceContracts provider, E expectations) {
+    public List<ExpectationValidationResult> validateExpectations(ServiceContracts consumer, List<ServiceContracts> allProviders) {
+        return extractExpectations(consumer)
+            .entrySet()
+            .stream()
+            .flatMap(pe -> validateExpectations(pe.getValue(), pe.getKey(), allProviders))
+            .collect(toList());
+    }
+
+    private Stream<? extends ExpectationValidationResult> validateExpectations(E expectations, String providerName, List<ServiceContracts> allProviders) {
+        List<ServiceContracts> matchedProviders = allProviders
+            .stream()
+            .filter(it -> it.getName().equals(providerName))
+            .collect(toList());
+        if (matchedProviders.isEmpty()) {
+            return Stream.of(createProviderNotAvailableResult(providerName));
+        } else {
+            return matchedProviders
+                .stream()
+                .map(matchedProvider -> validateExpectations(expectations, matchedProvider));
+        }
+    }
+
+    private ExpectationValidationResult validateExpectations(E expectations, ServiceContracts provider) {
         List<InteractionValidationResult> validatedInteractions = provider
             .getCapabilities(this.communicationInterface, this::asCapabilities)
             .map(capabilities -> validate(expectations, capabilities))
@@ -53,19 +92,27 @@ public abstract class InterfaceContractValidator<C, E> {
         );
     }
 
+    private ExpectationValidationResult createProviderNotAvailableResult(String providerName) {
+        return new ExpectationValidationResult(
+            providerName,
+            null,
+            newArrayList(new InteractionValidationResult("any", InteractionValidationStatus.FAILED, newArrayList("provider not available")))
+        );
+    }
+
+    public Optional<C> extractCapabilities(ServiceContracts serviceContracts) {
+        return serviceContracts.getCapabilities(this.communicationInterface, this::asCapabilities);
+    }
+
+    public Map<String, E> extractExpectations(ServiceContracts testedServiceContracts) {
+        return testedServiceContracts.getExpectations(this.communicationInterface, this::asExpectations);
+    }
+
     public abstract C asCapabilities(String rawCapabilities);
 
     public abstract E asExpectations(String rawExpectations);
 
     public abstract List<InteractionValidationResult> validate(E expectations, C capabilities);
-
-    public Optional<C> getCapabilities(ServiceContracts serviceContracts) {
-        return serviceContracts.getCapabilities(this.communicationInterface, this::asCapabilities);
-    }
-
-    public Map<String, E> getExpectations(ServiceContracts testedServiceContracts) {
-        return testedServiceContracts.getExpectations(this.communicationInterface, this::asExpectations);
-    }
 
     public enum InteractionValidationStatus {
 
@@ -100,12 +147,19 @@ public abstract class InterfaceContractValidator<C, E> {
     }
 
     @Getter
-    @AllArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class InteractionValidationResult {
 
         private final String name;
         private final InteractionValidationStatus status;
         private final List<String> errors;
 
+        public static InteractionValidationResult success(String name) {
+            return new InteractionValidationResult(name, OK, newArrayList());
+        }
+
+        public static InteractionValidationResult fail(String name, List<String> errors) {
+            return new InteractionValidationResult(name, FAILED, errors);
+        }
     }
 }

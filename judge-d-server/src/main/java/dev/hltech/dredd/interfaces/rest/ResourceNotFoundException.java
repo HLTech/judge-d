@@ -1,4 +1,4 @@
-package dev.hltech.dredd.interfaces.rest.validation;
+package dev.hltech.dredd.interfaces.rest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

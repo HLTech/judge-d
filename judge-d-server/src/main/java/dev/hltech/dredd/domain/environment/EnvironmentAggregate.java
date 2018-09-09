@@ -2,10 +2,7 @@ package dev.hltech.dredd.domain.environment;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -37,17 +34,11 @@ public class EnvironmentAggregate {
     }
 
     public String getName() {
-        return name;
-    }
-
-    public Set<ServiceVersion> findServices(String serviceName) {
-        return serviceVersions.stream()
-            .filter(sv -> sv.getName().equals(serviceName))
-            .collect(toSet());
+        return this.name;
     }
 
     public Set<ServiceVersion> getAllServices() {
-        return serviceVersions;
+        return this.serviceVersions;
     }
 
     public static EnvironmentAggregate empty(String environmentName) {
@@ -60,6 +51,7 @@ public class EnvironmentAggregate {
     @AllArgsConstructor
     @NoArgsConstructor(access = PROTECTED)
     @Access(AccessType.FIELD)
+    @ToString
     public static class ServiceVersion {
 
         private String name;
@@ -81,13 +73,13 @@ public class EnvironmentAggregate {
         }
 
         public void withServiceVersion(String name, String version) {
-            serviceVersions.put(name, version);
+            this.serviceVersions.put(name, version);
         }
 
         public EnvironmentAggregate build() {
             return new EnvironmentAggregate(
-                name,
-                serviceVersions.entries()
+                this.name,
+                this.serviceVersions.entries()
                     .stream()
                     .map(e -> new ServiceVersion(e.getKey(), e.getValue()))
                     .collect(toSet())

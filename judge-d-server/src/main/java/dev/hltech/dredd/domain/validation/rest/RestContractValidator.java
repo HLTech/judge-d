@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 
 import static au.com.dius.pact.model.PactReader.loadPact;
 import static com.atlassian.oai.validator.pact.PactRequest.of;
-import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationStatus.FAILED;
-import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationStatus.OK;
+import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationResult.fail;
+import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationResult.success;
 import static java.util.function.Function.identity;
 
 @Component
@@ -27,6 +27,7 @@ public class RestContractValidator extends InterfaceContractValidator<String, Re
         super(COMMUNICATION_INTERFACE);
     }
 
+    @Override
     public List<InteractionValidationResult> validate(RequestResponsePact pact, String capabilities) {
         SwaggerRequestResponseValidator swaggerValidator = SwaggerRequestResponseValidator.createFor(capabilities).build();
 
@@ -42,13 +43,16 @@ public class RestContractValidator extends InterfaceContractValidator<String, Re
             .stream()
             .map(e -> {
                 ValidationReport validationReport = e.getValue();
-                return new InteractionValidationResult(
-                    e.getKey().getDescription(),
-                    validationReport.hasErrors() ? FAILED : OK,
-                    validationReport.getMessages().stream().map(
-                        message -> message.getMessage()
-                    ).collect(Collectors.toList())
-                );
+                if (validationReport.hasErrors()) {
+                    return fail(
+                        e.getKey().getDescription(),
+                        validationReport.getMessages().stream().map(
+                            message -> message.getMessage()
+                        ).collect(Collectors.toList())
+                    );
+                } else {
+                    return success(e.getKey().getDescription());
+                }
             })
             .collect(Collectors.toList());
 
