@@ -1,23 +1,23 @@
 package dev.hltech.dredd.interfaces.rest.validation;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 
 import java.util.List;
 
 @Getter
-@Builder
-@AllArgsConstructor
 public class ContractValidationReportDto {
 
-    private String consumerName;
-    private String consumerVersion;
-    private String providerName;
-    private String providerVersion;
+    private ConsumerAndProviderDto consumerAndProvider;
 
-    private ContractValidationStatus validationStatus;
+    private List<InteractionValidationReportDto> interactions = Lists.newLinkedList();
 
-    private List<InteractionValidationReportDto> interactions;
+    public ContractValidationReportDto(ConsumerAndProviderDto consumerAndProvider) {
+        this.consumerAndProvider = consumerAndProvider;
+    }
+
+    public void addInteractions(List<InteractionValidationReportDto> interactions) {
+        this.interactions.addAll(interactions);
+    }
 
 }

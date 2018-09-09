@@ -5,8 +5,8 @@ import dev.hltech.dredd.domain.validation.InterfaceContractValidator;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationStatus.FAILED;
-import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationStatus.OK;
+import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationResult.fail;
+import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationResult.success;
 
 public class PingContractValidator extends InterfaceContractValidator<String, String> {
 
@@ -26,11 +26,12 @@ public class PingContractValidator extends InterfaceContractValidator<String, St
         return rawExpectations;
     }
 
+    @Override
     public List<InteractionValidationResult> validate(String expectations, String capabilities) {
         if (expectations.equals(capabilities)) {
-            return newArrayList(new InteractionValidationResult("ping", OK, newArrayList()));
+            return newArrayList(success("ping"));
         } else {
-            return newArrayList(new InteractionValidationResult("ping", FAILED, newArrayList("expected ping of " + expectations + " but found: " + capabilities)));
+            return newArrayList(fail("ping", newArrayList("expected ping of " + expectations + " but found: " + capabilities)));
         }
     }
 

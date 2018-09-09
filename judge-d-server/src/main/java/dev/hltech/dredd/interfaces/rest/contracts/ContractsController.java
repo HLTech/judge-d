@@ -2,7 +2,7 @@ package dev.hltech.dredd.interfaces.rest.contracts;
 
 import dev.hltech.dredd.domain.contracts.ServiceContracts;
 import dev.hltech.dredd.domain.contracts.ServiceContractsRepository;
-import dev.hltech.dredd.interfaces.rest.validation.ResourceNotFoundException;
+import dev.hltech.dredd.interfaces.rest.ResourceNotFoundException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -27,7 +27,7 @@ public class ContractsController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
     public ServiceContractsDto create(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version, @RequestBody ServiceContractsForm form) {
-        return toDto(serviceContractsRepository.persist(
+        return toDto(this.serviceContractsRepository.persist(
             new ServiceContracts(
                 provider,
                 version,
@@ -44,7 +44,7 @@ public class ContractsController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
     public ServiceContractsDto create(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version) {
-        return toDto(serviceContractsRepository.find(provider, version).orElseThrow(() -> new ResourceNotFoundException()));
+        return toDto(this.serviceContractsRepository.find(provider, version).orElseThrow(() -> new ResourceNotFoundException()));
     }
 
     private ServiceContractsDto toDto(ServiceContracts serviceContracts) {
