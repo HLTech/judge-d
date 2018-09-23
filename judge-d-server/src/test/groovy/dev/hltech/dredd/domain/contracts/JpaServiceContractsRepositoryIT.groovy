@@ -5,7 +5,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
-import wiremock.org.apache.commons.lang3.RandomStringUtils
 
 import static java.util.function.Function.identity
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -38,10 +37,10 @@ class JpaServiceContractsRepositoryIT extends Specification {
             }
     }
 
-    def 'should find all persisted service names' (){
+    def 'should find all persisted service names'() {
         given:
-            def s1 = repository.persist(new ServiceContracts(randomAlphabetic(10),"1.0",[:],[:]))
-            def s2 = repository.persist(new ServiceContracts(randomAlphabetic(10),"1.0",[:],[:]))
+            def s1 = repository.persist(new ServiceContracts(randomAlphabetic(10), "1.0", [:], [:]))
+            def s2 = repository.persist(new ServiceContracts(randomAlphabetic(10), "1.0", [:], [:]))
         when:
             def serviceNames = repository.getServiceNames()
         then:
@@ -49,7 +48,7 @@ class JpaServiceContractsRepositoryIT extends Specification {
             serviceNames.contains(s2.name)
     }
 
-    def 'should find all persisted versions of a service' () {
+    def 'should find all persisted versions of a service'() {
         given:
             def serviceName = randomAlphabetic(10)
             def s1 = repository.persist(new ServiceContracts(serviceName, randomAlphabetic(5), [:], [:]))

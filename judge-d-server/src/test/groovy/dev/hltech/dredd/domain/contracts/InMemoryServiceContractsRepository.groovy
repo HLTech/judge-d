@@ -21,17 +21,17 @@ class InMemoryServiceContractsRepository implements ServiceContractsRepository {
     @Override
     List<ServiceContracts> find(String name) {
         return storage.entrySet()
-        .stream()
-        .filter {it -> it.getKey().name == name}
-        .map {it -> it.value}
-        .collect()
+            .stream()
+            .filter { it -> it.getKey().name == name }
+            .map { it -> it.value }
+            .collect()
     }
 
     @Override
     List<String> getServiceNames() {
         return storage.keySet()
             .stream()
-            .map { it -> it.name}
+            .map { it -> it.name }
             .collect()
     }
 }

@@ -5,11 +5,11 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 
-import static dev.hltech.dredd.domain.environment.EnvironmentAggregate.*
-import static org.apache.commons.lang.RandomStringUtils.*
+import static dev.hltech.dredd.domain.environment.EnvironmentAggregate.ServiceVersion
+import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = [ "management.port=0" ])
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["management.port=0"])
 @ActiveProfiles("test-integration")
 class JPAEnvironmentRepositoryIT extends Specification {
 
@@ -35,7 +35,7 @@ class JPAEnvironmentRepositoryIT extends Specification {
             noExceptionThrown()
     }
 
-    def 'should overwrite what was persisted before'(){
+    def 'should overwrite what was persisted before'() {
         given:
             def environment1 = repository.persist(new EnvironmentAggregate(
                 'environmentName',

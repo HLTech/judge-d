@@ -32,9 +32,9 @@ class ContractsControllerIT extends Specification {
             def serviceName = randomAlphabetic(10)
             def version = '1.0'
             def response = mockMvc.perform(
-                    get('/contracts/'+ serviceName + '/' + version)
-                        .contentType("application/json")
-                ).andReturn().getResponse()
+                get('/contracts/' + serviceName + '/' + version)
+                    .contentType("application/json")
+            ).andReturn().getResponse()
         then: 'controller returns 404'
             response.getStatus() == 404
     }
@@ -44,14 +44,14 @@ class ContractsControllerIT extends Specification {
             def serviceName = randomAlphabetic(10)
             def version = '1.0'
             def response = mockMvc.perform(
-                post('/contracts/'+ serviceName + '/' + version)
+                post('/contracts/' + serviceName + '/' + version)
                     .contentType("application/json")
                     .content(objectMapper.writeValueAsString(randomServiceWithExpectationsAndCapabilities()))
             ).andReturn().getResponse()
         then: 'controller returns dto response in json'
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>(){})
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>() {})
     }
 
 
@@ -61,22 +61,22 @@ class ContractsControllerIT extends Specification {
             def version = '1.0'
             def serviceContractsForm = randomServiceWithExpectationsAndCapabilities()
             mockMvc.perform(
-                post('/contracts/'+ serviceName + '/' + version)
+                post('/contracts/' + serviceName + '/' + version)
                     .contentType("application/json")
                     .content(objectMapper.writeValueAsString(serviceContractsForm))
             ).andReturn().getResponse()
         when:
             def response = mockMvc.perform(
-                 get('/contracts/'+ serviceName + '/' + version)
+                get('/contracts/' + serviceName + '/' + version)
                     .contentType("application/json")
             ).andReturn().getResponse()
         then: 'controller returns dto response in json'
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>(){})
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>() {})
     }
 
-    def 'should successfully retrieve list of services'(){
+    def 'should successfully retrieve list of services'() {
         given:
         when:
             def response = mockMvc.perform(
@@ -85,34 +85,33 @@ class ContractsControllerIT extends Specification {
         then:
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<String>>(){})
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<String>>() {})
     }
 
-    def 'should successfully retrieve list of service versions'(){
+    def 'should successfully retrieve list of service versions'() {
         given:
             def serviceName = randomAlphabetic(10)
             def version = '1.0'
             mockMvc.perform(
-                post('/contracts/'+ serviceName + '/' + version)
+                post('/contracts/' + serviceName + '/' + version)
                     .contentType("application/json")
                     .content(objectMapper.writeValueAsString(randomServiceWithExpectationsAndCapabilities()))
             ).andReturn().getResponse()
         when:
             def response = mockMvc.perform(
-                get('/contracts/'+serviceName)
+                get('/contracts/' + serviceName)
             ).andReturn().getResponse()
         then:
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<String>>(){})
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<String>>() {})
     }
-
 
 
     ServiceContractsForm randomServiceWithExpectationsAndCapabilities() {
         return new ServiceContractsForm(
-            ['protocol' : 'capabilities'],
-            ['some-other-provider': ['protocol':'expectations']]
+            ['protocol': 'capabilities'],
+            ['some-other-provider': ['protocol': 'expectations']]
 
         )
     }
@@ -121,7 +120,7 @@ class ContractsControllerIT extends Specification {
     static class TestConfig extends BeanFactory {
 
         @Bean
-        public ServiceContractsRepository repository(){
+        public ServiceContractsRepository repository() {
             return new InMemoryServiceContractsRepository();
         }
 

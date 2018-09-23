@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static dev.hltech.dredd.domain.environment.EnvironmentAggregate.*;
+import static dev.hltech.dredd.domain.environment.EnvironmentAggregate.empty;
 
 public class InMemoryEnvironmentRepository implements EnvironmentRepository {
 

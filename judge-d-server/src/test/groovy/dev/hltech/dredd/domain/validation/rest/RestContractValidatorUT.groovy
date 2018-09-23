@@ -12,7 +12,7 @@ class RestContractValidatorUT extends Specification {
 
     RestContractValidator validator = new RestContractValidator()
 
-    def "should convert rawExpectations to pact"(){
+    def "should convert rawExpectations to pact"() {
         given:
             def pactAsString = new String(toByteArray(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json")))
         when:
@@ -31,10 +31,10 @@ class RestContractValidatorUT extends Specification {
             capabilities == rawCapabilities
     }
 
-    def 'should return validation result with all interactions validated when validate swagger with pact' (){
+    def 'should return validation result with all interactions validated when validate swagger with pact'() {
         given:
             def swagger = new String(toByteArray(getClass().getResourceAsStream("/backend-provider-swagger.json")))
-            def pact = (RequestResponsePact)loadPact(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json"))
+            def pact = (RequestResponsePact) loadPact(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json"))
         when:
             def validationResult = validator.validate(pact, swagger)
         then:

@@ -3,7 +3,6 @@ package dev.hltech.dredd.interfaces.rest.environment
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.hltech.dredd.config.BeanFactory
-
 import dev.hltech.dredd.domain.environment.EnvironmentRepository
 import dev.hltech.dredd.domain.environment.InMemoryEnvironmentRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,10 +36,10 @@ class EnvironmentControllerIT extends Specification {
         then: 'controller returns validation response in json'
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<ServiceDto>>(){}) != null
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<ServiceDto>>() {}) != null
     }
 
-    def 'update environment hits the url and receives 200'(){
+    def 'update environment hits the url and receives 200'() {
         given:
             def environmentServices = newArrayList(randomServiceForm(), randomServiceForm())
         when:
@@ -61,7 +60,7 @@ class EnvironmentControllerIT extends Specification {
     static class TestConfig extends BeanFactory {
 
         @Bean
-        EnvironmentRepository environmentRepository(){
+        EnvironmentRepository environmentRepository() {
             return new InMemoryEnvironmentRepository()
         }
     }
