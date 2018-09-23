@@ -17,4 +17,21 @@ class InMemoryServiceContractsRepository implements ServiceContractsRepository {
     Optional<ServiceContracts> find(String name, String version) {
         return Optional.ofNullable(storage.get(new EnvironmentAggregate.ServiceVersion(name, version)))
     }
+
+    @Override
+    List<ServiceContracts> find(String name) {
+        return storage.entrySet()
+        .stream()
+        .filter {it -> it.getKey().name == name}
+        .map {it -> it.value}
+        .collect()
+    }
+
+    @Override
+    List<String> getServiceNames() {
+        return storage.keySet()
+            .stream()
+            .map { it -> it.name}
+            .collect()
+    }
 }
