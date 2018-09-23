@@ -40,7 +40,7 @@ public class JpaServiceContractsRepository implements ServiceContractsRepository
     @Override
     public List<String> getServiceNames() {
         return entityManager
-            .createQuery("select o.id.name from " + ServiceContracts.class.getName() + " o", String.class)
+            .createQuery("select distinct o.id.name from " + ServiceContracts.class.getName() + " o", String.class)
             .getResultList();
     }
 
