@@ -42,7 +42,7 @@ public class ContractsController {
         ));
     }
 
-    @GetMapping(value = "/contracts", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/contracts", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get names of services with registered contracts", nickname = "get names of services")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
@@ -52,7 +52,7 @@ public class ContractsController {
         return serviceContractsRepository.getServiceNames();
     }
 
-    @GetMapping(value = "/contracts/{serviceName}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/contracts/{serviceName}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get versions of a service with registered contracts", nickname = "get versions of a service")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),

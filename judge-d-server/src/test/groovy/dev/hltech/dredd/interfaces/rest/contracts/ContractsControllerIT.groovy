@@ -80,7 +80,7 @@ class ContractsControllerIT extends Specification {
         given:
         when:
             def response = mockMvc.perform(
-                get('/contracts').contentType("application/json")
+                get('/contracts')
             ).andReturn().getResponse()
         then:
             response.getStatus() == 200
@@ -99,7 +99,7 @@ class ContractsControllerIT extends Specification {
             ).andReturn().getResponse()
         when:
             def response = mockMvc.perform(
-                get('/contracts/'+serviceName).contentType("application/json")
+                get('/contracts/'+serviceName)
             ).andReturn().getResponse()
         then:
             response.getStatus() == 200
