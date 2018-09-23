@@ -76,6 +76,37 @@ class ContractsControllerIT extends Specification {
             objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>(){})
     }
 
+    def 'should successfully retrieve list of services'(){
+        given:
+        when:
+            def response = mockMvc.perform(
+                get('/contracts').contentType("application/json")
+            ).andReturn().getResponse()
+        then:
+            response.getStatus() == 200
+            response.getContentType().contains("application/json")
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<String>>(){})
+    }
+
+    def 'should successfully retrieve list of service versions'(){
+        given:
+            def serviceName = randomAlphabetic(10)
+            def version = '1.0'
+            mockMvc.perform(
+                post('/contracts/'+ serviceName + '/' + version)
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(randomServiceWithExpectationsAndCapabilities()))
+            ).andReturn().getResponse()
+        when:
+            def response = mockMvc.perform(
+                get('/contracts/'+serviceName).contentType("application/json")
+            ).andReturn().getResponse()
+        then:
+            response.getStatus() == 200
+            response.getContentType().contains("application/json")
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<String>>(){})
+    }
+
 
 
     ServiceContractsForm randomServiceWithExpectationsAndCapabilities() {
