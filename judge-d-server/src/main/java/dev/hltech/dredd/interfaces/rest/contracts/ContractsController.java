@@ -26,7 +26,7 @@ public class ContractsController {
         this.serviceContractsRepository = serviceContractsRepository;
     }
 
-    @PostMapping(value = "/contracts/{provider}/{version}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/contracts/{provider}/{version:.+}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Register contracts for a version of a service", nickname = "register contracts")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
@@ -67,7 +67,7 @@ public class ContractsController {
     }
 
 
-    @GetMapping(value = "/contracts/{provider}/{version}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/contracts/{provider}/{version:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Register contracts for a version of a service", nickname = "register contracts")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
