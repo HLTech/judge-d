@@ -44,14 +44,15 @@ public class ValidationController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
         @ApiResponse(code = 500, message = "Failure"),
-        @ApiResponse(code = 404, message = "Service not found"),})
+        @ApiResponse(code = 404, message = "Service not found")
+    })
     public List<ContractValidationReportDto> validateAgainstEnvironment(
         @PathVariable("environment") String environment,
         @PathVariable("serviceName") String serviceName,
         @PathVariable("serviceVersion") String serviceVersion
     ) {
         ServiceContracts validatedServiceContracts = this.serviceContractsRepository.find(serviceName, serviceVersion)
-            .orElseThrow(() -> new ResourceNotFoundException());
+            .orElseThrow(ResourceNotFoundException::new);
 
         List<EnvironmentValidatorResult> collect = this.validators.stream()
             .map(validator ->
@@ -69,14 +70,15 @@ public class ValidationController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
         @ApiResponse(code = 500, message = "Failure"),
-        @ApiResponse(code = 404, message = "Service not found"),})
+        @ApiResponse(code = 404, message = "Service not found")
+    })
     public List<ContractValidationReportDto> validateAgainstEnvironments(
         @PathVariable("serviceName") String serviceName,
         @PathVariable("serviceVersion") String serviceVersion,
         @RequestParam("environment") List<String> environments
     ) {
         ServiceContracts validatedServiceContracts = this.serviceContractsRepository.find(serviceName, serviceVersion)
-            .orElseThrow(() -> new ResourceNotFoundException());
+            .orElseThrow(ResourceNotFoundException::new);
 
         List<EnvironmentValidatorResult> collect = this.validators.stream()
             .map(validator ->
