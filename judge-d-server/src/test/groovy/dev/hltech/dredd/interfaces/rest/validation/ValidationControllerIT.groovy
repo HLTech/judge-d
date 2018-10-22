@@ -37,31 +37,31 @@ class ValidationControllerIT extends Specification {
 
     def "should return 200 when validate given all went fine - old"() {
         given:
-        serviceContractsRepository.persist(new ServiceContracts(
-            "service-name",
-            "1.0",
-            [:] as Map,
-            [:] as Map
-        ))
+            serviceContractsRepository.persist(new ServiceContracts(
+                "service-name",
+                "1.0",
+                [:] as Map,
+                [:] as Map
+            ))
         when: 'rest validatePacts url is hit'
-        def response = mockMvc.perform(
-            get(new URI('/environment-compatibility-report/SIT/service-name:1.0'))
-                .accept("application/json")
-        ).andReturn().getResponse()
+            def response = mockMvc.perform(
+                get(new URI('/environment-compatibility-report/SIT/service-name:1.0'))
+                    .accept("application/json")
+            ).andReturn().getResponse()
         then: 'controller returns validation response in json'
-        response.getStatus() == 200
-        response.getContentType().contains("application/json")
-        objectMapper.readValue(response.getContentAsString(), new TypeReference<List<ServiceDto>>() {}) != null
+            response.getStatus() == 200
+            response.getContentType().contains("application/json")
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<ServiceDto>>() {}) != null
     }
 
     def "should return 404 when validate service contracts against env given contracts have not been registered - old"() {
         when: 'rest validatePacts url is hit'
-        def response = mockMvc.perform(
-            get(new URI('/validation-report/environment/SIT/service/other-service:1.0'))
-                .accept("application/json")
-        ).andReturn().getResponse()
+            def response = mockMvc.perform(
+                get(new URI('/validation-report/environment/SIT/service/other-service:1.0'))
+                    .accept("application/json")
+            ).andReturn().getResponse()
         then: 'controller returns validation response in json'
-        response.getStatus() == 404
+            response.getStatus() == 404
     }
 
     def "should return 200 when validate given all went fine"() {
