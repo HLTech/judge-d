@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -45,8 +46,8 @@ public class JudgeD {
         List<ServiceContracts> environmentContracts = environments.stream()
             .flatMap(env -> this.environmentRepository.get(env).getAllServices().stream())
             .map(sv -> this.serviceContractsRepository.find(sv.getName(), sv.getVersion()))
-            .filter(it -> it.isPresent())
-            .map(it -> it.get())
+            .filter(Optional::isPresent)
+            .map(Optional::get)
             .collect(toList());
 
         return new EnvironmentValidatorResult(
