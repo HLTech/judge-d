@@ -39,4 +39,20 @@ public class JudgeD {
             validator.validateExpectations(validatedService, environmentContracts)
         );
     }
+
+    public <C, E> EnvironmentValidatorResult validateServiceAgainstEnv(ServiceContracts validatedService, List<String> environments, InterfaceContractValidator<C, E> validator) {
+
+        List<ServiceContracts> environmentContracts = environments.stream()
+            .flatMap(env -> this.environmentRepository.get(env).getAllServices().stream())
+            .map(sv -> this.serviceContractsRepository.find(sv.getName(), sv.getVersion()))
+            .filter(it -> it.isPresent())
+            .map(it -> it.get())
+            .collect(toList());
+
+        return new EnvironmentValidatorResult(
+            validator.getCommunicationInterface(),
+            validator.validateCapabilities(validatedService, environmentContracts),
+            validator.validateExpectations(validatedService, environmentContracts)
+        );
+    }
 }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -44,7 +45,7 @@ public class ValidationController {
         @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
         @ApiResponse(code = 500, message = "Failure"),
         @ApiResponse(code = 404, message = "Service not found"),})
-    public List<ContractValidationReportDto> validate(
+    public List<ContractValidationReportDto> validateAgainstEnvironment(
         @PathVariable("environment") String environment,
         @PathVariable("serviceName") String serviceName,
         @PathVariable("serviceVersion") String serviceVersion
@@ -63,5 +64,28 @@ public class ValidationController {
         return toDtos(collect, serviceName, serviceVersion);
     }
 
+    @GetMapping(value = "/environment-compatibility-report/{serviceName}:{serviceVersion:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get validation report for contract between given service and given environment", nickname = "Validate against environment")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
+        @ApiResponse(code = 500, message = "Failure"),
+        @ApiResponse(code = 404, message = "Service not found"),})
+    public List<ContractValidationReportDto> validateAgainstEnvironments(
+        @PathVariable("serviceName") String serviceName,
+        @PathVariable("serviceVersion") String serviceVersion,
+        @RequestParam("environment") List<String> environments
+    ) {
+        ServiceContracts validatedServiceContracts = this.serviceContractsRepository.find(serviceName, serviceVersion)
+            .orElseThrow(() -> new ResourceNotFoundException());
 
+        List<EnvironmentValidatorResult> collect = this.validators.stream()
+            .map(validator ->
+                this.judgeD.validateServiceAgainstEnv(
+                    validatedServiceContracts,
+                    environments,
+                    validator
+                ))
+            .collect(Collectors.toList());
+        return toDtos(collect, serviceName, serviceVersion);
+    }
 }
