@@ -39,32 +39,6 @@ public class ValidationController {
         this.validators = validators;
     }
 
-    @GetMapping(value = "/environment-compatibility-report/{environment}/{serviceName}:{serviceVersion:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get validation report for contract between given service and given environment", nickname = "Validate against environment")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
-        @ApiResponse(code = 500, message = "Failure"),
-        @ApiResponse(code = 404, message = "Service not found")
-    })
-    public List<ContractValidationReportDto> validateAgainstEnvironment(
-        @PathVariable("environment") String environment,
-        @PathVariable("serviceName") String serviceName,
-        @PathVariable("serviceVersion") String serviceVersion
-    ) {
-        ServiceContracts validatedServiceContracts = this.serviceContractsRepository.find(serviceName, serviceVersion)
-            .orElseThrow(ResourceNotFoundException::new);
-
-        List<EnvironmentValidatorResult> collect = this.validators.stream()
-            .map(validator ->
-                this.judgeD.validateServiceAgainstEnv(
-                    validatedServiceContracts,
-                    environment,
-                    validator
-                ))
-            .collect(Collectors.toList());
-        return toDtos(collect, serviceName, serviceVersion);
-    }
-
     @GetMapping(value = "/environment-compatibility-report/{serviceName}:{serviceVersion:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get validation report for contract between given service and given environment", nickname = "Validate against environment")
     @ApiResponses(value = {
@@ -82,7 +56,7 @@ public class ValidationController {
 
         List<EnvironmentValidatorResult> collect = this.validators.stream()
             .map(validator ->
-                this.judgeD.validateServiceAgainstEnv(
+                this.judgeD.validateServiceAgainstEnvironments(
                     validatedServiceContracts,
                     environments,
                     validator
