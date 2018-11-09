@@ -59,6 +59,11 @@ public class HLTechServiceLocator implements ServiceLocator {
             return new Service(podName, podVersion);
         }
         catch(Exception exception) {
+            if(pod.getMetadata() == null || pod.getMetadata().getName() == null) {
+                LOGGER.debug("Exception during service resolution");
+                throw new KubernetesEnvironmentException("Exception during service resolution", exception);
+            }
+
             LOGGER.debug("Exception during service resolution for pod: {}", pod.getMetadata().getName());
             throw new KubernetesEnvironmentException("Exception during service resolution", exception);
         }
