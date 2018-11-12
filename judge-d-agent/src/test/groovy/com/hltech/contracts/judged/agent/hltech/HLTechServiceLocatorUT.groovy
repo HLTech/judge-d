@@ -1,6 +1,7 @@
 package com.hltech.contracts.judged.agent.hltech
 
-import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.google.common.collect.ImmutableMap
 import feign.Feign
 import feign.Target
@@ -16,14 +17,17 @@ import io.fabric8.kubernetes.client.dsl.MixedOperation
 import org.assertj.core.util.Lists
 import spock.lang.Specification
 import org.springframework.http.ResponseEntity
+import spock.lang.Subject
 
 import static com.google.common.collect.Lists.newArrayList
 
-class K8sLabelBasedServiceLocatorUT extends Specification {
+class HLTechServiceLocatorUT extends Specification {
 
     private Feign feign
-    private HLTechServiceLocator serviceLocator
     private KubernetesClient kubernetesClient
+
+    @Subject
+    private HLTechServiceLocator serviceLocator
 
     def setup(){
         feign = Mock()
@@ -33,90 +37,71 @@ class K8sLabelBasedServiceLocatorUT extends Specification {
 
     def 'should correctly locate a service fulfilling all conditions'(){
         given: "data of pods"
-            def name1 = 'test-service-1'
-            def version1 = '1.0.0'
+            def name = 'test-service-1'
+            def version = '1.0.0'
 
         and: "pods are present in kubernetes environment"
-            def mixedOperationMock = Mock(MixedOperation)
-            kubernetesClient.pods() >> mixedOperationMock
+            def podListMock = Mock(PodList) { getItems() >> newArrayList(createPodFulfillingAllConditions(name)) }
+            def mixedOperationMock = Mock(MixedOperation) { list() >> podListMock }
             mixedOperationMock.inAnyNamespace() >> mixedOperationMock
-
-            def podListMock = Mock(PodList)
-            mixedOperationMock.list() >> podListMock
-
-            podListMock.getItems() >> newArrayList(createPodFulfillingAllConditions(name1))
+            kubernetesClient.pods() >> mixedOperationMock
 
         and: "version of pods is accessible using feign"
-            def podClient = Mock(PodClient)
-            def response = Mock(ResponseEntity)
-            def body = Mock(JsonNode)
-            def build = Mock(JsonNode)
-            def version = Mock(JsonNode)
+            ObjectNode objectNode = JsonNodeFactory.instance.objectNode()
+            ObjectNode anotherObjectNode = JsonNodeFactory.instance.objectNode()
+            anotherObjectNode.put('version', version)
+            objectNode.set('build', anotherObjectNode)
+
+            def response = Mock(ResponseEntity) { getBody() >> objectNode }
+            def podClient = Mock(PodClient) { getInfo() >> response }
+
             feign.newInstance(new Target.HardCodedTarget(PodClient.class, "http://" + '127.0.0.1' + ":" + 123)) >> podClient
-            podClient.getInfo() >> response
-            response.getBody() >> body
-            body.get('build') >> build
-            build.get('version') >> version
-            version.asText() >> version1
 
         when: "agent tries to find services"
             def services = serviceLocator.locateServices()
 
         then: "available services having required labels and exposing version are found"
             services.size() == 1
-            services.find {it.name == name1} .version == version1
+            services.any {it.name == name && it.version == version}
     }
 
     def 'should correctly locate a service fulfilling all conditions except port availability'(){
         given: "data of pods"
-            def name1 = 'test-service-1'
-            def version1 = '1.0.0'
+            def name = 'test-service-1'
+            def version = '1.0.0'
 
         and: "pods are present in kubernetes environment"
-            def mixedOperationMock = Mock(MixedOperation)
-            kubernetesClient.pods() >> mixedOperationMock
+            def podListMock = Mock(PodList) { getItems() >> newArrayList(createPodFulfillingAllConditionsExceptPortAvailability(name)) }
+            def mixedOperationMock = Mock(MixedOperation) { list() >> podListMock }
             mixedOperationMock.inAnyNamespace() >> mixedOperationMock
-
-            def podListMock = Mock(PodList)
-            mixedOperationMock.list() >> podListMock
-
-            podListMock.getItems() >> newArrayList(createPodFulfillingAllConditionsExceptPortAvailability(name1))
+            kubernetesClient.pods() >> mixedOperationMock
 
         and: "version of pods is accessible using feign"
-            def podClient = Mock(PodClient)
-            def response = Mock(ResponseEntity)
-            def body = Mock(JsonNode)
-            def build = Mock(JsonNode)
-            def version = Mock(JsonNode)
+            ObjectNode objectNode = JsonNodeFactory.instance.objectNode()
+            ObjectNode anotherObjectNode = JsonNodeFactory.instance.objectNode()
+            anotherObjectNode.put('version', version)
+            objectNode.set('build', anotherObjectNode)
+
+            def response = Mock(ResponseEntity) { getBody() >> objectNode }
+            def podClient = Mock(PodClient) { getInfo() >> response }
+
             feign.newInstance(new Target.HardCodedTarget(PodClient.class, "http://" + '127.0.0.1' + ":" + HLTechServiceLocator.DEFAULT_CONTAINER_VERSION_PORT)) >> podClient
-            podClient.getInfo() >> response
-            response.getBody() >> body
-            body.get('build') >> build
-            build.get('version') >> version
-            version.asText() >> version1
 
         when: "agent tries to find services"
             def services = serviceLocator.locateServices()
 
         then: "available services having required labels and exposing version are found"
             services.size() == 1
-            services.find {it.name == name1} .version == version1
+            services.find {it.name == name && it.version == version}
     }
 
     def 'should not locate a service when a label is missing'(){
-        given: "data of pods"
-            def name1 = 'test-service-1'
-            def version1 = '1.0.0'
-
-        and: "pods are present in kubernetes environment"
-            def mixedOperationMock = Mock(MixedOperation)
-            kubernetesClient.pods() >> mixedOperationMock
+        given: "pods are present in kubernetes environment"
+            def podListMock = Mock(PodList) { getItems() >> newArrayList(new Pod()) }
+            def mixedOperationMock = Mock(MixedOperation) { list() >> podListMock }
             mixedOperationMock.inAnyNamespace() >> mixedOperationMock
 
-            def podListMock = Mock(PodList)
-            mixedOperationMock.list() >> podListMock
-
-            podListMock.getItems() >> newArrayList(new Pod())
+            kubernetesClient.pods() >> mixedOperationMock
 
         when: "agent tries to find services"
             def services = serviceLocator.locateServices()
