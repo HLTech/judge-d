@@ -1,6 +1,5 @@
 package com.hltech.contracts.judged.agent.k8s
 
-import com.google.common.collect.ImmutableMap
 import io.fabric8.kubernetes.api.model.Container
 import io.fabric8.kubernetes.api.model.Initializers
 import io.fabric8.kubernetes.api.model.ListMeta
@@ -29,7 +28,7 @@ class K8sLabelBasedServiceLocatorUT extends Specification {
         serviceLocator = new K8sLabelBasedServiceLocator(kubernetesClient, label)
     }
 
-    def ''(){
+    def 'should find all correctly configured services'(){
         given:
             def service1Name = "service1"
             def service1Version = "1.0"
@@ -38,19 +37,22 @@ class K8sLabelBasedServiceLocatorUT extends Specification {
             def service3Name = "service3"
             def service3Version = "3.0"
             def service4Name = "service4"
+            def service5Name = "service5"
+            def service5Version = "service6"
 
             MixedOperation mixedOperation = Mock()
             FilterWatchListMultiDeletable watchList = Mock()
             PodList podList = new PodList("1.0", [
-                randomPod(service1Name, "hltech/" + service1Name + ":" + service1Version),
-                randomPod(service2Name, "hltech/" + service2Name + ":" + service2Version),
-                randomPod(service2Name, service3Name + ":" + service3Version),
-                randomPod(service2Name, service4Name),
+                randomPod(service1Name, "hltech/" + service1Name + ":" + service1Version, new HashMap<String, String>()),
+                randomPod(service2Name, "hltech/" + service2Name + ":" + service2Version, new HashMap<String, String>()),
+                randomPod(service3Name, service3Name + ":" + service3Version, new HashMap<String, String>()),
+                randomPod(service4Name, service4Name, new HashMap<String, String>()),
+                randomPod(service5Name, "hltech/" + service5Name + ":" + service5Version, ['exclude-from-judged-jurisdiction': 'true']),
             ] as List,
                 "Pod",
                 new ListMeta("1.0", "")
             )
-            watchList.withLabel(_) >> watchList
+            watchList.withLabel(label) >> watchList
             watchList.list() >> podList
 
             mixedOperation.inAnyNamespace() >> watchList
@@ -64,13 +66,13 @@ class K8sLabelBasedServiceLocatorUT extends Specification {
             services.find {it.name == "service3"} .version == "3.0"
     }
 
-    def randomPod(String serviceName, String imageName) {
+    def randomPod(String serviceName, String imageName, Map<String, String> podLabels) {
         return new Pod(
             "1.0",
             "Pod",
             new ObjectMeta(
                 newHashMap(),
-                "clisterName",
+                "clusterName",
                 "2018",
                 5,
                 "2018",
@@ -78,7 +80,7 @@ class K8sLabelBasedServiceLocatorUT extends Specification {
                 serviceName,
                 1,
                 new Initializers(newArrayList(), null),
-                ImmutableMap.of("1", "2"),
+                podLabels,
                 serviceName,
                 "default",
                 newArrayList(),
