@@ -18,7 +18,7 @@ public class K8sBeanFactory {
     }
 
     @Bean
-    public ServiceLocator serviceLocator(KubernetesClient kubernetesClient, @Value("${hltech.contracts.judge-d.reuiredLabel}") String requiredLabel) {
+    public ServiceLocator serviceLocator(KubernetesClient kubernetesClient, @Value("${hltech.contracts.judge-d.requiredLabel}") String requiredLabel) {
         return new K8sLabelBasedServiceLocator(kubernetesClient, requiredLabel);
     }
 
