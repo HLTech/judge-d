@@ -1,6 +1,7 @@
 package com.hltech.contracts.judged.agent.k8s;
 
 import com.hltech.contracts.judged.agent.ServiceLocator;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
 import java.util.Optional;
@@ -8,6 +9,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class K8sLabelBasedServiceLocator implements ServiceLocator {
+
+    private static final String EXCLUDE_FROM_JURISDICTION_LABEL = "exclude-from-judged-jurisdiction";
 
     private final KubernetesClient kubernetesClient;
     private final String requiredLabel;
@@ -19,8 +22,9 @@ public class K8sLabelBasedServiceLocator implements ServiceLocator {
 
     @Override
     public Set<Service> locateServices() {
-        Set<Service> services = kubernetesClient.pods().inAnyNamespace().withLabel(requiredLabel).list().getItems()
+        return kubernetesClient.pods().inAnyNamespace().withLabel(requiredLabel).list().getItems()
             .stream()
+            .filter(pod -> !isExcludedFromJurisdiction(pod))
             .filter(pod -> "running".equalsIgnoreCase(pod.getStatus().getPhase()))
             .flatMap(pod -> pod.getSpec().getContainers().stream())
             .map(container -> {
@@ -39,7 +43,11 @@ public class K8sLabelBasedServiceLocator implements ServiceLocator {
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(Collectors.toSet());
-        return services;
+    }
+
+    private boolean isExcludedFromJurisdiction(Pod pod) {
+        return pod.getMetadata().getLabels().get(EXCLUDE_FROM_JURISDICTION_LABEL) != null
+            && pod.getMetadata().getLabels().get(EXCLUDE_FROM_JURISDICTION_LABEL).equals("true");
     }
 
 }

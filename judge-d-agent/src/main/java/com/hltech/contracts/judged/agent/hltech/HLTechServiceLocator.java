@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class HLTechServiceLocator implements ServiceLocator {
 
     private static final Integer DEFAULT_CONTAINER_VERSION_PORT = 9999;
-
+    private static final String EXCLUDE_FROM_JURISDICTION_LABEL = "exclude-from-judged-jurisdiction";
     private static final Logger LOGGER = LoggerFactory.getLogger(HLTechServiceLocator.class);
 
     private final KubernetesClient kubernetesClient;
@@ -33,6 +33,7 @@ public class HLTechServiceLocator implements ServiceLocator {
     @Override
     public Set<Service> locateServices() {
         return getPods().stream()
+            .filter(pod -> !isExcludedFromJurisdiction(pod))
             .map(pod -> {
                 try{
                     return createService(pod);
@@ -43,6 +44,11 @@ public class HLTechServiceLocator implements ServiceLocator {
             })
             .filter(Objects::nonNull)
             .collect(Collectors.toSet());
+    }
+
+    private boolean isExcludedFromJurisdiction(Pod pod) {
+        return pod.getMetadata().getLabels().get(EXCLUDE_FROM_JURISDICTION_LABEL) != null
+            && pod.getMetadata().getLabels().get(EXCLUDE_FROM_JURISDICTION_LABEL).equals("true");
     }
 
     private Collection<Pod> getPods() {
