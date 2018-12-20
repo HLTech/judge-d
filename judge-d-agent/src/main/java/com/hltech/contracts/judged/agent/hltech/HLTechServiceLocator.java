@@ -58,9 +58,18 @@ public class HLTechServiceLocator implements ServiceLocator {
     private Service createService(Pod pod) {
         try {
             String podName = getPodName(pod);
+
+            if (podName == null) {
+                throw new NullPointerException("Pod name cannot be null");
+            }
+
             String podIP = getPodIP(pod);
             Integer podVersionPort = getPodVersionPort(pod).orElse(DEFAULT_CONTAINER_VERSION_PORT);
             String podVersion = getPodVersion(podIP, podVersionPort);
+
+            if (podVersion == null) {
+                throw new NullPointerException("Pod version cannot be null");
+            }
 
             return new Service(podName, podVersion);
         }
@@ -100,10 +109,7 @@ public class HLTechServiceLocator implements ServiceLocator {
     }
 
     private String getPodName(Pod pod) {
-        return pod
-            .getMetadata()
-            .getLabels()
-            .get("app");
+        return pod.getMetadata().getLabels().get("app");
     }
 
     private String getPodVersion(String podIP, Integer podVersionPort) {
