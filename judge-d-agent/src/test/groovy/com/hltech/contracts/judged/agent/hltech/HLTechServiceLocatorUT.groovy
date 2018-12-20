@@ -36,13 +36,20 @@ class HLTechServiceLocatorUT extends Specification {
         serviceLocator = new HLTechServiceLocator(kubernetesClient, feign)
     }
 
-    def 'should correctly locate a service fulfilling all conditions'(){
+    def 'should find all correctly configured services'(){
         given: "data of pods"
-            def name = 'test-service-1'
-            def version = '1.0.0'
+            def servicesVersion = '1.0.0'
+            def service1Name = 'test-service-1'
+            def service1Port = 123
+            def service2Name = 'test-service-2'
+            def service2Port = HLTechServiceLocator.DEFAULT_CONTAINER_VERSION_PORT
+            def service4Name = 'test-service-4'
 
         and: "pods are present in kubernetes environment"
-            def podListMock = Mock(PodList) { getItems() >> newArrayList(createPodFulfillingAllConditions(name)) }
+            def podListMock = Mock(PodList) { getItems() >> [createPod([new Container(name: service1Name, ports: [new ContainerPort(containerPort: 123, name: 'monitoring')])], ["app": service1Name]),
+                                                             createPod(new ArrayList<Container>(), ["app": service2Name]),
+                                                             createPod(new ArrayList<Container>(), new HashMap<String, String>()),
+                                                             createPod(new ArrayList<Container>(), ["app": service4Name, 'exclude-from-judged-jurisdiction': 'true'])] }
             def mixedOperationMock = Mock(MixedOperation) { list() >> podListMock }
             mixedOperationMock.inAnyNamespace() >> mixedOperationMock
             kubernetesClient.pods() >> mixedOperationMock
@@ -50,122 +57,27 @@ class HLTechServiceLocatorUT extends Specification {
         and: "version of pods is accessible using feign"
             ObjectNode objectNode = JsonNodeFactory.instance.objectNode()
             ObjectNode anotherObjectNode = JsonNodeFactory.instance.objectNode()
-            anotherObjectNode.put('version', version)
+            anotherObjectNode.put('version', servicesVersion)
             objectNode.set('build', anotherObjectNode)
 
             def response = Mock(ResponseEntity) { getBody() >> objectNode }
             def podClient = Mock(PodClient) { getInfo() >> response }
 
-            feign.newInstance(new Target.HardCodedTarget(PodClient.class, "http://" + '127.0.0.1' + ":" + 123)) >> podClient
+            1 * feign.newInstance(new Target.HardCodedTarget(PodClient.class, "http://" + '127.0.0.1' + ":" + service1Port)) >> podClient
+            1 * feign.newInstance(new Target.HardCodedTarget(PodClient.class, "http://" + '127.0.0.1' + ":" + service2Port)) >> podClient
 
         when: "agent tries to find services"
             def services = serviceLocator.locateServices()
 
         then: "available services having required labels and exposing version are found"
-            services.size() == 1
-            services.any {it.name == name && it.version == version}
+            services.size() == 2
+            services.find {it.name == service1Name} .version == "1.0.0"
+            services.find {it.name == service2Name} .version == "1.0.0"
     }
 
-    def 'should correctly locate a service fulfilling all conditions except port availability'(){
-        given: "data of pods"
-            def name = 'test-service-1'
-            def version = '1.0.0'
-
-        and: "pods are present in kubernetes environment"
-            def podListMock = Mock(PodList) { getItems() >> newArrayList(createPodFulfillingAllConditionsExceptPortAvailability(name)) }
-            def mixedOperationMock = Mock(MixedOperation) { list() >> podListMock }
-            mixedOperationMock.inAnyNamespace() >> mixedOperationMock
-            kubernetesClient.pods() >> mixedOperationMock
-
-        and: "version of pods is accessible using feign"
-            ObjectNode objectNode = JsonNodeFactory.instance.objectNode()
-            ObjectNode anotherObjectNode = JsonNodeFactory.instance.objectNode()
-            anotherObjectNode.put('version', version)
-            objectNode.set('build', anotherObjectNode)
-
-            def response = Mock(ResponseEntity) { getBody() >> objectNode }
-            def podClient = Mock(PodClient) { getInfo() >> response }
-
-            feign.newInstance(new Target.HardCodedTarget(PodClient.class, "http://" + '127.0.0.1' + ":" + HLTechServiceLocator.DEFAULT_CONTAINER_VERSION_PORT)) >> podClient
-
-        when: "agent tries to find services"
-            def services = serviceLocator.locateServices()
-
-        then: "available services having required labels and exposing version are found"
-            services.size() == 1
-            services.find {it.name == name && it.version == version}
-    }
-
-    def 'should not locate a service when a label is missing'(){
-        given: "pods are present in kubernetes environment"
-            def pod = Mock(Pod) {
-                getMetadata() >> Mock(ObjectMeta) {
-                    getLabels() >> new HashMap<String, String>()
-                }
-            }
-            def podListMock = Mock(PodList) { getItems() >> newArrayList(pod) }
-            def mixedOperationMock = Mock(MixedOperation) { list() >> podListMock }
-            mixedOperationMock.inAnyNamespace() >> mixedOperationMock
-
-            kubernetesClient.pods() >> mixedOperationMock
-
-        when: "agent tries to find services"
-            def services = serviceLocator.locateServices()
-
-        then: "available services without required labels are not found"
-            services.size() == 0
-    }
-
-    def 'should not locate a service when a service is not under jurisdiction'(){
-        given: "data of pods"
-            def name = 'test-service-1'
-            def version = '1.0.0'
-
-        and: "pods are present in kubernetes environment"
-            def podListMock = Mock(PodList) { getItems() >> newArrayList(createPodNotUnderJurisdiction()) }
-            def mixedOperationMock = Mock(MixedOperation) { list() >> podListMock }
-            mixedOperationMock.inAnyNamespace() >> mixedOperationMock
-            kubernetesClient.pods() >> mixedOperationMock
-
-        and: "version of pods is accessible using feign"
-            ObjectNode objectNode = JsonNodeFactory.instance.objectNode()
-            ObjectNode anotherObjectNode = JsonNodeFactory.instance.objectNode()
-            anotherObjectNode.put('version', version)
-            objectNode.set('build', anotherObjectNode)
-
-            def response = Mock(ResponseEntity) { getBody() >> objectNode }
-            def podClient = Mock(PodClient) { getInfo() >> response }
-
-            feign.newInstance(new Target.HardCodedTarget(PodClient.class, "http://" + '127.0.0.1' + ":" + HLTechServiceLocator.DEFAULT_CONTAINER_VERSION_PORT)) >> podClient
-
-        when: "agent tries to find services"
-            def services = serviceLocator.locateServices()
-
-        then: "service not being under jurisdiction is not found"
-            services.size() == 0
-    }
-
-    def createPodFulfillingAllConditions(String serviceName) {
-        def objectMetadata = new ObjectMeta(labels: ImmutableMap.of("app", serviceName))
-        def containerPort = new ContainerPort(containerPort: 123, name: 'monitoring')
-        def container = new Container(name: serviceName, ports: newArrayList(containerPort))
-        def podSpec = new PodSpec(containers: Lists.newArrayList(container))
-        def podStatus = new PodStatus(podIP: '127.0.0.1')
-
-        return new Pod(metadata: objectMetadata, spec: podSpec, status: podStatus)
-    }
-
-    def createPodFulfillingAllConditionsExceptPortAvailability(String serviceName) {
-        def objectMetadata = new ObjectMeta(labels: ImmutableMap.of("app", serviceName))
-        def podSpec = new PodSpec(containers: new ArrayList<Container>())
-        def podStatus = new PodStatus(podIP: '127.0.0.1')
-
-        return new Pod(metadata: objectMetadata, spec: podSpec, status: podStatus)
-    }
-
-    def createPodNotUnderJurisdiction(String serviceName) {
-        def objectMetadata = new ObjectMeta(labels: ['exclude-from-judged-jurisdiction': 'true', 'app': serviceName])
-        def podSpec = new PodSpec(containers: new ArrayList<Container>())
+    def createPod(List<Container> containers, Map<String, String> labels) {
+        def objectMetadata = new ObjectMeta(labels: labels)
+        def podSpec = new PodSpec(containers: containers)
         def podStatus = new PodStatus(podIP: '127.0.0.1')
 
         return new Pod(metadata: objectMetadata, spec: podSpec, status: podStatus)
