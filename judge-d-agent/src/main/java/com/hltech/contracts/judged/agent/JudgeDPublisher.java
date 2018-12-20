@@ -3,6 +3,7 @@ package com.hltech.contracts.judged.agent;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,7 @@ public interface JudgeDPublisher {
     @Getter
     @AllArgsConstructor
     @EqualsAndHashCode
+    @ToString
     class ServiceForm {
 
         private String name;
