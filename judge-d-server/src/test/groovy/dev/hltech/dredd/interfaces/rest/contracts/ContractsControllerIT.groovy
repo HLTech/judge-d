@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
@@ -46,7 +47,22 @@ class ContractsControllerIT extends Specification {
             def response = mockMvc.perform(
                 post('/contracts/' + serviceName + '/' + version)
                     .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(randomServiceWithExpectationsAndCapabilities()))
+                    .content(objectMapper.writeValueAsString(randomServiceContractFormWithExpectationsAndCapabilities()))
+            ).andReturn().getResponse()
+        then: 'controller returns dto response in json'
+            response.getStatus() == 200
+            response.getContentType().contains("application/json")
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>() {})
+    }
+
+    def 'should return 200 and json when create a service contracts - new'() {
+        when: 'rest validatePacts url is hit'
+            def serviceName = randomAlphabetic(10)
+            def version = '1.0'
+            def response = mockMvc.perform(
+                post('/new/contracts/' + serviceName + '/' + version)
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(randomNewServiceContractFormWithExpectationsAndCapabilities()))
             ).andReturn().getResponse()
         then: 'controller returns dto response in json'
             response.getStatus() == 200
@@ -55,11 +71,11 @@ class ContractsControllerIT extends Specification {
     }
 
 
-    def 'should return 200 and json when get previousl saved service contracts'() {
+    def 'should return 200 and json when get previously saved service contracts'() {
         given: 'rest validatePacts url is hit'
             def serviceName = randomAlphabetic(10)
             def version = '1.0'
-            def serviceContractsForm = randomServiceWithExpectationsAndCapabilities()
+            def serviceContractsForm = randomServiceContractFormWithExpectationsAndCapabilities()
             mockMvc.perform(
                 post('/contracts/' + serviceName + '/' + version)
                     .contentType("application/json")
@@ -95,7 +111,7 @@ class ContractsControllerIT extends Specification {
             mockMvc.perform(
                 post('/contracts/' + serviceName + '/' + version)
                     .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(randomServiceWithExpectationsAndCapabilities()))
+                    .content(objectMapper.writeValueAsString(randomServiceContractFormWithExpectationsAndCapabilities()))
             ).andReturn().getResponse()
         when:
             def response = mockMvc.perform(
@@ -108,10 +124,18 @@ class ContractsControllerIT extends Specification {
     }
 
 
-    ServiceContractsForm randomServiceWithExpectationsAndCapabilities() {
+    ServiceContractsForm randomServiceContractFormWithExpectationsAndCapabilities() {
         return new ServiceContractsForm(
             ['protocol': 'capabilities'],
             ['some-other-provider': ['protocol': 'expectations']]
+
+        )
+    }
+
+    NewServiceContractsForm randomNewServiceContractFormWithExpectationsAndCapabilities() {
+        return new NewServiceContractsForm(
+            ['protocol': new NewServiceContractsForm.ContractForm(value: 'capabilities', mimeType: MediaType.APPLICATION_JSON_VALUE)],
+            ['some-other-provider': ['protocol': new NewServiceContractsForm.ContractForm(value: 'expectations', mimeType: MediaType.APPLICATION_JSON_VALUE)]]
 
         )
     }

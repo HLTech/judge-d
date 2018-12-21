@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -37,8 +39,35 @@ public class ContractsController {
             new ServiceContracts(
                 provider,
                 version,
-                form.getCapabilities(),
-                form.getExpectations()
+                map(form.getCapabilities()),
+                form.getExpectations().entrySet().stream()
+                    .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> map(entry.getValue())
+                        )
+                    )
+            )
+        ));
+    }
+
+    @PostMapping(value = "/new/contracts/{provider}/{version:.+}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Register contracts for a version of a service", nickname = "register contracts")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Failure")})
+    public ServiceContractsDto newCreate(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version, @RequestBody NewServiceContractsForm form) {
+        return toDto(this.serviceContractsRepository.persist(
+            new ServiceContracts(
+                provider,
+                version,
+                mapNew(form.getCapabilities()),
+                form.getExpectations().entrySet().stream()
+                    .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> mapNew(entry.getValue())
+                        )
+                    )
             )
         ));
     }
@@ -66,7 +95,6 @@ public class ContractsController {
             .collect(toList());
     }
 
-
     @GetMapping(value = "/contracts/{provider}/{version:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Register contracts for a version of a service", nickname = "register contracts")
     @ApiResponses(value = {
@@ -75,6 +103,22 @@ public class ContractsController {
         @ApiResponse(code = 500, message = "Failure")})
     public ServiceContractsDto create(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version) {
         return toDto(this.serviceContractsRepository.find(provider, version).orElseThrow(() -> new ResourceNotFoundException()));
+    }
+
+    private Map<String, ServiceContracts.Contract> map(Map<String, String> protocolToContractStrings) {
+        return protocolToContractStrings.entrySet().stream()
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> new ServiceContracts.Contract(entry.getValue(), MediaType.APPLICATION_JSON_VALUE)
+            ));
+    }
+
+    private Map<String, ServiceContracts.Contract> mapNew(Map<String, NewServiceContractsForm.ContractForm> protocolToContractForms) {
+        return protocolToContractForms.entrySet().stream()
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> new ServiceContracts.Contract(entry.getValue().getValue(), entry.getValue().getMimeType())
+            ));
     }
 
     private ServiceContractsDto toDto(ServiceContracts serviceContracts) {
@@ -86,6 +130,4 @@ public class ContractsController {
         dto.setExpectations(serviceContracts.getExpectations());
         return dto;
     }
-
-
 }

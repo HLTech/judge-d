@@ -2,6 +2,7 @@ package dev.hltech.dredd.domain.contracts
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
@@ -23,8 +24,8 @@ class JpaServiceContractsRepositoryIT extends Specification {
             def serviceContracts = new ServiceContracts(
                 "provider",
                 "1.0",
-                ['ping': '654321'],
-                ['some-other-provider': ['ping': '098765']]
+                ["ping": new ServiceContracts.Contract("654321", MediaType.APPLICATION_JSON_VALUE)],
+                ['some-other-provider': ["ping": new ServiceContracts.Contract("098765", MediaType.APPLICATION_JSON_VALUE)]]
             )
             repository.persist(serviceContracts)
         when:
