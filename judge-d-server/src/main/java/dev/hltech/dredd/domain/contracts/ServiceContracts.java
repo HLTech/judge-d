@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.MediaType;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -46,7 +47,7 @@ public class ServiceContracts {
         this.id = new ServiceContractsId(name, version);
         this.capabilitiesPerProtocol = capabilitiesPerProtocol.entrySet().stream().collect(toMap(
             entry -> entry.getKey(),
-            entry -> new Contract(entry.getValue())
+            entry -> new Contract(entry.getValue(), MediaType.APPLICATION_JSON_UTF8_VALUE)
         ));
         this.expectations = newHashMap();
         for (Entry<String, Map<String, String>> expectationsPerProviderEntry : expectationsPerProvider.entrySet()) {
@@ -56,7 +57,7 @@ public class ServiceContracts {
             for (Entry<String, String> expectationsPerProtocolEntry : expectationsPerProtocol.entrySet()) {
                 String protocol = expectationsPerProtocolEntry.getKey();
                 String protocolExpectation = expectationsPerProtocolEntry.getValue();
-                this.expectations.put(new ProviderProtocol(provider, protocol), new Contract(protocolExpectation));
+                this.expectations.put(new ProviderProtocol(provider, protocol), new Contract(protocolExpectation, MediaType.APPLICATION_JSON_UTF8_VALUE));
             }
         }
     }
@@ -139,8 +140,7 @@ public class ServiceContracts {
     @NoArgsConstructor
     @Access(AccessType.FIELD)
     public static class Contract implements Serializable {
-
         private String value;
-
+        private String mimeType;
     }
 }
