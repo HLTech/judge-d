@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.http.MediaType;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -43,21 +42,17 @@ public class ServiceContracts {
     protected ServiceContracts() {
     }
 
-    public ServiceContracts(String name, String version, Map<String, String> capabilitiesPerProtocol, Map<String, Map<String, String>> expectationsPerProvider) {
+    public ServiceContracts(String name, String version, Map<String, Contract> capabilitiesPerProtocol, Map<String, Map<String, Contract>> expectationsPerProvider) {
         this.id = new ServiceContractsId(name, version);
-        this.capabilitiesPerProtocol = capabilitiesPerProtocol.entrySet().stream().collect(toMap(
-            entry -> entry.getKey(),
-            entry -> new Contract(entry.getValue(), MediaType.APPLICATION_JSON_UTF8_VALUE)
-        ));
+        this.capabilitiesPerProtocol = capabilitiesPerProtocol;
         this.expectations = newHashMap();
-        for (Entry<String, Map<String, String>> expectationsPerProviderEntry : expectationsPerProvider.entrySet()) {
+        for (Entry<String, Map<String, Contract>> expectationsPerProviderEntry : expectationsPerProvider.entrySet()) {
             String provider = expectationsPerProviderEntry.getKey();
-            Map<String, String> expectationsPerProtocol = expectationsPerProviderEntry.getValue();
+            Map<String, Contract> expectationsPerProtocol = expectationsPerProviderEntry.getValue();
 
-            for (Entry<String, String> expectationsPerProtocolEntry : expectationsPerProtocol.entrySet()) {
+            for (Entry<String, Contract> expectationsPerProtocolEntry : expectationsPerProtocol.entrySet()) {
                 String protocol = expectationsPerProtocolEntry.getKey();
-                String protocolExpectation = expectationsPerProtocolEntry.getValue();
-                this.expectations.put(new ProviderProtocol(provider, protocol), new Contract(protocolExpectation, MediaType.APPLICATION_JSON_UTF8_VALUE));
+                this.expectations.put(new ProviderProtocol(provider, protocol), expectationsPerProtocolEntry.getValue());
             }
         }
     }

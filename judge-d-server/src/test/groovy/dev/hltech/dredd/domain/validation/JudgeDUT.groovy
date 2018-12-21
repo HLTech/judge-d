@@ -7,6 +7,7 @@ import dev.hltech.dredd.domain.environment.EnvironmentAggregate
 import dev.hltech.dredd.domain.environment.InMemoryEnvironmentRepository
 import dev.hltech.dredd.domain.validation.ping.PingContractValidator
 import org.assertj.core.util.Lists
+import org.springframework.http.MediaType
 import spock.lang.Specification
 
 class JudgeDUT extends Specification {
@@ -21,7 +22,7 @@ class JudgeDUT extends Specification {
                 "validated-service",
                 "1.0",
                 [:],
-                ["provider": ["ping": "12345"]]
+                ["provider": ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)]]
             ))
             environmentRepository.persist(new EnvironmentAggregate("test-env", [] as Set))
         when:
@@ -41,14 +42,14 @@ class JudgeDUT extends Specification {
             def provider = serviceContractsRepository.persist(new ServiceContracts(
                 "provider",
                 "1.0",
-                ["ping": "123456"],
+                ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)],
                 [:]
             ))
             def validatedService = serviceContractsRepository.persist(new ServiceContracts(
                 "validated-service",
                 "1.0",
                 [:],
-                ["provider": ["ping": "123456"]]
+                ["provider": ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)]]
             ))
             environmentRepository.persist(new EnvironmentAggregate("test-env", [new EnvironmentAggregate.ServiceVersion("provider", "1.0")] as Set))
         when:
@@ -68,14 +69,14 @@ class JudgeDUT extends Specification {
             def provider = serviceContractsRepository.persist(new ServiceContracts(
                 "provider-x",
                 "1.0",
-                ["ping": "123456"],
+                ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)],
                 [:]
             ))
             def consumer = serviceContractsRepository.persist(new ServiceContracts(
                 "consumer",
                 "1.0",
                 [:],
-                ["provider-x": ["ping": "123456"]]
+                ["provider-x": ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)]]
             ))
             environmentRepository.persist(new EnvironmentAggregate("test-env", [new EnvironmentAggregate.ServiceVersion("consumer", "1.0")] as Set))
         when:
@@ -94,7 +95,7 @@ class JudgeDUT extends Specification {
             def provider = serviceContractsRepository.persist(new ServiceContracts(
                 "provider-x",
                 "1.0",
-                ["ping": "123456"],
+                ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)],
                 [:]
             ))
             environmentRepository.persist(new EnvironmentAggregate("test-env", [new EnvironmentAggregate.ServiceVersion("consumer", "1.0")] as Set))
@@ -114,20 +115,20 @@ class JudgeDUT extends Specification {
             def provider = serviceContractsRepository.persist(new ServiceContracts(
                 "provider-x",
                 "1.0",
-                ["ping": "123456"],
+                ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)],
                 [:]
             ))
             def consumer = serviceContractsRepository.persist(new ServiceContracts(
                 "consumer",
                 "1.0",
                 [:],
-                ["provider-x": ["ping": "123456"]]
+                ["provider-x": ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)]]
             ))
             def consumer2 = serviceContractsRepository.persist(new ServiceContracts(
                 "consumer2",
                 "1.0",
                 [:],
-                ["provider-x": ["ping": "123456"]]
+                ["provider-x": ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)]]
             ))
             environmentRepository.persist(new EnvironmentAggregate("test-env", [new EnvironmentAggregate.ServiceVersion("consumer", "1.0")] as Set))
             environmentRepository.persist(new EnvironmentAggregate("test-env2", [new EnvironmentAggregate.ServiceVersion("consumer2", "1.0")] as Set))
