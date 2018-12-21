@@ -72,6 +72,18 @@ Easiest way to run Judge D wherever you need is by using Docker - image is avail
 
 Of course you can use jar file generated during installation as well and deploy it on some application server like Tomcat.  
 
+## Validation
+
+Validation behaviour can be modified using one of the options listed [here](https://bitbucket.org/atlassian/swagger-request-validator/src/0dff457f9ea7614d606ae8475d65cfe950570031/swagger-request-validator-core/README.md?fileviewer=file-view-default).
+If you want to run the application using docker container, you can pass environment variable `VALIDATION_OPTIONS` with comma-separated validation properties. 
+
+Below setting causes changing default validation level to IGNORE and emission of validation error `validation.schema.required` at ERROR level.
+```
+VALIDATION_OPTIONS=defaultLevel=IGNORE,validation.schema.required=ERROR,
+```
+
+See more about validation behaviours and levels [here](https://bitbucket.org/atlassian/swagger-request-validator/src/0dff457f9ea7614d606ae8475d65cfe950570031/swagger-request-validator-core/README.md?fileviewer=file-view-default).
+
 ## Built With
 
 * [Maven](https://maven.apache.org/) - Dependency Management
