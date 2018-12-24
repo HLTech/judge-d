@@ -33,8 +33,8 @@ class JpaServiceContractsRepositoryIT extends Specification {
         then:
             retrieved.isPresent() == true
             with(retrieved.get()) {
-                getCapabilities("ping", identity()).get() == "654321"
-                getExpectations('some-other-provider', "ping", identity()).get() == "098765"
+                getMappedCapabilities("ping", identity()).get() == "654321"
+                getMappedExpectations('some-other-provider', "ping", identity()).get() == "098765"
             }
     }
 
