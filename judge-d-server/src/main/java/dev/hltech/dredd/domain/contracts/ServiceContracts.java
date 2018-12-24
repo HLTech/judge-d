@@ -18,6 +18,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toMap;
 
 @Entity
+@Getter
 @Access(AccessType.FIELD)
 public class ServiceContracts {
 
@@ -66,19 +67,19 @@ public class ServiceContracts {
     }
 
 
-    public <C> Optional<C> getCapabilities(String communicationInterface, Function<String, C> deserializer) {
+    public <C> Optional<C> getMappedCapabilities(String communicationInterface, Function<String, C> deserializer) {
         return ofNullable(this.capabilitiesPerProtocol.get(communicationInterface))
             .map(Contract::getValue)
             .map(deserializer);
     }
 
-    public <E> Optional<E> getExpectations(String providerName, String communicationInterface, Function<String, E> deserializer) {
+    public <E> Optional<E> getMappedExpectations(String providerName, String communicationInterface, Function<String, E> deserializer) {
         return ofNullable(this.expectations.get(new ProviderProtocol(providerName, communicationInterface)))
             .map(Contract::getValue)
             .map(deserializer);
     }
 
-    public <E> Map<String, E> getExpectations(String communicationInterface, Function<String, E> deserializer) {
+    public <E> Map<String, E> getMappedExpectations(String communicationInterface, Function<String, E> deserializer) {
         return this.expectations.entrySet()
             .stream()
             .filter(expectationsEntry -> expectationsEntry.getKey().getProtocol().equals(communicationInterface))
@@ -88,14 +89,14 @@ public class ServiceContracts {
             ));
     }
 
-    public Map<String, String> getCapabilities() {
+    public Map<String, String> getMappedCapabilities() {
         return this.capabilitiesPerProtocol.entrySet().stream().collect(toMap(
             e -> e.getKey(),
             e -> e.getValue().getValue()
         ));
     }
 
-    public Map<String, Map<String, String>> getExpectations() {
+    public Map<String, Map<String, String>> getMappedExpectations() {
         HashMap<String, Map<String, String>> result = newHashMap();
         for (Entry<ProviderProtocol, Contract> e : this.expectations.entrySet()) {
             ProviderProtocol pp = e.getKey();

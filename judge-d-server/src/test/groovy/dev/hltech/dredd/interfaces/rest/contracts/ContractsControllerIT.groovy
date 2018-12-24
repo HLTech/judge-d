@@ -67,9 +67,8 @@ class ContractsControllerIT extends Specification {
         then: 'controller returns dto response in json'
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>() {})
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<NewServiceContractsDto>() {})
     }
-
 
     def 'should return 200 and json when get previously saved service contracts'() {
         given: 'rest validatePacts url is hit'
@@ -90,6 +89,27 @@ class ContractsControllerIT extends Specification {
             response.getStatus() == 200
             response.getContentType().contains("application/json")
             objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>() {})
+    }
+
+    def 'should return 200 and json when get previously saved service contracts - new'() {
+        given: 'rest validatePacts url is hit'
+            def serviceName = randomAlphabetic(10)
+            def version = '1.0'
+            def serviceContractsForm = randomNewServiceContractFormWithExpectationsAndCapabilities()
+            mockMvc.perform(
+                post('/new/contracts/' + serviceName + '/' + version)
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(serviceContractsForm))
+            ).andReturn().getResponse()
+        when:
+            def response = mockMvc.perform(
+                get('/new/contracts/' + serviceName + '/' + version)
+                    .contentType("application/json")
+            ).andReturn().getResponse()
+        then: 'controller returns dto response in json'
+            response.getStatus() == 200
+            response.getContentType().contains("application/json")
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<NewServiceContractsDto>() {})
     }
 
     def 'should successfully retrieve list of services'() {

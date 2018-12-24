@@ -40,7 +40,7 @@ public abstract class InterfaceContractValidator<C, E> {
 
     private CapabilitiesValidationResult validateCapabilities(C capabilities, String providerName, ServiceContracts consumer) {
         List<InteractionValidationResult> validatedInteractions = consumer
-            .getExpectations(providerName, this.communicationInterface, this::asExpectations)
+            .getMappedExpectations(providerName, this.communicationInterface, this::asExpectations)
             .map(expectations -> validate(expectations, capabilities))
             .orElse(emptyList());
 
@@ -75,7 +75,7 @@ public abstract class InterfaceContractValidator<C, E> {
 
     private ExpectationValidationResult validateExpectations(E expectations, ServiceContracts provider) {
         List<InteractionValidationResult> validatedInteractions = provider
-            .getCapabilities(this.communicationInterface, this::asCapabilities)
+            .getMappedCapabilities(this.communicationInterface, this::asCapabilities)
             .map(capabilities -> validate(expectations, capabilities))
             .orElseGet(() -> newArrayList(
                 new InteractionValidationResult(
@@ -101,11 +101,11 @@ public abstract class InterfaceContractValidator<C, E> {
     }
 
     public Optional<C> extractCapabilities(ServiceContracts serviceContracts) {
-        return serviceContracts.getCapabilities(this.communicationInterface, this::asCapabilities);
+        return serviceContracts.getMappedCapabilities(this.communicationInterface, this::asCapabilities);
     }
 
     public Map<String, E> extractExpectations(ServiceContracts testedServiceContracts) {
-        return testedServiceContracts.getExpectations(this.communicationInterface, this::asExpectations);
+        return testedServiceContracts.getMappedExpectations(this.communicationInterface, this::asExpectations);
     }
 
     public abstract C asCapabilities(String rawCapabilities);
