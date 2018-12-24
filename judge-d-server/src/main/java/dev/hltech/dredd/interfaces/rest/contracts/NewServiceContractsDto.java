@@ -1,31 +1,22 @@
 package dev.hltech.dredd.interfaces.rest.contracts;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Map;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class NewServiceContractsDto {
 
-    private String name;
-    private String version;
+    private final String name;
+    private final String version;
 
-    private Map<String, ContractDto> capabilities;
-    private Map<String, Map<String, ContractDto>> expectations;
+    private final Map<String, ContractDto> capabilities;
+    private final Map<String, Map<String, ContractDto>> expectations;
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @EqualsAndHashCode
+    @Data
     public static class ContractDto implements Serializable {
-        private String value;
-        private String mimeType;
+        private final String value;
+        private final String mimeType;
     }
 }

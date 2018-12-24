@@ -155,13 +155,12 @@ public class ContractsController {
     }
 
     private ServiceContractsDto toDto(ServiceContracts serviceContracts) {
-        ServiceContractsDto dto = new ServiceContractsDto();
-        dto.setName(serviceContracts.getName());
-        dto.setVersion(serviceContracts.getVersion());
-
-        dto.setCapabilities(serviceContracts.getMappedCapabilities());
-        dto.setExpectations(serviceContracts.getMappedExpectations());
-        return dto;
+        return new ServiceContractsDto(
+            serviceContracts.getName(),
+            serviceContracts.getVersion(),
+            serviceContracts.getMappedCapabilities(),
+            serviceContracts.getMappedExpectations()
+        );
     }
 
     private NewServiceContractsDto newToDto(ServiceContracts serviceContracts) {
