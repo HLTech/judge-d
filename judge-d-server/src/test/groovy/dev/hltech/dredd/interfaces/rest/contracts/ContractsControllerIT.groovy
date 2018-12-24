@@ -148,15 +148,13 @@ class ContractsControllerIT extends Specification {
         return new ServiceContractsForm(
             ['protocol': 'capabilities'],
             ['some-other-provider': ['protocol': 'expectations']]
-
         )
     }
 
     NewServiceContractsForm randomNewServiceContractFormWithExpectationsAndCapabilities() {
         return new NewServiceContractsForm(
-            ['protocol': new NewServiceContractsForm.ContractForm(value: 'capabilities', mimeType: MediaType.APPLICATION_JSON_VALUE)],
-            ['some-other-provider': ['protocol': new NewServiceContractsForm.ContractForm(value: 'expectations', mimeType: MediaType.APPLICATION_JSON_VALUE)]]
-
+            ['protocol': new NewServiceContractsForm.ContractForm( 'capabilities',  MediaType.APPLICATION_JSON_VALUE)],
+            ['some-other-provider': ['protocol': new NewServiceContractsForm.ContractForm( 'expectations', MediaType.APPLICATION_JSON_VALUE)]]
         )
     }
 

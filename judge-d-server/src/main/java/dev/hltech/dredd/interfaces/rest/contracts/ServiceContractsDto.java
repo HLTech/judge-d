@@ -7,10 +7,10 @@ import java.util.Map;
 @Data
 public class ServiceContractsDto {
 
-    private String name;
-    private String version;
+    private final String name;
+    private final String version;
 
-    private Map<String, String> capabilities;
-    private Map<String, Map<String, String>> expectations;
+    private final Map<String, String> capabilities;
+    private final Map<String, Map<String, String>> expectations;
 
 }
