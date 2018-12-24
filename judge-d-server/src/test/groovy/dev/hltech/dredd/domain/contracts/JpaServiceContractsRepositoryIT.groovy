@@ -31,7 +31,9 @@ class JpaServiceContractsRepositoryIT extends Specification {
         when:
             def retrieved = repository.find(serviceContracts.name, serviceContracts.version)
         then:
-            retrieved.isPresent() == true
+            retrieved.get().id.name == 'provider'
+            retrieved.get().id.version == '1.0'
+            retrieved.isPresent()
             with(retrieved.get()) {
                 getMappedCapabilities("ping", identity()).get() == "654321"
                 getMappedExpectations('some-other-provider', "ping", identity()).get() == "098765"
