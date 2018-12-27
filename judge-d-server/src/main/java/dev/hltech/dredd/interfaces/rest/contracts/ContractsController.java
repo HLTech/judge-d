@@ -41,11 +41,11 @@ public class ContractsController {
             new ServiceContracts(
                 provider,
                 version,
-                map(form.getCapabilities()),
+                mapToEntity(form.getCapabilities()),
                 form.getExpectations().entrySet().stream()
                     .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        entry -> map(entry.getValue())
+                        entry -> mapToEntity(entry.getValue())
                         )
                     )
             )
@@ -58,8 +58,8 @@ public class ContractsController {
         @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
-    public NewServiceContractsDto newCreate(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version, @RequestBody NewServiceContractsForm form) {
-        return newToDto(this.serviceContractsRepository.persist(
+    public ServiceContractsDto newCreate(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version, @RequestBody ServiceContractsForm form) {
+        return toDto(this.serviceContractsRepository.persist(
             new ServiceContracts(
                 provider,
                 version,
@@ -113,19 +113,11 @@ public class ContractsController {
         @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
-    public NewServiceContractsDto newGet(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version) {
-        return newToDto(this.serviceContractsRepository.find(provider, version).orElseThrow(() -> new ResourceNotFoundException()));
+    public ServiceContractsDto newGet(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version) {
+        return toDto(this.serviceContractsRepository.find(provider, version).orElseThrow(() -> new ResourceNotFoundException()));
     }
 
-    private Map<String, ServiceContracts.Contract> map(Map<String, String> protocolToContractStrings) {
-        return protocolToContractStrings.entrySet().stream()
-            .collect(Collectors.toMap(
-                Map.Entry::getKey,
-                entry -> new ServiceContracts.Contract(entry.getValue(), MediaType.APPLICATION_JSON_VALUE)
-            ));
-    }
-
-    private Map<String, ServiceContracts.Contract> mapToEntity(Map<String, NewServiceContractsForm.ContractForm> protocolToContractForms) {
+    private Map<String, ServiceContracts.Contract> mapToEntity(Map<String, ServiceContractsForm.ContractForm> protocolToContractForms) {
         return protocolToContractForms.entrySet().stream()
             .collect(Collectors.toMap(
                 Map.Entry::getKey,
@@ -133,38 +125,29 @@ public class ContractsController {
             ));
     }
 
-    private Map<String, NewServiceContractsDto.ContractDto> mapCapabilitiesToDto(Map<String, ServiceContracts.Contract> capabilities) {
+    private Map<String, ServiceContractsDto.ContractDto> mapCapabilitiesToDto(Map<String, ServiceContracts.Contract> capabilities) {
         return capabilities.entrySet().stream()
             .collect(Collectors.toMap(
                 Map.Entry::getKey,
-                entry -> new NewServiceContractsDto.ContractDto(entry.getValue().getValue(), entry.getValue().getMimeType())
+                entry -> new ServiceContractsDto.ContractDto(entry.getValue().getValue(), entry.getValue().getMimeType())
             ));
     }
 
-    private Map<String, Map<String, NewServiceContractsDto.ContractDto>> mapExpectationsToDto(Map<ServiceContracts.ProviderProtocol, ServiceContracts.Contract> expectations) {
-        HashMap<String, Map<String, NewServiceContractsDto.ContractDto>> result = newHashMap();
+    private Map<String, Map<String, ServiceContractsDto.ContractDto>> mapExpectationsToDto(Map<ServiceContracts.ProviderProtocol, ServiceContracts.Contract> expectations) {
+        HashMap<String, Map<String, ServiceContractsDto.ContractDto>> result = newHashMap();
         for (Map.Entry<ServiceContracts.ProviderProtocol, ServiceContracts.Contract> e : expectations.entrySet()) {
             ServiceContracts.ProviderProtocol pp = e.getKey();
             ServiceContracts.Contract contract = e.getValue();
             if (!result.containsKey(pp.getProvider())) {
                 result.put(pp.getProvider(), newHashMap());
             }
-            result.get(pp.getProvider()).put(pp.getProtocol(), new NewServiceContractsDto.ContractDto(contract.getValue(), contract.getMimeType()));
+            result.get(pp.getProvider()).put(pp.getProtocol(), new ServiceContractsDto.ContractDto(contract.getValue(), contract.getMimeType()));
         }
         return result;
     }
 
     private ServiceContractsDto toDto(ServiceContracts serviceContracts) {
         return new ServiceContractsDto(
-            serviceContracts.getName(),
-            serviceContracts.getVersion(),
-            serviceContracts.getMappedCapabilities(),
-            serviceContracts.getMappedExpectations()
-        );
-    }
-
-    private NewServiceContractsDto newToDto(ServiceContracts serviceContracts) {
-        return new NewServiceContractsDto(
             serviceContracts.getName(),
             serviceContracts.getVersion(),
             mapCapabilitiesToDto(serviceContracts.getCapabilitiesPerProtocol()),
