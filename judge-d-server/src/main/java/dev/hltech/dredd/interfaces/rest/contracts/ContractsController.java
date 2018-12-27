@@ -75,7 +75,7 @@ public class ContractsController {
     }
 
     @GetMapping(value = "/contracts", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get names of services with registered contracts", nickname = "create names of services")
+    @ApiOperation(value = "Get names of services with registered contracts", nickname = "get names of services")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
         @ApiResponse(code = 400, message = "Bad Request"),
@@ -85,7 +85,7 @@ public class ContractsController {
     }
 
     @GetMapping(value = "/contracts/{serviceName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get versions of a service with registered contracts", nickname = "create versions of a service")
+    @ApiOperation(value = "Get versions of a service with registered contracts", nickname = "get versions of a service")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
         @ApiResponse(code = 400, message = "Bad Request"),
@@ -98,7 +98,7 @@ public class ContractsController {
     }
 
     @GetMapping(value = "/contracts/{provider}/{version:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get contracts for a version of a service", nickname = "register contracts")
+    @ApiOperation(value = "Get contracts for a version of a service", nickname = "get contracts")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
         @ApiResponse(code = 400, message = "Bad Request"),
@@ -108,7 +108,7 @@ public class ContractsController {
     }
 
     @GetMapping(value = "/new/contracts/{provider}/{version:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get contracts for a version of a service", nickname = "register contracts")
+    @ApiOperation(value = "Get contracts for a version of a service", nickname = "get contracts")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
         @ApiResponse(code = 400, message = "Bad Request"),
