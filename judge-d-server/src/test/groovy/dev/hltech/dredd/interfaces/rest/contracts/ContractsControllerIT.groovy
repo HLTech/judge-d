@@ -55,21 +55,6 @@ class ContractsControllerIT extends Specification {
             objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>() {})
     }
 
-    def 'should return 200 and json when create a service contracts - new'() {
-        when: 'rest validatePacts url is hit'
-            def serviceName = randomAlphabetic(10)
-            def version = '1.0'
-            def response = mockMvc.perform(
-                post('/new/contracts/' + serviceName + '/' + version)
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(randomServiceContractFormWithExpectationsAndCapabilities()))
-            ).andReturn().getResponse()
-        then: 'controller returns dto response in json'
-            response.getStatus() == 200
-            response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>() {})
-    }
-
     def 'should return 200 and json when get previously saved service contracts'() {
         given: 'rest validatePacts url is hit'
             def serviceName = randomAlphabetic(10)
@@ -82,28 +67,7 @@ class ContractsControllerIT extends Specification {
             ).andReturn().getResponse()
         when:
             def response = mockMvc.perform(
-                get('/new/contracts/' + serviceName + '/' + version)
-                    .contentType("application/json")
-            ).andReturn().getResponse()
-        then: 'controller returns dto response in json'
-            response.getStatus() == 200
-            response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>() {})
-    }
-
-    def 'should return 200 and json when get previously saved service contracts - new'() {
-        given: 'rest validatePacts url is hit'
-            def serviceName = randomAlphabetic(10)
-            def version = '1.0'
-            def serviceContractsForm = randomServiceContractFormWithExpectationsAndCapabilities()
-            mockMvc.perform(
-                post('/new/contracts/' + serviceName + '/' + version)
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(serviceContractsForm))
-            ).andReturn().getResponse()
-        when:
-            def response = mockMvc.perform(
-                get('/new/contracts/' + serviceName + '/' + version)
+                get('/contracts/' + serviceName + '/' + version)
                     .contentType("application/json")
             ).andReturn().getResponse()
         then: 'controller returns dto response in json'

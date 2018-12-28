@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -87,26 +86,6 @@ public class ServiceContracts {
                 e -> e.getKey().getProvider(),
                 e -> deserializer.apply(e.getValue().getValue())
             ));
-    }
-
-    public Map<String, String> getMappedCapabilities() {
-        return this.capabilitiesPerProtocol.entrySet().stream().collect(toMap(
-            e -> e.getKey(),
-            e -> e.getValue().getValue()
-        ));
-    }
-
-    public Map<String, Map<String, String>> getMappedExpectations() {
-        HashMap<String, Map<String, String>> result = newHashMap();
-        for (Entry<ProviderProtocol, Contract> e : this.expectations.entrySet()) {
-            ProviderProtocol pp = e.getKey();
-            Contract contract = e.getValue();
-            if (!result.containsKey(pp.provider)) {
-                result.put(pp.provider, newHashMap());
-            }
-            result.get(pp.getProvider()).put(pp.getProtocol(), contract.getValue());
-        }
-        return result;
     }
 
     @Getter
