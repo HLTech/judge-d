@@ -114,6 +114,7 @@ public class ServiceContracts {
     @AllArgsConstructor
     @NoArgsConstructor
     @Access(AccessType.FIELD)
+    @EqualsAndHashCode
     public static class Contract implements Serializable {
         private String value;
         private String mimeType;

@@ -118,10 +118,14 @@ class ContractsControllerIT extends Specification {
     static class TestConfig extends BeanFactory {
 
         @Bean
-        public ServiceContractsRepository repository() {
-            return new InMemoryServiceContractsRepository();
+        ServiceContractsRepository repository() {
+            return new InMemoryServiceContractsRepository()
         }
 
+        @Bean
+        ContractsMapper mapper() {
+            return new ContractsMapper()
+        }
     }
 
 }
