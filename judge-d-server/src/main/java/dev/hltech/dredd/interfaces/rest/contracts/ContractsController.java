@@ -52,28 +52,6 @@ public class ContractsController {
         ));
     }
 
-    @PostMapping(value = "/new/contracts/{provider}/{version:.+}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Register contracts for a version of a service", nickname = "register contracts")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
-        @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Failure")})
-    public ServiceContractsDto newCreate(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version, @RequestBody ServiceContractsForm form) {
-        return toDto(this.serviceContractsRepository.persist(
-            new ServiceContracts(
-                provider,
-                version,
-                mapToEntity(form.getCapabilities()),
-                form.getExpectations().entrySet().stream()
-                    .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> mapToEntity(entry.getValue())
-                        )
-                    )
-            )
-        ));
-    }
-
     @GetMapping(value = "/contracts", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get names of services with registered contracts", nickname = "get names of services")
     @ApiResponses(value = {
@@ -104,16 +82,6 @@ public class ContractsController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
     public ServiceContractsDto get(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version) {
-        return toDto(this.serviceContractsRepository.find(provider, version).orElseThrow(() -> new ResourceNotFoundException()));
-    }
-
-    @GetMapping(value = "/new/contracts/{provider}/{version:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get contracts for a version of a service", nickname = "get contracts")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
-        @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Failure")})
-    public ServiceContractsDto newGet(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version) {
         return toDto(this.serviceContractsRepository.find(provider, version).orElseThrow(() -> new ResourceNotFoundException()));
     }
 
