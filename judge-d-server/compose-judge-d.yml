@@ -1,12 +1,15 @@
-judge-d:
-  image: hltech/judge-d
-  ports:
-    - 8090:8090
-  environment:
-    - DB_CONNECTION_STRING=jdbc:postgresql://postgres:5432/judge_d
-    - DB_USERNAME=postgres
-    - DB_PASSWORD=postgres
-    - DB_DRIVER_CLASS=org.postgresql.Driver
-    - PACT_BROKER_URL=http://some-host/
-  external_links:
-    - postgres
+version: '3.7'
+
+services:
+  judge-d:
+    image: hltech/judge-d
+    ports:
+      - 8080:8080
+    environment:
+      - DB_CONNECTION_STRING=jdbc:postgresql://postgres:5432/judge_d
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_DRIVER_CLASS=org.postgresql.Driver
+      - PACT_BROKER_URL=http://some-host/
+    external_links:
+      - postgres
