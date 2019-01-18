@@ -14,5 +14,5 @@ if [[ -v VALIDATION_OPTIONS ]]; then
     done
 fi
 
-echo $JAVA_OPTIONS
-java $JAVA_OPTIONS $* -jar judge-d.jar
+set -x
+java $JAVA_OPTIONS -jar judge-d.jar
