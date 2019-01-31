@@ -11,5 +11,6 @@ services:
       - DB_PASSWORD=postgres
       - DB_DRIVER_CLASS=org.postgresql.Driver
       - PACT_BROKER_URL=http://some-host/
+      - PORT=8080
     external_links:
       - postgres
