@@ -14,8 +14,17 @@ jobs:
       if: branch = master
       script:
       - mvn docker:build@build-docker -P docker-app -f ./judge-d-server/pom.xml
+      - echo "Pushing to docker registry"
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       - docker push hltech/judge-d
+      - echo "Pushing to heroku registry"
+      - docker login -u _ -p "$HEROKU_API_KEY" registry.heroku.com
+      - docker tag hltech/judge-d registry.heroku.com/judge-d/web
+      - docker push registry.heroku.com/judge-d/web
+    - stage: release app in heroku
+      if: branch = master
+      script:
+      - heroku container:release web -a judge-d
     - stage: build & publish docker image for agent
       if: branch = master
       script:
