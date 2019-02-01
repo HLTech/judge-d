@@ -2,7 +2,6 @@ package com.hltech.contracts.judged.agent.hltech
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.google.common.collect.ImmutableMap
 import feign.Feign
 import feign.Target
 import io.fabric8.kubernetes.api.model.Container
@@ -14,27 +13,17 @@ import io.fabric8.kubernetes.api.model.PodSpec
 import io.fabric8.kubernetes.api.model.PodStatus
 import io.fabric8.kubernetes.client.KubernetesClient
 import io.fabric8.kubernetes.client.dsl.MixedOperation
-import org.assertj.core.util.Lists
-import org.assertj.core.util.Maps
 import spock.lang.Specification
 import org.springframework.http.ResponseEntity
 import spock.lang.Subject
 
-import static com.google.common.collect.Lists.newArrayList
-
 class HLTechServiceLocatorUT extends Specification {
 
-    private Feign feign
-    private KubernetesClient kubernetesClient
+    private def feign = Mock(Feign)
+    private def kubernetesClient = Mock(KubernetesClient)
 
     @Subject
-    private HLTechServiceLocator serviceLocator
-
-    def setup(){
-        feign = Mock()
-        kubernetesClient = Mock()
-        serviceLocator = new HLTechServiceLocator(kubernetesClient, feign)
-    }
+    private HLTechServiceLocator serviceLocator = new HLTechServiceLocator(kubernetesClient, feign)
 
     def 'should find all correctly configured services'(){
         given: "data of pods"

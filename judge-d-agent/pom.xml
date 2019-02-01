@@ -16,6 +16,7 @@
     <properties>
         <springBootVersion>1.5.9.RELEASE</springBootVersion>
         <swaggerVersion>2.7.0</swaggerVersion>
+        <pactGenVersion>1.3.3</pactGenVersion>
     </properties>
 
     <dependencyManagement>
@@ -63,17 +64,6 @@
             <artifactId>kubernetes-client</artifactId>
             <version>3.1.10</version>
         </dependency>
-
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>${swaggerVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>${swaggerVersion}</version>
-        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -105,6 +95,17 @@
             <artifactId>spring-cloud-contract-wiremock</artifactId>
             <version>1.2.4.RELEASE</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>3.2.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.hltech</groupId>
+            <artifactId>pact-gen</artifactId>
+            <version>${pactGenVersion}</version>
         </dependency>
     </dependencies>
 

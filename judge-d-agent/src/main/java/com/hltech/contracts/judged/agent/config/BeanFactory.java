@@ -35,8 +35,13 @@ public class BeanFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(BeanFactory.class);
 
     @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
+    @Bean
     public JudgeDPublisher judgeDEnvironmentPublisher(Feign feign, @Value("${hltech.contracts.judge-d.baseUrl}") String baseUrl) {
-        return new CachingDelegatingDPublisher(feign.newInstance(new Target.HardCodedTarget<>(JudgeDPublisher.class, baseUrl)));
+        return feign.newInstance(new Target.HardCodedTarget<>(JudgeDPublisher.class, baseUrl));
     }
 
     @Bean

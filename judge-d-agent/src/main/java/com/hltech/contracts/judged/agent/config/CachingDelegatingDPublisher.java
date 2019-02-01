@@ -7,18 +7,17 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Set;
 
 @Slf4j
-public class CachingDelegatingDPublisher implements JudgeDPublisher {
+public class CachingDelegatingDPublisher {
 
     private final JudgeDPublisher judgeDPublisher;
 
-    private Set<ServiceForm> previouslySentEnvironment;
+    private Set<JudgeDPublisher.ServiceForm> previouslySentEnvironment;
 
     public CachingDelegatingDPublisher(JudgeDPublisher judgeDPublisher) {
         this.judgeDPublisher = judgeDPublisher;
     }
 
-    @Override
-    public void publish(String environment, Set<ServiceForm> serviceForms) {
+    public void publish(String environment, Set<JudgeDPublisher.ServiceForm> serviceForms) {
         if (previouslySentEnvironment == null || !previouslySentEnvironment.equals(serviceForms)) {
             log.info("publishing services to Judge-D: " + serviceForms);
 
