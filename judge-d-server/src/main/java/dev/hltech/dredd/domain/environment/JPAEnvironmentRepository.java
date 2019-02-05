@@ -5,8 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Set;
 
-import static java.util.Optional.ofNullable;
-
 @Repository
 public class JPAEnvironmentRepository implements EnvironmentRepository {
 
@@ -29,6 +27,6 @@ public class JPAEnvironmentRepository implements EnvironmentRepository {
 
     @Override
     public EnvironmentAggregate get(String name) {
-        return ofNullable(springDataEnvironmentRepository.findOne(name)).orElse(EnvironmentAggregate.empty(name));
+        return springDataEnvironmentRepository.findById(name).orElse(EnvironmentAggregate.empty(name));
     }
 }

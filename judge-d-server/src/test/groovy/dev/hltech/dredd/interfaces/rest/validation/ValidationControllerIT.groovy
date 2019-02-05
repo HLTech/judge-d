@@ -57,7 +57,7 @@ class ValidationControllerIT extends Specification {
     def "should return 404 when validate service contracts against env given contracts have not been registered"() {
         when: 'rest validatePacts url is hit'
             def response = mockMvc.perform(
-                get(new URI('/validation-report/service/other-service:1.0?environment=SIT&environment=UAT'))
+                get(new URI('/environment-compatibility-report/other-service:1.0?environment=SIT&environment=UAT'))
                     .accept("application/json")
             ).andReturn().getResponse()
         then: 'controller returns validation response in json'
