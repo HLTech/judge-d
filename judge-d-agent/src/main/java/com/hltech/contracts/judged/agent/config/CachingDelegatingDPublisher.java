@@ -1,9 +1,9 @@
 package com.hltech.contracts.judged.agent.config;
 
-import com.google.common.collect.Sets;
 import com.hltech.contracts.judged.agent.JudgeDPublisher;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Slf4j
@@ -23,7 +23,7 @@ public class CachingDelegatingDPublisher {
 
             judgeDPublisher.publish(environment, serviceForms);
 
-            previouslySentEnvironment = Sets.newHashSet(serviceForms);
+            previouslySentEnvironment = new HashSet<>(serviceForms);
         } else {
             log.debug("Services not changed since last update. Skipping update.");
         }
