@@ -12,7 +12,7 @@ import spock.lang.Specification
 @SpringBootTest(classes = BeanFactory)
 @ActiveProfiles("test")
 @ContextConfiguration
-class ContractTestsGenerator extends Specification {
+class ContractTestsGeneratorIT extends Specification {
 
     @Autowired
     ObjectMapper objectMapper

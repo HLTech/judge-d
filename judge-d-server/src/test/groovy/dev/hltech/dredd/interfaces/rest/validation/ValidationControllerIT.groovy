@@ -27,13 +27,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 class ValidationControllerIT extends Specification {
 
     @Autowired
-    ObjectMapper objectMapper;
+    ObjectMapper objectMapper
 
     @Autowired
     ServiceContractsRepository serviceContractsRepository
 
     @Autowired
-    MockMvc mockMvc;
+    MockMvc mockMvc
 
     def "should return 200 when validate given all went fine"() {
         given:
