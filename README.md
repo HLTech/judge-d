@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/HLTech/judge-d.svg?branch=master)](https://travis-ci.org/HLTech/judge-d.svg?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/HLTech/judge-d/badge.svg?branch=master)](https://coveralls.io/github/HLTech/judge-d?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/HLTech/judge-d/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/HLTech/judge-d/?branch=master)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 Living in a microservices world is not that easy. APIs change often and when it happens it is not always easy to find out what happened.
 This is where Judge D comes in and lends a hand. Judge D is an open-source project focused on painless contract testing between
@@ -118,4 +119,4 @@ See also the list of [contributors](https://github.com/HLTech/judge-d/contributo
 
 ## License
 
-TODO
+judge dredd is [MIT licensed](./LICENSE).
