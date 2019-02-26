@@ -7,14 +7,30 @@
 
 Judge Dredd is a tool used to test contracts between microservices.
 
-# Motivation
+## Table of Contents
+1. [**Overview**](#Overview)
+2. [**Idea**](#Idea)
+3. [**Reference implementation**](#ReferenceImplementation)
+4. [**Prerequisites**](#Prerequisites)
+5. [**Installing**](#Installing)
+6. [**Running tests**](#RunningTests)
+7. [**Deployment**](#Deployment)
+8. [**Validation**](#Validation)
+9. [**Build with**](#BuiltWith)
+10. [**Report generation**](#ReportGeneration)
+11. [**Contributing**](#Contributing)
+12. [**Versioning**](#Versioning)
+13. [**Authors**](#Authors)
+14. [**License**](#License)
 
-In a microservice architecture it is of importance to ensure that communication between them is not broken after changes in 
+## Overview
+
+In a microservices architecture it is of importance to ensure that communication between them is not broken after changes in 
 any of participating sides. One of the best approaches to tackle this problem is contract testing. Judge Dredd is 
-an open source project which aims at performing contract tests between any microservices deployed within any environment under
- Judge Dredd jurisdiction.
+an open source project which aims at performing contract tests between any microservices deployed within any environment under 
+Judge Dredd jurisdiction.
 
-# Idea
+## Idea
 
 Judge Dredd includes two functional roles - agent and server. Agents are deployed within any environment and gather information
 about names and versions of any service within this environment. For now Judge Dredd agents support Kubernetes environments, 
@@ -36,17 +52,17 @@ the service to the environment would break communication between this service an
 For now Judge Dredd supports expectations specified in [Pact files](https://github.com/pact-foundation/pact-specification) 
 (json) and capabilities specified in [Swagger file](https://swagger.io/specification/) (json).
 
-# Reference implementation
+## Reference implementation <a name="ReferenceImplementation"></a>
 Basically, there are 2 steps - contract publishing and contract verification. They should be added to your CI/CD tool
 (like Jenkins). Both publishing and verification should be done before actual deployment into any environment.
 
-## Contract Publishing
+### Contract Publishing
 Contract publishing should be done for both service expectations (what do I expect from the others? What message format 
 do I send?) and capabilities (What am I able to offer to the others? What message format do I accept and return?) for
 given service name and version. Publishing means sending a REST request to Judge Dredd's endpoint with information about
 expectations, capabilities and the protocol of communication. Currently only REST is supported.
 
-## Contract Verification
+### Contract Verification
 Contract verification means checking if newly introduced changes do not break possibility of communication between services.
 Verification should be done against all environments where the services are being deployed. Verification is done by
 sending a REST request to Judge Dredd's endpoint with information about service name and version. Judge Dredd uses information
@@ -196,7 +212,7 @@ to compare Pact files and Swagger files.
 Judge Dredd server should be deployed on one environment. Judge Dredd agent should be deployed on each environment which
 is planned to be under Judge Dredd jurisdiction. For now Kubernetes environments are supported.  
 
-# Prerequisites
+## Prerequisites
 
 For development you need:
 * [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
@@ -206,7 +222,7 @@ You can use your local Maven distribution, but there is maven wrapper included i
 (for UNIX users) or `mvnw.cmd {command}` (for Windows users)
 
 
-# Installing
+## Installing
 
 To compile code, run tests and build jar files simply use 
 
@@ -235,21 +251,21 @@ to run app.
 By default you have to create new database called judge_d for the application to start, but jdbc connection properties 
 can be defined in judge-d-server/compose-judge-d.yml file.
 
-### Running the tests
+## Running tests <a name="RunningTests"></a>
 
 Tests are part of `mvn clean install` task - but if you'd like to only run tests (without building jar file) use
 ```
 mvn test
 ```
 
-# Deployment
+## Deployment
 
 Easiest way to run Judge D wherever you need is by using Docker - image is available in our 
 [Dockerhub](https://hub.docker.com/r/hltech/judge-d/).
 
 Of course you can use jar file generated during installation as well and deploy it on some application server like Tomcat.  
 
-# Validation
+## Validation
 
 Validation behaviour can be modified using one of the options listed [here](https://bitbucket.org/atlassian/swagger-request-validator/src/0dff457f9ea7614d606ae8475d65cfe950570031/swagger-request-validator-core/README.md?fileviewer=file-view-default).
 If you want to run the application using docker container, you can pass environment variable `VALIDATION_OPTIONS` with comma-separated validation properties. 
@@ -261,18 +277,18 @@ VALIDATION_OPTIONS=defaultLevel=IGNORE,validation.schema.required=ERROR,
 
 See more about validation behaviours and levels [here](https://bitbucket.org/atlassian/swagger-request-validator/src/0dff457f9ea7614d606ae8475d65cfe950570031/swagger-request-validator-core/README.md?fileviewer=file-view-default).
 
-# Built With
+## Built With <a name="BuiltWith"></a>
 
 * [Maven](https://maven.apache.org/) - Dependency Management
 * [Docker](https://www.docker.com/) - Containerization engine
 
-# Report generation
+## Report generation <a name="ReportGeneration"></a>
 
 The result of running validations in Judge D is json containing data result. Reading json files is not very human
 friendly so in assets/report-generator there is python script that generates nice HTML report. To use it you need installed
 python and jinja2 libs. You can also use Dockerfile located in this directory.
 
-# Contributing
+## Contributing <a name="Contributing"></a>
 
 Want to help? Have any problems or questions? Let us know!
 
@@ -281,11 +297,11 @@ Want to help? Have any problems or questions? Let us know!
 * for detailed informations about contributing read our [Contribution guide](../master/CONTRIBUTING.md)
 
 
-# Versioning
+## Versioning <a name="Versioning"></a>
 
 TODO - Gitflow versioning in plans.
 
-# Authors
+## Authors <a name="Authors"></a>
 
 * **Tomasz Krzyżak** - *Development* - [krzyzy](https://github.com/krzyzy)
 * **Filip Łazarski** - *Development* - [Felipe444](https://github.com/Felipe444)
@@ -293,6 +309,6 @@ TODO - Gitflow versioning in plans.
 
 See also the list of [contributors](https://github.com/HLTech/judge-d/contributors) who participated in this project.
 
-# License
+## License <a name="License"></a>
 
 judge dredd is [MIT licensed](./LICENSE).
