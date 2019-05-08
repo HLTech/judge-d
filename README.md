@@ -12,7 +12,7 @@ Judge Dredd is a tool used to test contracts between microservices.
 2. [**Idea**](#Idea)
 3. [**Reference implementation**](#ReferenceImplementation)
 4. [**Prerequisites**](#Prerequisites)
-5. [**Installing**](#Installing)
+5. [**Running**](#Running)
 6. [**Running tests**](#RunningTests)
 7. [**Deployment**](#Deployment)
 8. [**Validation**](#Validation)
@@ -222,8 +222,9 @@ You can use your local Maven distribution, but there is maven wrapper included i
 (for UNIX users) or `mvnw.cmd {command}` (for Windows users)
 
 
-## Installing
+## Running
 
+### Local development mode
 To compile code, run tests and build jar files simply use 
 
 ```
@@ -235,10 +236,14 @@ After that jar files will appear in target directories.
 To run application on your local machine you have to go to judge-d-server package and run it using mvn task:
 ```
 cd judge-d-server
-mvn spring-boot:run
+mvn spring-boot:run -D spring.profiles.active=dev
 ```
 
-or (preferably) use docker-compose:
+To verify successful start you can go to the following url: _http://localhost:8080/v2/api-docs_. 
+
+### Docker based development mode
+
+Alternatively one cane use docker-compose:
 ```
 docker-compose -f judge-d-server/compose-dependencies.yml up -d
 ```
@@ -250,6 +255,8 @@ to run app.
 
 By default you have to create new database called judge_d for the application to start, but jdbc connection properties 
 can be defined in judge-d-server/compose-judge-d.yml file.
+
+
 
 ## Running tests <a name="RunningTests"></a>
 
