@@ -76,18 +76,6 @@ class ContractsControllerIT extends Specification {
             objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>() {})
     }
 
-    def 'should successfully retrieve list of services'() {
-        given:
-        when:
-            def response = mockMvc.perform(
-                get('/contracts')
-            ).andReturn().getResponse()
-        then:
-            response.getStatus() == 200
-            response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<String>>() {})
-    }
-
     def 'should successfully retrieve list of service versions'() {
         given:
             def serviceName = randomAlphabetic(10)

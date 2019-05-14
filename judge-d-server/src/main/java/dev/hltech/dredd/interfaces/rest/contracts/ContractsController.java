@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.google.common.collect.Maps.newHashMap;
 import static java.util.stream.Collectors.toList;
 
 @RestController
@@ -46,17 +45,7 @@ public class ContractsController {
         ));
     }
 
-    @GetMapping(value = "/contracts", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get names of services with registered contracts", nickname = "get names of services")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
-        @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Failure")})
-    public List<String> getAvailableServiceNames() {
-        return serviceContractsRepository.getServiceNames();
-    }
-
-    @GetMapping(value = "/contracts/{serviceName}", produces = MediaType.APPLICATION_JSON_VALUE)
+     @GetMapping(value = "/contracts/{serviceName}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get versions of a service with registered contracts", nickname = "get versions of a service")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
