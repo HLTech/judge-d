@@ -2,6 +2,12 @@ package dev.hltech.dredd.domain.validation.jms;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.hltech.vaunt.core.domain.model.Contract;
+import com.hltech.vaunt.validator.ValidationError;
+import com.hltech.vaunt.validator.ValidationResult;
+import com.hltech.vaunt.validator.VauntValidator;
 import dev.hltech.dredd.domain.validation.InterfaceContractValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,6 +28,8 @@ public class JmsContractValidator extends InterfaceContractValidator<List<Contra
     public JmsContractValidator() {
         super(COMMUNICATION_INTERFACE);
         objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new GuavaModule());
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     @Override
@@ -48,9 +56,7 @@ public class JmsContractValidator extends InterfaceContractValidator<List<Contra
 
     @Override
     public List<InteractionValidationResult> validate(List<Contract> expectations, List<Contract> capabilities) {
-        VauntValidator vauntValidator = new VauntValidator();
-
-        List<ValidationResult> validationResults = vauntValidator.validate(expectations, capabilities);
+        List<ValidationResult> validationResults = new VauntValidator().validate(expectations, capabilities);
 
         return validationResults.stream()
             .map(this::toInteractionValidationResult)

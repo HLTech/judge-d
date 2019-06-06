@@ -163,6 +163,16 @@
             <version>1.2.4.RELEASE</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.hltech</groupId>
+            <artifactId>vaunt-validator</artifactId>
+            <version>1.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hltech</groupId>
+            <artifactId>vaunt-core</artifactId>
+            <version>1.0.6</version>
+        </dependency>
     </dependencies>
 
     <build>
