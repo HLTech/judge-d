@@ -3,6 +3,8 @@ package dev.hltech.dredd.domain.validation.jms
 import com.fasterxml.jackson.module.jsonSchema.types.NullSchema
 import com.fasterxml.jackson.module.jsonSchema.types.NumberSchema
 import com.fasterxml.jackson.module.jsonSchema.types.StringSchema
+import com.hltech.vaunt.core.domain.model.Contract
+import com.hltech.vaunt.core.domain.model.DestinationType
 import dev.hltech.dredd.domain.validation.InterfaceContractValidator
 import spock.lang.Specification
 import spock.lang.Subject
@@ -105,7 +107,7 @@ class JmsContractValidatorUT extends Specification {
             }
     }
 
-    def "If there are some umnatched expectatuions - validation results with success"() {
+    def "If there are some unmatched expectations - validation results with success"() {
         given:
         def expectations = [new Contract(DestinationType.QUEUE, 'dst', new StringSchema()),
                             new Contract(DestinationType.TOPIC, 'dst', new StringSchema()),
