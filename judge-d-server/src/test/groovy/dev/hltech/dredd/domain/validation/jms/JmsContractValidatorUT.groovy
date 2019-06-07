@@ -84,17 +84,17 @@ class JmsContractValidatorUT extends Specification {
 
     def "If there is matching capability for each expectations - validation results with success"() {
         given:
-            def expectations = [new Contract(DestinationType.QUEUE, 'dst', new StringSchema()),
-                                new Contract(DestinationType.TOPIC, 'dst', new StringSchema()),
-                                new Contract(DestinationType.QUEUE, 'dst2', new StringSchema()),
-                                new Contract(DestinationType.QUEUE, 'dst', new NumberSchema())]
+            def expectations = [new Contract(DestinationType.QUEUE, 'dst', createStringSchema()),
+                                new Contract(DestinationType.TOPIC, 'dst', createStringSchema()),
+                                new Contract(DestinationType.QUEUE, 'dst2', createStringSchema()),
+                                new Contract(DestinationType.QUEUE, 'dst', createNumberSchema())]
 
         and:
-            def capabilities = [new Contract(DestinationType.QUEUE, 'dst', new NumberSchema()),
-                                new Contract(DestinationType.TOPIC, 'dst', new StringSchema()),
-                                new Contract(DestinationType.QUEUE, 'dst2', new StringSchema()),
-                                new Contract(DestinationType.QUEUE, 'dst', new StringSchema()),
-                                new Contract(DestinationType.QUEUE, 'weirdDst', new NumberSchema())]
+            def capabilities = [new Contract(DestinationType.QUEUE, 'dst', createNumberSchema()),
+                                new Contract(DestinationType.TOPIC, 'dst', createStringSchema()),
+                                new Contract(DestinationType.QUEUE, 'dst2', createStringSchema()),
+                                new Contract(DestinationType.QUEUE, 'dst', createStringSchema()),
+                                new Contract(DestinationType.QUEUE, 'weirdDst', createNumberSchema())]
 
         when:
             def results = validator.validate(expectations, capabilities)
@@ -109,18 +109,18 @@ class JmsContractValidatorUT extends Specification {
 
     def "If there are some unmatched expectations - validation results with success"() {
         given:
-        def expectations = [new Contract(DestinationType.QUEUE, 'dst', new StringSchema()),
-                            new Contract(DestinationType.TOPIC, 'dst', new StringSchema()),
-                            new Contract(DestinationType.QUEUE, 'dst2', new StringSchema()),
-                            new Contract(DestinationType.QUEUE, 'dst', new NumberSchema()),
-                            new Contract(DestinationType.QUEUE, 'weirdDst', new NumberSchema()),
-                            new Contract(DestinationType.QUEUE, 'dst', new NullSchema())]
+        def expectations = [new Contract(DestinationType.QUEUE, 'dst', createStringSchema()),
+                            new Contract(DestinationType.TOPIC, 'dst', createStringSchema()),
+                            new Contract(DestinationType.QUEUE, 'dst2', createStringSchema()),
+                            new Contract(DestinationType.QUEUE, 'dst', createNumberSchema()),
+                            new Contract(DestinationType.QUEUE, 'weirdDst', createNumberSchema()),
+                            new Contract(DestinationType.QUEUE, 'dst', createNullSchema())]
 
         and:
-        def capabilities = [new Contract(DestinationType.QUEUE, 'dst', new NumberSchema()),
-                            new Contract(DestinationType.TOPIC, 'dst', new StringSchema()),
-                            new Contract(DestinationType.QUEUE, 'dst2', new StringSchema()),
-                            new Contract(DestinationType.QUEUE, 'dst', new StringSchema())]
+        def capabilities = [new Contract(DestinationType.QUEUE, 'dst', createNumberSchema()),
+                            new Contract(DestinationType.TOPIC, 'dst', createStringSchema()),
+                            new Contract(DestinationType.QUEUE, 'dst2', createStringSchema()),
+                            new Contract(DestinationType.QUEUE, 'dst', createStringSchema())]
 
         when:
         def results = validator.validate(expectations, capabilities)
@@ -141,5 +141,23 @@ class JmsContractValidatorUT extends Specification {
             result.status == InterfaceContractValidator.InteractionValidationStatus.OK
             result.errors.size() == 0
         } == 4
+    }
+
+    def createNumberSchema() {
+        def schema = new NumberSchema()
+        schema.setId('id')
+        return schema
+    }
+
+    def createStringSchema() {
+        def schema = new StringSchema()
+        schema.setId('id')
+        return schema
+    }
+
+    def createNullSchema() {
+        def schema = new NullSchema()
+        schema.setId('id')
+        return schema
     }
 }
