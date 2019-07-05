@@ -80,13 +80,25 @@ class ContractsControllerIT extends Specification {
         given:
         when:
             def response = mockMvc.perform(
-                get('/contracts')
+                get('/contracts/services')
             ).andReturn().getResponse()
         then:
             response.getStatus() == 200
             response.getContentType().contains("application/json")
             objectMapper.readValue(response.getContentAsString(), new TypeReference<List<String>>() {})
     }
+
+    def 'should calling /contracts should redirect to /contracts/services to improve api discovery'() {
+        given:
+        when:
+        def response = mockMvc.perform(
+            get('/contracts')
+        ).andReturn().getResponse()
+        then:
+            response.getStatus() == 302
+            response.getRedirectedUrl() == "contracts/services"
+    }
+
 
     def 'should successfully retrieve list of service versions'() {
         given:
