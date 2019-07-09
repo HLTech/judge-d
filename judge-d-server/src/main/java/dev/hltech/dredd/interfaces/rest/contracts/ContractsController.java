@@ -57,7 +57,7 @@ public class ContractsController {
     }
 
     @GetMapping(value = "/contracts", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get contracts registered", nickname = "get names of services")
+    @ApiOperation(value = "Get registered contracts", nickname = "get names of services")
     @ApiResponses(value = {
         @ApiResponse(code = 302, message = "Found")
     })

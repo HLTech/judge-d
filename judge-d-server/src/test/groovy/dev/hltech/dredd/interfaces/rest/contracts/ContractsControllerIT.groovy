@@ -88,12 +88,11 @@ class ContractsControllerIT extends Specification {
             objectMapper.readValue(response.getContentAsString(), new TypeReference<List<String>>() {})
     }
 
-    def 'should calling /contracts should redirect to /contracts/services to improve api discovery'() {
-        given:
+    def 'should calling /contracts redirect to /contracts/services to improve api discovery'() {
         when:
-        def response = mockMvc.perform(
-            get('/contracts')
-        ).andReturn().getResponse()
+            def response = mockMvc.perform(
+                get('/contracts')
+            ).andReturn().getResponse()
         then:
             response.getStatus() == 302
             response.getRedirectedUrl() == "contracts/services"
