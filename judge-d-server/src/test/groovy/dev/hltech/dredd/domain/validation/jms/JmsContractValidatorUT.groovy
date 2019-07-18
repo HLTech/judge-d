@@ -1,5 +1,6 @@
 package dev.hltech.dredd.domain.validation.jms
 
+import com.fasterxml.jackson.module.jsonSchema.types.IntegerSchema
 import com.fasterxml.jackson.module.jsonSchema.types.NullSchema
 import com.fasterxml.jackson.module.jsonSchema.types.NumberSchema
 import com.fasterxml.jackson.module.jsonSchema.types.StringSchema
@@ -114,23 +115,30 @@ class JmsContractValidatorUT extends Specification {
                             new Contract(DestinationType.QUEUE, 'dst2', createStringSchema()),
                             new Contract(DestinationType.QUEUE, 'dst', createNumberSchema()),
                             new Contract(DestinationType.QUEUE, 'weirdDst', createNumberSchema()),
-                            new Contract(DestinationType.QUEUE, 'dst', createNullSchema())]
+                            new Contract(DestinationType.QUEUE, 'dst', createNullSchema()),
+                            new Contract(DestinationType.QUEUE, 'dst3', createIntegerSchema())]
 
         and:
         def capabilities = [new Contract(DestinationType.QUEUE, 'dst', createNumberSchema()),
                             new Contract(DestinationType.TOPIC, 'dst', createStringSchema()),
                             new Contract(DestinationType.QUEUE, 'dst2', createStringSchema()),
-                            new Contract(DestinationType.QUEUE, 'dst', createStringSchema())]
+                            new Contract(DestinationType.QUEUE, 'dst', createStringSchema()),
+                            new Contract(DestinationType.QUEUE, 'dst3', createStringSchema())]
 
         when:
         def results = validator.validate(expectations, capabilities)
 
         then:
-        results.size() == 6
+        results.size() == 7
         results.any { result ->
             result.status == InterfaceContractValidator.InteractionValidationStatus.FAILED
             result.errors.size() == 1
             result.errors[0] == 'Missing endpoint required by consumer'
+        }
+        results.any { result ->
+            result.status == InterfaceContractValidator.InteractionValidationStatus.FAILED
+            result.errors.size() == 1
+            result.errors[0] == 'Missing message name required by consumer'
         }
         results.any { result ->
             result.status == InterfaceContractValidator.InteractionValidationStatus.FAILED
@@ -151,13 +159,19 @@ class JmsContractValidatorUT extends Specification {
 
     def createStringSchema() {
         def schema = new StringSchema()
-        schema.setId('id')
+        schema.setId('id2')
         return schema
     }
 
     def createNullSchema() {
         def schema = new NullSchema()
-        schema.setId('id')
+        schema.setId('id3')
+        return schema
+    }
+
+    def createIntegerSchema() {
+        def schema = new IntegerSchema()
+        schema.setId('id2')
         return schema
     }
 }
