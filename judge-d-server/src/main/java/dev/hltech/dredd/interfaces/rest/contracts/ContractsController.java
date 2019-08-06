@@ -7,16 +7,22 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
 @RestController
+@RequestMapping("/contracts")
 @Transactional
 public class ContractsController {
 
@@ -29,24 +35,16 @@ public class ContractsController {
         this.mapper = mapper;
     }
 
-    @PostMapping(value = "/contracts/{provider}/{version:.+}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Register contracts for a version of a service", nickname = "register contracts")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get registered contracts", nickname = "get names of services")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
-        @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Failure")})
-    public ServiceContractsDto create(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version, @RequestBody ServiceContractsForm form) {
-        return mapper.toDto(this.serviceContractsRepository.persist(
-            new ServiceContracts(
-                provider,
-                version,
-                mapper.mapCapabilitiesForm(form.getCapabilities()),
-                mapper.mapExpectationsForm(form.getExpectations())
-            )
-        ));
+        @ApiResponse(code = 302, message = "Found")
+    })
+    public RedirectView getServicesEndpointDescription()  {
+        return new RedirectView("contracts/services", true);
     }
 
-    @GetMapping(value = "/contracts/services", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/services", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get names of services with registered contracts", nickname = "get names of services")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
@@ -56,17 +54,24 @@ public class ContractsController {
         return serviceContractsRepository.getServiceNames();
     }
 
-    @GetMapping(value = "/contracts", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get registered contracts", nickname = "get names of services")
+    @GetMapping(value = "/services/{serviceName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get details of a services with registered contracts", nickname = "get service details")
     @ApiResponses(value = {
-        @ApiResponse(code = 302, message = "Found")
-    })
-    public RedirectView getServicesEndpointDescription()  {
-        return new RedirectView("contracts/services", true);
+        @ApiResponse(code = 200, message = "Success", response = String.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 400, message = "Not found"),
+        @ApiResponse(code = 500, message = "Failure")})
+    public String getAvailableServiceNames(@PathVariable(name = "serviceName") String serviceName) {
+        return serviceContractsRepository.getService(serviceName);
     }
 
+    @ExceptionHandler(NoResultException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    void notFound() {
 
-    @GetMapping(value = "/contracts/{serviceName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    }
+
+    @GetMapping(value = "/services/{serviceName}/versions", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get versions of a service with registered contracts", nickname = "get versions of a service")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
@@ -79,14 +84,30 @@ public class ContractsController {
             .collect(toList());
     }
 
-    @GetMapping(value = "/contracts/{provider}/{version:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "services/{serviceName}/versions/{version:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get contracts for a version of a service", nickname = "get contracts")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
-    public ServiceContractsDto get(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version) {
-        return mapper.toDto(this.serviceContractsRepository.find(provider, version).orElseThrow(ResourceNotFoundException::new));
+    public ServiceContractsDto get(@PathVariable(name = "serviceName") String serviceName, @PathVariable(name = "version") String version) {
+        return mapper.toDto(this.serviceContractsRepository.find(serviceName, version).orElseThrow(ResourceNotFoundException::new));
     }
 
+    @PostMapping(value = "services/{serviceName}/versions/{version:.+}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Register contracts for a version of a service", nickname = "register contracts")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Failure")})
+    public ServiceContractsDto create(@PathVariable(name = "serviceName") String serviceName, @PathVariable(name = "version") String version, @RequestBody ServiceContractsForm form) {
+        return mapper.toDto(this.serviceContractsRepository.persist(
+            new ServiceContracts(
+                serviceName,
+                version,
+                mapper.mapCapabilitiesForm(form.getCapabilities()),
+                mapper.mapExpectationsForm(form.getExpectations())
+            )
+        ));
+    }
 }

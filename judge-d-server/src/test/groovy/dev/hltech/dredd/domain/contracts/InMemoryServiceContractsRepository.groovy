@@ -3,6 +3,9 @@ package dev.hltech.dredd.domain.contracts
 import com.google.common.collect.Maps
 import dev.hltech.dredd.domain.environment.EnvironmentAggregate
 
+import javax.persistence.EntityNotFoundException
+import javax.persistence.NoResultException
+
 class InMemoryServiceContractsRepository implements ServiceContractsRepository {
 
     private Map<EnvironmentAggregate.ServiceVersion, ServiceContracts> storage = Maps.newHashMap()
@@ -16,6 +19,19 @@ class InMemoryServiceContractsRepository implements ServiceContractsRepository {
     @Override
     Optional<ServiceContracts> find(String name, String version) {
         return Optional.ofNullable(storage.get(new EnvironmentAggregate.ServiceVersion(name, version)))
+    }
+
+    @Override
+    String getService(String name)  {
+        try {
+            return storage
+                .keySet()
+                .grep {it.name == name}
+                .first().name
+        } catch (NoSuchElementException nsee) {
+            throw new NoResultException("Not found")
+        }
+
     }
 
     @Override
