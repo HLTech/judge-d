@@ -28,24 +28,36 @@ class ContractsControllerIT extends Specification {
     @Autowired
     private MockMvc mockMvc
 
-    def 'return 404 when no contracts registered for given service'() {
+    def 'return 404 when no contracts registered for given service and version'() {
         when: 'rest validatePacts url is hit'
             def serviceName = randomAlphabetic(10)
             def version = '1.0'
             def response = mockMvc.perform(
-                get(serviceNameVersionUrl(serviceName, version))
+                get(serviceNameVersionUrl(), serviceName, version)
                     .contentType("application/json")
             ).andReturn().getResponse()
         then: 'controller returns 404'
             response.getStatus() == 404
     }
 
+    def 'return 404 when no contracts registered for given service'() {
+        when: 'rest validatePacts url is hit'
+        def serviceName = randomAlphabetic(10)
+        def response = mockMvc.perform(
+            get('/contracts/services/{serviceName}', serviceName)
+                .contentType("application/json")
+        ).andReturn().getResponse()
+        then: 'controller returns 404'
+        response.getStatus() == 404
+    }
+
+
     def 'should return 200 and json when create a service contracts'() {
         when: 'rest validatePacts url is hit'
             def serviceName = randomAlphabetic(10)
             def version = '1.0'
             def response = mockMvc.perform(
-                post(serviceNameVersionUrl(serviceName, version))
+                post(serviceNameVersionUrl(), serviceName, version)
                     .contentType("application/json")
                     .content(objectMapper.writeValueAsString(randomServiceContractFormWithExpectationsAndCapabilities()))
             ).andReturn().getResponse()
@@ -55,8 +67,8 @@ class ContractsControllerIT extends Specification {
             objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>() {})
     }
 
-    private String serviceNameVersionUrl(String serviceName, String version) {
-        '/contracts/services/' + serviceName + '/versions/' + version
+    private String serviceNameVersionUrl() {
+        '/contracts/services/{serviceName}/versions/{version}'
     }
 
     def 'should return 200 and json when get previously saved service contracts'() {
@@ -64,7 +76,7 @@ class ContractsControllerIT extends Specification {
             def (serviceName, version) = createAService()
         when:
             def response = mockMvc.perform(
-                get(serviceNameVersionUrl(serviceName, version))
+                get(serviceNameVersionUrl(), serviceName, version)
                     .contentType("application/json")
             ).andReturn().getResponse()
         then: 'controller returns dto response in json'
@@ -102,13 +114,12 @@ class ContractsControllerIT extends Specification {
         def version = '1.0'
         def serviceName = randomAlphabetic(10)
         mockMvc.perform(
-            post(serviceNameVersionUrl(serviceName, version))
+            post(serviceNameVersionUrl(), serviceName, version)
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(randomServiceContractFormWithExpectationsAndCapabilities()))
         ).andReturn().getResponse()
         [serviceName, version]
     }
-
 
     def 'should calling /contracts redirect to /contracts/services to improve api discovery'() {
         when:
@@ -120,19 +131,18 @@ class ContractsControllerIT extends Specification {
             response.getRedirectedUrl() == "contracts/services"
     }
 
-
     def 'should successfully retrieve list of service versions'() {
         given:
             def serviceName = randomAlphabetic(10)
             def version = '1.0'
             mockMvc.perform(
-                post(serviceNameVersionUrl(serviceName, version))
+                post(serviceNameVersionUrl(), serviceName, version)
                     .contentType("application/json")
                     .content(objectMapper.writeValueAsString(randomServiceContractFormWithExpectationsAndCapabilities()))
             ).andReturn().getResponse()
         when:
             def response = mockMvc.perform(
-                get('/contracts/services/' + serviceName + "/versions")
+                get('/contracts/services/{serviceName}/versions', serviceName)
             ).andReturn().getResponse()
         then:
             response.getStatus() == 200

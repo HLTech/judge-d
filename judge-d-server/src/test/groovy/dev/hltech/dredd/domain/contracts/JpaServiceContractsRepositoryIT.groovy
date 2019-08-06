@@ -7,6 +7,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 
+import javax.persistence.NoResultException
+
 import static java.util.function.Function.identity
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import static wiremock.org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
@@ -63,5 +65,23 @@ class JpaServiceContractsRepositoryIT extends Specification {
             serviceContracts.contains(s1)
             serviceContracts.contains(s2)
     }
+
+    def 'should find persisted service by name'() {
+        given:
+            def serviceName = randomAlphabetic(10)
+            def s1 = repository.persist(new ServiceContracts(serviceName, randomAlphabetic(5), [:], [:]))
+        when:
+            String service = repository.getService(serviceName)
+        then:
+            service == s1.name
+    }
+
+    def 'should throw exception when service not found by name'() {
+        when:
+            repository.getService(randomAlphabetic(7))
+        then:
+            thrown NoResultException
+    }
+
 
 }
