@@ -1,8 +1,5 @@
 package dev.hltech.dredd.domain.contracts;
 
-import org.hibernate.annotations.NotFound;
-
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 

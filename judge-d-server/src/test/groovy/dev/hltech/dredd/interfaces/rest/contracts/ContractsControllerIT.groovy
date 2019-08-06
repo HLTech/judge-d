@@ -171,4 +171,98 @@ class ContractsControllerIT extends Specification {
         }
     }
 
+    @Deprecated
+    def '[deprecated] old return 404 when no contracts registered for given service'() {
+        when: 'rest validatePacts url is hit'
+        def serviceName = randomAlphabetic(10)
+        def version = '1.0'
+        def response = mockMvc.perform(
+            get('/contracts/' + serviceName + '/' + version)
+                .contentType("application/json")
+        ).andReturn().getResponse()
+        then: 'controller returns 404'
+        response.getStatus() == 404
+    }
+
+    @Deprecated
+    def '[deprecated] old should return 200 and json when create a service contracts'() {
+        when: 'rest validatePacts url is hit'
+            def serviceName = randomAlphabetic(10)
+            def version = '1.0'
+            def response = mockMvc.perform(
+                post('/contracts/{serviceName}/{version}', serviceName, version)
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(randomServiceContractFormWithExpectationsAndCapabilities()))
+            ).andReturn().getResponse()
+        then: 'controller returns dto response in json'
+            response.getStatus() == 200
+            response.getContentType().contains("application/json")
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>() {})
+    }
+
+    @Deprecated
+    def '[deprecated] old should return 200 and json when get previously saved service contracts'() {
+        given: 'rest validatePacts url is hit'
+        def serviceName = randomAlphabetic(10)
+        def version = '1.0'
+        def serviceContractsForm = randomServiceContractFormWithExpectationsAndCapabilities()
+        mockMvc.perform(
+            post('/contracts/' + serviceName + '/' + version)
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(serviceContractsForm))
+        ).andReturn().getResponse()
+        when:
+        def response = mockMvc.perform(
+            get('/contracts/' + serviceName + '/' + version)
+                .contentType("application/json")
+        ).andReturn().getResponse()
+        then: 'controller returns dto response in json'
+        response.getStatus() == 200
+        response.getContentType().contains("application/json")
+        objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>() {})
+    }
+
+    @Deprecated
+    def '[deprecated] should successfully retrieve list of services'() {
+        given:
+        when:
+            def response = mockMvc.perform(
+                get('/contracts/services')
+            ).andReturn().getResponse()
+        then:
+            response.getStatus() == 200
+            response.getContentType().contains("application/json")
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<String>>() {})
+    }
+
+    @Deprecated
+    def '[deprecated] old should calling /contracts redirect to /contracts/services to improve api discovery'() {
+        when:
+        def response = mockMvc.perform(
+            get('/contracts')
+        ).andReturn().getResponse()
+        then:
+        response.getStatus() == 302
+        response.getRedirectedUrl() == "contracts/services"
+    }
+
+    @Deprecated
+    def '[deprecated] old should successfully retrieve list of service versions'() {
+        given:
+        def serviceName = randomAlphabetic(10)
+        def version = '1.0'
+        mockMvc.perform(
+            post('/contracts/' + serviceName + '/' + version)
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(randomServiceContractFormWithExpectationsAndCapabilities()))
+        ).andReturn().getResponse()
+        when:
+            def response = mockMvc.perform(
+                get('/contracts/' + serviceName)
+            ).andReturn().getResponse()
+        then:
+            response.getStatus() == 200
+            response.getContentType().contains("application/json")
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<String>>() {})
+    }
 }
