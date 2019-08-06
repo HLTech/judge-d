@@ -30,6 +30,15 @@ public class JpaServiceContractsRepository implements ServiceContractsRepository
     }
 
     @Override
+    public String getService(String name) {
+        return entityManager
+            .createQuery("select distinct o.id.name from " + ServiceContracts.class.getName() + " o where o.id.name = :name", String.class)
+            .setParameter("name", name)
+            .getSingleResult();
+
+    }
+
+    @Override
     public List<ServiceContracts> find(String name) {
         return entityManager
             .createQuery("select o from " + ServiceContracts.class.getName() + " o where o.id.name = :name", ServiceContracts.class)
