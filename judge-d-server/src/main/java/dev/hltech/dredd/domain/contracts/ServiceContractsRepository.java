@@ -12,7 +12,7 @@ public interface ServiceContractsRepository {
 
     Optional<ServiceContracts> find(String name, String version);
 
-    String getService(String name) throws EntityNotFoundException;
+    String getService(String name);
 
     List<ServiceContracts> find(String name);
 
