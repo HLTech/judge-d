@@ -106,7 +106,7 @@ class ContractsControllerIT extends Specification {
             ).andReturn().getResponse()
         then:
             response.getStatus() == 200
-            response.getContentType().contains("application/json")
+            response.getContentType().contains("text/plain")
             response.getContentAsString() == serviceName
     }
 
