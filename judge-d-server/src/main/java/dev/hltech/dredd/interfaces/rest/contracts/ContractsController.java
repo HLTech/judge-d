@@ -65,7 +65,7 @@ public class ContractsController {
      * @param serviceName - name of the service that we are querying for
      * @return name of the service if contracts are present, NOT_FOUND (404) otherwise
      */
-    @GetMapping(value = "/services/{serviceName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/services/{serviceName}", produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Get details of a services with registered contracts", nickname = "get service details")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = String.class),
