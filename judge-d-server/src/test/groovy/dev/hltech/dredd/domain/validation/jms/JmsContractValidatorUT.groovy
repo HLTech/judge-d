@@ -1,7 +1,5 @@
 package dev.hltech.dredd.domain.validation.jms
 
-import com.fasterxml.jackson.module.jsonSchema.types.IntegerSchema
-import com.fasterxml.jackson.module.jsonSchema.types.NullSchema
 import com.fasterxml.jackson.module.jsonSchema.types.NumberSchema
 import com.fasterxml.jackson.module.jsonSchema.types.StringSchema
 import com.hltech.vaunt.core.domain.model.Contract
@@ -24,7 +22,7 @@ class JmsContractValidatorUT extends Specification {
                     {
                         "destinationType":"${dstType}",
                         "destinationName":"${dstName}",
-                        "body": {
+                        "message": {
                             "type":"string"
                         }
                     }
@@ -44,7 +42,7 @@ class JmsContractValidatorUT extends Specification {
                         {
                             "destinationType":"${dstType}",
                             "destinationName":"${dstName}",
-                            "body": {
+                            "message": {
                                 "type":"string"
                             }
                         }
@@ -85,17 +83,17 @@ class JmsContractValidatorUT extends Specification {
 
     def "If there is matching capability for each expectations - validation results with success"() {
         given:
-            def expectations = [new Contract(DestinationType.QUEUE, 'dst', createStringSchema()),
-                                new Contract(DestinationType.TOPIC, 'dst', createStringSchema()),
-                                new Contract(DestinationType.QUEUE, 'dst2', createStringSchema()),
-                                new Contract(DestinationType.QUEUE, 'dst', createNumberSchema())]
+            def expectations = [new Contract(DestinationType.QUEUE, 'dst', new StringSchema(id: 'id')),
+                                new Contract(DestinationType.TOPIC, 'dst', new StringSchema(id: 'id')),
+                                new Contract(DestinationType.QUEUE, 'dst2', new StringSchema(id: 'id')),
+                                new Contract(DestinationType.QUEUE, 'dst', new NumberSchema(id: 'id2'))]
 
         and:
-            def capabilities = [new Contract(DestinationType.QUEUE, 'dst', createNumberSchema()),
-                                new Contract(DestinationType.TOPIC, 'dst', createStringSchema()),
-                                new Contract(DestinationType.QUEUE, 'dst2', createStringSchema()),
-                                new Contract(DestinationType.QUEUE, 'dst', createStringSchema()),
-                                new Contract(DestinationType.QUEUE, 'weirdDst', createNumberSchema())]
+            def capabilities = [new Contract(DestinationType.QUEUE, 'dst', new NumberSchema(id: 'id2')),
+                                new Contract(DestinationType.TOPIC, 'dst', new StringSchema(id: 'id')),
+                                new Contract(DestinationType.QUEUE, 'dst2', new StringSchema(id: 'id')),
+                                new Contract(DestinationType.QUEUE, 'dst', new StringSchema(id: 'id')),
+                                new Contract(DestinationType.QUEUE, 'weirdDst', new NumberSchema(id: 'id2'))]
 
         when:
             def results = validator.validate(expectations, capabilities)
@@ -110,68 +108,44 @@ class JmsContractValidatorUT extends Specification {
 
     def "If there are some unmatched expectations - validation results with success"() {
         given:
-        def expectations = [new Contract(DestinationType.QUEUE, 'dst', createStringSchema()),
-                            new Contract(DestinationType.TOPIC, 'dst', createStringSchema()),
-                            new Contract(DestinationType.QUEUE, 'dst2', createStringSchema()),
-                            new Contract(DestinationType.QUEUE, 'dst', createNumberSchema()),
-                            new Contract(DestinationType.QUEUE, 'weirdDst', createNumberSchema()),
-                            new Contract(DestinationType.QUEUE, 'dst', createNullSchema()),
-                            new Contract(DestinationType.QUEUE, 'dst3', createIntegerSchema())]
+        def expectations = [new Contract(DestinationType.QUEUE, 'dst', new StringSchema(id: 'id')),
+                            new Contract(DestinationType.QUEUE, 'dst2', new StringSchema(id: 'id2')),
+                            new Contract(DestinationType.QUEUE, 'dst3', new StringSchema(id: 'id3', pathStart: 'abc')),
+                            new Contract(DestinationType.QUEUE, 'dst4', new StringSchema(id: 'id4', pathStart: 'abc'))]
 
         and:
-        def capabilities = [new Contract(DestinationType.QUEUE, 'dst', createNumberSchema()),
-                            new Contract(DestinationType.TOPIC, 'dst', createStringSchema()),
-                            new Contract(DestinationType.QUEUE, 'dst2', createStringSchema()),
-                            new Contract(DestinationType.QUEUE, 'dst', createStringSchema()),
-                            new Contract(DestinationType.QUEUE, 'dst3', createStringSchema())]
+        def capabilities = [new Contract(DestinationType.TOPIC, 'dst', new StringSchema(id: 'id')),
+                            new Contract(DestinationType.QUEUE, 'dst2', new StringSchema(id: 'id22')),
+                            new Contract(DestinationType.QUEUE, 'dst3', new StringSchema(id: 'id3', pathStart: 'def')),
+                            new Contract(DestinationType.QUEUE, 'dst4', new StringSchema(id: 'id4', pathStart: 'abc'))]
 
         when:
         def results = validator.validate(expectations, capabilities)
 
         then:
-        results.size() == 7
+        results.size() == 4
         results.any { result ->
+            result.name == 'Contract(destinationType = QUEUE, destinationName = "dst", messageId = "id")'
             result.status == InterfaceContractValidator.InteractionValidationStatus.FAILED
             result.errors.size() == 1
             result.errors[0] == 'Missing endpoint required by consumer'
         }
         results.any { result ->
+            result.name == 'Contract(destinationType = QUEUE, destinationName = "dst2", messageId = "id2")'
             result.status == InterfaceContractValidator.InteractionValidationStatus.FAILED
             result.errors.size() == 1
-            result.errors[0] == 'Missing message name required by consumer'
+            result.errors[0] == 'Missing message with given id required by consumer'
         }
         results.any { result ->
+            result.name == 'Contract(destinationType = QUEUE, destinationName = "dst3", messageId = "id3")'
             result.status == InterfaceContractValidator.InteractionValidationStatus.FAILED
             result.errors.size() == 1
-            result.errors[0] == 'Wrong schema of the message'
+            result.errors[0] == 'Schema with id id3 has not matching pathStart - consumer: abc, provider: def'
         }
-        results.count { result ->
+        results.any { result ->
+            result.name == 'Contract(destinationType = QUEUE, destinationName = "dst4", messageId = "id4")'
             result.status == InterfaceContractValidator.InteractionValidationStatus.OK
             result.errors.size() == 0
-        } == 4
-    }
-
-    def createNumberSchema() {
-        def schema = new NumberSchema()
-        schema.setId('id')
-        return schema
-    }
-
-    def createStringSchema() {
-        def schema = new StringSchema()
-        schema.setId('id2')
-        return schema
-    }
-
-    def createNullSchema() {
-        def schema = new NullSchema()
-        schema.setId('id3')
-        return schema
-    }
-
-    def createIntegerSchema() {
-        def schema = new IntegerSchema()
-        schema.setId('id2')
-        return schema
+        }
     }
 }
