@@ -2,7 +2,6 @@ package dev.hltech.dredd.domain.validation.jms;
 
 import com.hltech.vaunt.core.VauntSerializer;
 import com.hltech.vaunt.core.domain.model.Contract;
-import com.hltech.vaunt.validator.ValidationError;
 import com.hltech.vaunt.validator.ValidationResult;
 import com.hltech.vaunt.validator.VauntValidator;
 import dev.hltech.dredd.domain.validation.InterfaceContractValidator;
@@ -11,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.hltech.vaunt.validator.ValidationResult.ValidationStatus.FAILED;
 
 @Component
 @Slf4j
@@ -42,12 +43,10 @@ public class JmsContractValidator extends InterfaceContractValidator<List<Contra
     }
 
     private InteractionValidationResult toInteractionValidationResult(ValidationResult validationResult) {
-        if (!validationResult.isValid()) {
-            List<String> errors = validationResult.getErrors().stream()
-                .map(ValidationError::getDescription)
-                .collect(Collectors.toList());
-            return InteractionValidationResult.fail(validationResult.toString(), errors);
+        if (validationResult.getResult().equals(FAILED)) {
+            return InteractionValidationResult.fail(validationResult.getName(), validationResult.getErrors());
         }
-        return InteractionValidationResult.success(validationResult.toString());
+
+        return InteractionValidationResult.success(validationResult.getName());
     }
 }
