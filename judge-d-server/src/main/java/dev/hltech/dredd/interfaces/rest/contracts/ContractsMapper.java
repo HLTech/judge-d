@@ -33,7 +33,7 @@ public class ContractsMapper {
             ));
     }
 
-    ServiceContractsDto toDto(ServiceContracts serviceContracts) {
+    public ServiceContractsDto toDto(ServiceContracts serviceContracts) {
         return new ServiceContractsDto(
             serviceContracts.getName(),
             serviceContracts.getVersion(),
