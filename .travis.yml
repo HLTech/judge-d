@@ -11,8 +11,7 @@ jobs:
   include:
     - stage: build with maven & generate reporrts
       script:
-#      - mvn clean verify jacoco:report coveralls:report
-       - mvn clean install
+      - mvn clean verify jacoco:report coveralls:report
     - stage: build & publish docker image for server
       if: branch = master
       script:
