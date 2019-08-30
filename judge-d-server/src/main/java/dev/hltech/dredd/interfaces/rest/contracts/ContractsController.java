@@ -120,24 +120,6 @@ public class ContractsController {
         ));
     }
 
-    @PostMapping(value = "/{provider}/{version:.+}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Register contracts for a version of a service", nickname = "register contracts")
-    @Deprecated
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
-        @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Failure")})
-    public ServiceContractsDto create(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version, @RequestBody ServiceContractsForm form) {
-        return mapper.toDto(this.serviceContractsRepository.persist(
-            new ServiceContracts(
-                provider,
-                version,
-                mapper.mapCapabilitiesForm(form.getCapabilities()),
-                mapper.mapExpectationsForm(form.getExpectations())
-            )
-        ));
-    }
-
     @GetMapping(value = "/{serviceName}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get versions of a service with registered contracts", nickname = "get versions of a service")
     @Deprecated
