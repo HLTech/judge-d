@@ -185,29 +185,13 @@ class ContractsControllerIT extends Specification {
     }
 
     @Deprecated
-    def '[deprecated] old should return 200 and json when create a service contracts'() {
-        when: 'rest validatePacts url is hit'
-            def serviceName = randomAlphabetic(10)
-            def version = '1.0'
-            def response = mockMvc.perform(
-                post('/contracts/{serviceName}/{version}', serviceName, version)
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(randomServiceContractFormWithExpectationsAndCapabilities()))
-            ).andReturn().getResponse()
-        then: 'controller returns dto response in json'
-            response.getStatus() == 200
-            response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<ServiceContractsDto>() {})
-    }
-
-    @Deprecated
     def '[deprecated] old should return 200 and json when get previously saved service contracts'() {
         given: 'rest validatePacts url is hit'
         def serviceName = randomAlphabetic(10)
         def version = '1.0'
         def serviceContractsForm = randomServiceContractFormWithExpectationsAndCapabilities()
         mockMvc.perform(
-            post('/contracts/' + serviceName + '/' + version)
+            post('/contracts/services/' + serviceName + '/versions/' + version)
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(serviceContractsForm))
         ).andReturn().getResponse()
@@ -252,7 +236,7 @@ class ContractsControllerIT extends Specification {
         def serviceName = randomAlphabetic(10)
         def version = '1.0'
         mockMvc.perform(
-            post('/contracts/' + serviceName + '/' + version)
+            post('/contracts/services/' + serviceName + '/versions/' + version)
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(randomServiceContractFormWithExpectationsAndCapabilities()))
         ).andReturn().getResponse()
