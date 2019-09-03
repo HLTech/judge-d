@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import java.util.Set;
+
 @Configuration
 @Profile("kubernetes")
 public class K8sBeanFactory {
@@ -18,8 +20,14 @@ public class K8sBeanFactory {
     }
 
     @Bean
-    public ServiceLocator serviceLocator(KubernetesClient kubernetesClient, @Value("${hltech.contracts.judge-d.requiredLabel}") String requiredLabel) {
-        return new K8sLabelBasedServiceLocator(kubernetesClient, requiredLabel);
+    public ServiceLocator serviceLocator(
+        KubernetesClient kubernetesClient,
+        @Value("${hltech.contracts.judge-d.requiredLabel}") String requiredLabel,
+        @Value("${hltech.contracts.judge-d.excluded-namespaces:#{''}}") Set<String> excludedNamespaces,
+        @Value("${hltech.contracts.judge-d.included-namespaces:#{''}}") Set<String> includedNamespaces
+
+    ) {
+        return new K8sLabelBasedServiceLocator(kubernetesClient, requiredLabel, excludedNamespaces, includedNamespaces);
     }
 
 }
