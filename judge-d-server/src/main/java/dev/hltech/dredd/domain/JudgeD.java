@@ -26,7 +26,6 @@ public class JudgeD {
     }
 
     public <C, E> EnvironmentValidatorResult validateServiceAgainstEnvironments(ServiceContracts validatedService, List<String> environments, InterfaceContractValidator<C, E> validator) {
-
         List<ServiceContracts> environmentContracts = environments.stream()
             .flatMap(env -> this.environmentRepository.get(env).getAllServices().stream())
             .map(sv -> this.serviceContractsRepository.find(sv.getName(), sv.getVersion()))
@@ -34,6 +33,14 @@ public class JudgeD {
             .map(Optional::get)
             .collect(toList());
 
+        return getValidatorResult(validatedService, environmentContracts, validator);
+    }
+
+    public <C, E> EnvironmentValidatorResult getValidatorResult(
+        ServiceContracts validatedService,
+        List<ServiceContracts> environmentContracts,
+        InterfaceContractValidator<C, E> validator
+    ) {
         return new EnvironmentValidatorResult(
             validator.getCommunicationInterface(),
             validator.validateCapabilities(validatedService, environmentContracts),
