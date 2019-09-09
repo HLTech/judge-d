@@ -191,6 +191,18 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>com.hltech</groupId>
+                <artifactId>judge-d-contract-publisher-maven-plugin</artifactId>
+                <version>0.3.0</version>
+                <configuration>
+                    <judgeDLocation>https://judge-d.herokuapp.com</judgeDLocation>
+                    <expectations>
+                        <param>rest</param>
+                    </expectations>
+                    <pactsLocation>${project.basedir}/target/pacts</pactsLocation>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
