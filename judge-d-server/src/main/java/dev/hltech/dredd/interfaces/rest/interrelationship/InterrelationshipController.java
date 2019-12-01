@@ -2,8 +2,8 @@ package dev.hltech.dredd.interfaces.rest.interrelationship;
 
 import dev.hltech.dredd.domain.contracts.ServiceContracts;
 import dev.hltech.dredd.domain.contracts.ServiceContractsRepository;
-import dev.hltech.dredd.domain.environment.EnvironmentAggregate;
 import dev.hltech.dredd.domain.environment.EnvironmentRepository;
+import dev.hltech.dredd.domain.ServiceVersion;
 import dev.hltech.dredd.interfaces.rest.contracts.ContractsMapper;
 import dev.hltech.dredd.interfaces.rest.contracts.ServiceContractsDto;
 import io.swagger.annotations.ApiOperation;
@@ -53,8 +53,8 @@ public class InterrelationshipController {
         return new InterrelationshipDto(env, serviceContractsSet);
     }
 
-    private ServiceContracts getServiceContracts(EnvironmentAggregate.ServiceVersion service) {
-        return serviceContractsRepository.find(service.getName(), service.getVersion())
+    private ServiceContracts getServiceContracts(ServiceVersion service) {
+        return serviceContractsRepository.findOne(service)
             .orElseGet(() ->
                 new ServiceContracts(service.getName(), service.getVersion(), new HashMap<>(), new HashMap<>()));
     }

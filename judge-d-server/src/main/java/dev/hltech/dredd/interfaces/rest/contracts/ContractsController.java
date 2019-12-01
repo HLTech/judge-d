@@ -2,6 +2,7 @@ package dev.hltech.dredd.interfaces.rest.contracts;
 
 import dev.hltech.dredd.domain.contracts.ServiceContracts;
 import dev.hltech.dredd.domain.contracts.ServiceContractsRepository;
+import dev.hltech.dredd.domain.ServiceVersion;
 import dev.hltech.dredd.interfaces.rest.ResourceNotFoundException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -87,7 +88,7 @@ public class ContractsController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
     public List<String> getAllServiceVersions(@PathVariable(name = "serviceName") String serviceName) {
-        return serviceContractsRepository.find(serviceName)
+        return serviceContractsRepository.findAllByServiceName(serviceName)
             .stream()
             .map(ServiceContracts::getVersion).sorted()
             .collect(toList());
@@ -100,7 +101,7 @@ public class ContractsController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
     public ServiceContractsDto getContracts(@PathVariable(name = "serviceName") String serviceName, @PathVariable(name = "version") String version) {
-        return mapper.toDto(this.serviceContractsRepository.find(serviceName, version).orElseThrow(ResourceNotFoundException::new));
+        return mapper.toDto(this.serviceContractsRepository.findOne(new ServiceVersion(serviceName, version)).orElseThrow(ResourceNotFoundException::new));
     }
 
     @PostMapping(value = "services/{serviceName}/versions/{version:.+}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -128,7 +129,7 @@ public class ContractsController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
     public List<String> getServiceVersions(@PathVariable(name = "serviceName") String serviceName) {
-        return serviceContractsRepository.find(serviceName)
+        return serviceContractsRepository.findAllByServiceName(serviceName)
             .stream()
             .map(ServiceContracts::getVersion).sorted()
             .collect(toList());
@@ -142,7 +143,7 @@ public class ContractsController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
     public ServiceContractsDto get(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version) {
-        return mapper.toDto(this.serviceContractsRepository.find(provider, version).orElseThrow(ResourceNotFoundException::new));
+        return mapper.toDto(this.serviceContractsRepository.findOne(new ServiceVersion(provider, version)).orElseThrow(ResourceNotFoundException::new));
     }
 
 }

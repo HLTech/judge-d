@@ -2,14 +2,13 @@ package dev.hltech.dredd.domain.environment;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.*;
+import dev.hltech.dredd.domain.ServiceVersion;
 
 import javax.persistence.*;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.stream.Collectors.toSet;
-import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Table(name = "environments")
@@ -43,20 +42,6 @@ public class EnvironmentAggregate {
 
     public static EnvironmentAggregate empty(String environmentName) {
         return new EnvironmentAggregate(environmentName, newHashSet());
-    }
-
-    @Embeddable
-    @Getter
-    @EqualsAndHashCode
-    @AllArgsConstructor
-    @NoArgsConstructor(access = PROTECTED)
-    @Access(AccessType.FIELD)
-    @ToString
-    public static class ServiceVersion {
-
-        private String name;
-        private String version;
-
     }
 
     public static EnvironmentAggregateBuilder builder(String name) {

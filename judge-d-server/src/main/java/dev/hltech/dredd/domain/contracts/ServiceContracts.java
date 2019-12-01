@@ -1,5 +1,6 @@
 package dev.hltech.dredd.domain.contracts;
 
+import dev.hltech.dredd.domain.ServiceVersion;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -22,7 +23,7 @@ import static java.util.stream.Collectors.toMap;
 public class ServiceContracts {
 
     @EmbeddedId
-    private ServiceContractsId id;
+    private ServiceVersion id;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(name = "protocol")
@@ -43,7 +44,7 @@ public class ServiceContracts {
     }
 
     public ServiceContracts(String name, String version, Map<String, Contract> capabilitiesPerProtocol, Map<String, Map<String, Contract>> expectationsPerProvider) {
-        this.id = new ServiceContractsId(name, version);
+        this.id = new ServiceVersion(name, version);
         this.capabilitiesPerProtocol = capabilitiesPerProtocol;
         this.expectations = newHashMap();
         for (Entry<String, Map<String, Contract>> expectationsPerProviderEntry : expectationsPerProvider.entrySet()) {
@@ -86,16 +87,6 @@ public class ServiceContracts {
                 e -> e.getKey().getProvider(),
                 e -> deserializer.apply(e.getValue().getValue())
             ));
-    }
-
-    @Getter
-    @Embeddable
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Access(AccessType.FIELD)
-    static class ServiceContractsId implements Serializable {
-        private String name;
-        private String version;
     }
 
     @Getter

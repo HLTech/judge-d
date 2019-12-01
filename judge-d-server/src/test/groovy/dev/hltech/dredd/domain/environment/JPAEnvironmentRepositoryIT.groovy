@@ -1,11 +1,11 @@
 package dev.hltech.dredd.domain.environment
 
+import dev.hltech.dredd.domain.ServiceVersion
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 
-import static dev.hltech.dredd.domain.environment.EnvironmentAggregate.ServiceVersion
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 

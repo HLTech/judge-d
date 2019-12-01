@@ -3,6 +3,7 @@ package dev.hltech.dredd.interfaces.rest.validation;
 import dev.hltech.dredd.domain.JudgeD;
 import dev.hltech.dredd.domain.contracts.ServiceContracts;
 import dev.hltech.dredd.domain.contracts.ServiceContractsRepository;
+import dev.hltech.dredd.domain.ServiceVersion;
 import dev.hltech.dredd.domain.validation.EnvironmentValidatorResult;
 import dev.hltech.dredd.domain.validation.InterfaceContractValidator;
 import dev.hltech.dredd.interfaces.rest.ResourceNotFoundException;
@@ -47,11 +48,12 @@ public class ValidationController {
         @ApiResponse(code = 404, message = "Service not found")
     })
     public List<ContractValidationReportDto> validateAgainstEnvironments(
-        @PathVariable("serviceName") String serviceName,
-        @PathVariable("serviceVersion") String serviceVersion,
+        @PathVariable("serviceName") String name,
+        @PathVariable("serviceVersion") String version,
         @RequestParam("environment") List<String> environments
     ) {
-        ServiceContracts validatedServiceContracts = this.serviceContractsRepository.find(serviceName, serviceVersion)
+        ServiceVersion serviceVersion = new ServiceVersion(name, version);
+        ServiceContracts validatedServiceContracts = this.serviceContractsRepository.findOne(serviceVersion)
             .orElseThrow(ResourceNotFoundException::new);
 
         List<EnvironmentValidatorResult> collect = this.validators.stream()
@@ -62,6 +64,6 @@ public class ValidationController {
                     validator
                 ))
             .collect(Collectors.toList());
-        return toDtos(collect, serviceName, serviceVersion);
+        return toDtos(collect, serviceVersion);
     }
 }

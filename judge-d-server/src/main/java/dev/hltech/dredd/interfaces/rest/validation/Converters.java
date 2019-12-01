@@ -1,6 +1,7 @@
 package dev.hltech.dredd.interfaces.rest.validation;
 
 import com.google.common.collect.Ordering;
+import dev.hltech.dredd.domain.ServiceVersion;
 import dev.hltech.dredd.domain.validation.EnvironmentValidatorResult;
 
 import java.util.Comparator;
@@ -15,7 +16,7 @@ public class Converters {
     private Converters() {
     }
 
-    public static List<ContractValidationReportDto> toDtos(List<EnvironmentValidatorResult> validationResults, String serviceName, String serviceVersion) {
+    public static List<ContractValidationReportDto> toDtos(List<EnvironmentValidatorResult> validationResults, ServiceVersion serviceVersion) {
         Map<ConsumerAndProviderDto, ContractValidationReportDto> result = newHashMap();
         validationResults
             .stream()
@@ -23,7 +24,7 @@ public class Converters {
                 environmentValidatorResult.getCapabilitiesValidationResults()
                     .stream()
                     .forEach(cvr -> {
-                        ConsumerAndProviderDto key = new ConsumerAndProviderDto(cvr.getConsumerName(), cvr.getConsumerVersion(), serviceName, serviceVersion);
+                        ConsumerAndProviderDto key = new ConsumerAndProviderDto(cvr.getConsumerName(), cvr.getConsumerVersion(), serviceVersion.getName(), serviceVersion.getVersion());
                         if (!result.containsKey(key)) {
                             result.put(
                                 key,
@@ -45,7 +46,7 @@ public class Converters {
                 environmentValidatorResult.getExpectationValidationResults()
                     .stream()
                     .forEach(evr -> {
-                        ConsumerAndProviderDto key = new ConsumerAndProviderDto(serviceName, serviceVersion, evr.getProviderName(), evr.getProviderVersion());
+                        ConsumerAndProviderDto key = new ConsumerAndProviderDto(serviceVersion.getName(), serviceVersion.getVersion(), evr.getProviderName(), evr.getProviderVersion());
                         if (!result.containsKey(key)) {
                             result.put(
                                 key,

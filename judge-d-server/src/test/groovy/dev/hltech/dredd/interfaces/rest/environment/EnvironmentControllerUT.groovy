@@ -3,6 +3,7 @@ package dev.hltech.dredd.interfaces.rest.environment
 
 import dev.hltech.dredd.domain.environment.EnvironmentAggregate
 import dev.hltech.dredd.domain.environment.InMemoryEnvironmentRepository
+import dev.hltech.dredd.domain.ServiceVersion
 import spock.lang.Specification
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic
@@ -33,7 +34,7 @@ class EnvironmentControllerUT extends Specification {
     }
 
     def 'should return list of services from and evironment given it was saved before'() {
-        def serviceVersion = new EnvironmentAggregate.ServiceVersion("service", "version")
+        def serviceVersion = new ServiceVersion("service", "version")
         given:
             def environment = new EnvironmentAggregate(
                 randomAlphabetic(10),
