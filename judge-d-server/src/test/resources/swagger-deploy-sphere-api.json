@@ -1,0 +1,2166 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "latest",
+    "title" : "Deploy Sphere API"
+  },
+  "host" : "ds.sit.deploysphere.com",
+  "basePath" : "/deploy-sphere-api",
+  "paths" : {
+    "/bitbucket/projects" : {
+      "get" : {
+        "operationId" : "projects",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Project"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ci-system/builds" : {
+      "post" : {
+        "operationId" : "newBuildStarted",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/BuildForm"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/ci-system/test-report" : {
+      "post" : {
+        "operationId" : "testReport",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/TestsReportForm"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/diff-report" : {
+      "get" : {
+        "operationId" : "getDiff",
+        "parameters" : [ {
+          "name" : "projectKey",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "serviceName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fromVersion",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "toVersion",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/DiffReportDto"
+            }
+          }
+        }
+      }
+    },
+    "/environments" : {
+      "get" : {
+        "operationId" : "getenvironmentNames",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              },
+              "uniqueItems" : true
+            }
+          }
+        }
+      }
+    },
+    "/environments/{environment}" : {
+      "get" : {
+        "operationId" : "getEnvironment",
+        "parameters" : [ {
+          "name" : "environment",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/EnvironmentDto"
+            }
+          }
+        }
+      }
+    },
+    "/environments/{environment}/health" : {
+      "put" : {
+        "operationId" : "updateEnvHealth",
+        "parameters" : [ {
+          "name" : "environment",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/ContainerHealthForm"
+            }
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/environments/{environment}/instances" : {
+      "put" : {
+        "operationId" : "updateEnvInstances",
+        "parameters" : [ {
+          "name" : "environment",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/ComponentInstanceForm"
+            }
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/health" : {
+      "get" : {
+        "operationId" : "healthProbe",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Health"
+            }
+          }
+        }
+      }
+    },
+    "/owasp-reports/environment/{environment}" : {
+      "get" : {
+        "operationId" : "environmentOwaspReport",
+        "parameters" : [ {
+          "name" : "environment",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/AggregatedAnalysisDependency"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/owasp-reports/service/{serviceName}:{serviceVersion}" : {
+      "get" : {
+        "operationId" : "serviceOwaspReport",
+        "parameters" : [ {
+          "name" : "serviceName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "serviceVersion",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/JsonNode"
+            }
+          }
+        }
+      }
+    },
+    "/release-candidates" : {
+      "get" : {
+        "operationId" : "getReleaseCandidates",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ReleaseCandidateVo"
+              },
+              "uniqueItems" : true
+            }
+          }
+        }
+      }
+    },
+    "/releases" : {
+      "get" : {
+        "operationId" : "getReleases",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ReleaseDto"
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "operationId" : "release",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ReleaseForm"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ReleaseDto"
+            }
+          }
+        }
+      }
+    },
+    "/releases/{releaseId}" : {
+      "put" : {
+        "operationId" : "updateCiStatus",
+        "parameters" : [ {
+          "name" : "releaseId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ReleaseComponentUpdateForm"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/releases/{releaseId}/approval" : {
+      "post" : {
+        "operationId" : "approve",
+        "parameters" : [ {
+          "name" : "releaseId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/releases/{releaseId}/deploy_to_prod" : {
+      "post" : {
+        "operationId" : "deployOnProd",
+        "parameters" : [ {
+          "name" : "releaseId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ReleaseDto"
+            }
+          }
+        }
+      }
+    },
+    "/releases/{releaseId}/rejection" : {
+      "post" : {
+        "operationId" : "reject",
+        "parameters" : [ {
+          "name" : "releaseId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/service-templates" : {
+      "get" : {
+        "operationId" : "templates",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ServiceTemplate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services" : {
+      "get" : {
+        "operationId" : "all",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ServiceDetailsDto"
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "operationId" : "generate",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ServiceForm"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ServiceDto"
+            }
+          }
+        }
+      }
+    },
+    "/services/{componentId}" : {
+      "get" : {
+        "operationId" : "one",
+        "parameters" : [ {
+          "name" : "componentId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ServiceDetailsDto"
+            }
+          }
+        }
+      }
+    },
+    "/services/{componentId}/versions" : {
+      "get" : {
+        "operationId" : "getVersions",
+        "parameters" : [ {
+          "name" : "componentId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ServiceVersionVo"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/{componentId}/versions/{serviceVersion}/report" : {
+      "get" : {
+        "operationId" : "getReport",
+        "parameters" : [ {
+          "name" : "componentId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "serviceVersion",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ServiceVersionReportDto"
+            }
+          }
+        }
+      }
+    },
+    "/services/{componentId}/versions/{version}/report/owasp" : {
+      "post" : {
+        "operationId" : "addOWASP",
+        "parameters" : [ {
+          "name" : "componentId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "version",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/JsonNode"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/services/{serviceName}/versions" : {
+      "post" : {
+        "operationId" : "createVersion",
+        "parameters" : [ {
+          "name" : "serviceName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ServiceVersionForm"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ServiceVersionVo"
+            }
+          }
+        }
+      }
+    },
+    "/static-code-analysis/metrics" : {
+      "get" : {
+        "operationId" : "getMetrics",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/static-code-analysis/services" : {
+      "get" : {
+        "operationId" : "getServices",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/static-code-analysis/services/{serviceName}/measurements" : {
+      "get" : {
+        "operationId" : "getMeasurements",
+        "parameters" : [ {
+          "name" : "serviceName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "metrics",
+          "in" : "query",
+          "required" : true,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/definitions/MeasurementDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/api-docs" : {
+      "get" : {
+        "operationId" : "getDocumentation",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "/webhooks/jira" : {
+      "post" : {
+        "operationId" : "onJiraMessage",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/JsonNode"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "AggregatedAnalysisDependency" : {
+      "type" : "object",
+      "properties" : {
+        "dependency" : {
+          "$ref" : "#/definitions/Dependency"
+        },
+        "projectInfos" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ProjectInfo"
+          }
+        }
+      }
+    },
+    "BuildForm" : {
+      "type" : "object",
+      "properties" : {
+        "jobUrl" : {
+          "type" : "string"
+        },
+        "buildUrl" : {
+          "type" : "string"
+        },
+        "serviceName" : {
+          "type" : "string"
+        },
+        "projectKey" : {
+          "type" : "string"
+        },
+        "buildNumber" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "commitHash" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "string"
+        },
+        "branch" : {
+          "type" : "string"
+        }
+      }
+    },
+    "BuildVo" : {
+      "type" : "object",
+      "properties" : {
+        "url" : {
+          "type" : "string"
+        },
+        "displayName" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "duration" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "estimatedDuration" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "latestStage" : {
+          "type" : "string"
+        }
+      }
+    },
+    "CommitDto" : {
+      "type" : "object",
+      "properties" : {
+        "hash" : {
+          "type" : "string"
+        },
+        "shortHash" : {
+          "type" : "string"
+        },
+        "message" : {
+          "type" : "string"
+        },
+        "authorTimestamp" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "authorName" : {
+          "type" : "string"
+        },
+        "committerTimestamp" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "committerName" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ComponentInstanceForm" : {
+      "type" : "object",
+      "properties" : {
+        "deploymentName" : {
+          "type" : "string"
+        },
+        "podId" : {
+          "type" : "string"
+        },
+        "containerName" : {
+          "type" : "string"
+        },
+        "artifactName" : {
+          "type" : "string"
+        },
+        "artifactVersion" : {
+          "type" : "string"
+        },
+        "numberOfRestarts" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "cpuRequest" : {
+          "type" : "string"
+        },
+        "cpuLimit" : {
+          "type" : "string"
+        },
+        "memoryRequest" : {
+          "type" : "string"
+        },
+        "memoryLimit" : {
+          "type" : "string"
+        },
+        "startedTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "ip" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ContainerDto" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "artifactName" : {
+          "type" : "string"
+        },
+        "artifactVersion" : {
+          "type" : "string"
+        },
+        "numberOfRestarts" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "cpuRequest" : {
+          "type" : "string"
+        },
+        "cpuLimit" : {
+          "type" : "string"
+        },
+        "memoryRequest" : {
+          "type" : "string"
+        },
+        "memoryLimit" : {
+          "type" : "string"
+        },
+        "startedTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "graphanaLink" : {
+          "type" : "string"
+        },
+        "checks" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/HealthCheckDto"
+          }
+        },
+        "logStats" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      }
+    },
+    "ContainerHealthCheckForm" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "message" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ContainerHealthForm" : {
+      "type" : "object",
+      "properties" : {
+        "podId" : {
+          "type" : "string"
+        },
+        "containerName" : {
+          "type" : "string"
+        },
+        "checks" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ContainerHealthCheckForm"
+          }
+        }
+      }
+    },
+    "ContributionDto" : {
+      "type" : "object",
+      "properties" : {
+        "authorEmail" : {
+          "type" : "string"
+        },
+        "authorDisplayName" : {
+          "type" : "string"
+        },
+        "authorAvatarUrl" : {
+          "type" : "string"
+        },
+        "commitsPercentage" : {
+          "type" : "number",
+          "format" : "double"
+        }
+      }
+    },
+    "CvssV2" : {
+      "type" : "object",
+      "required" : [ "accessComplexity", "accessVector", "authenticationr", "availabilityImpact", "confidentialImpact", "integrityImpact", "score", "severity" ],
+      "properties" : {
+        "score" : {
+          "type" : "number",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "accessVector" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "accessComplexity" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "authenticationr" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "confidentialImpact" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "integrityImpact" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "availabilityImpact" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "severity" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        }
+      }
+    },
+    "CvssV3" : {
+      "type" : "object",
+      "required" : [ "attackComplexity", "attackVector", "availabilityImpact", "baseScore", "baseSeverity", "confidentialityImpact", "integrityImpact", "privilegesRequired", "scope", "userInteraction" ],
+      "properties" : {
+        "baseScore" : {
+          "type" : "number",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "attackVector" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "attackComplexity" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "privilegesRequired" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "userInteraction" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "scope" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "confidentialityImpact" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "integrityImpact" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "availabilityImpact" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "baseSeverity" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        }
+      }
+    },
+    "Dependency" : {
+      "type" : "object",
+      "required" : [ "fileName", "filePath", "md5", "sha1", "sha256" ],
+      "properties" : {
+        "fileName" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "filePath" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "md5" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "sha1" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "sha256" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "license" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "projectReferences" : {
+          "type" : "array",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          },
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "relatedDependencies" : {
+          "type" : "array",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          },
+          "items" : {
+            "$ref" : "#/definitions/RelatedDependency"
+          }
+        },
+        "evidenceCollected" : {
+          "type" : "array",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          },
+          "items" : {
+            "$ref" : "#/definitions/Evidence"
+          }
+        },
+        "identifiers" : {
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          },
+          "$ref" : "#/definitions/Identifiers"
+        },
+        "vulnerabilities" : {
+          "type" : "array",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          },
+          "items" : {
+            "$ref" : "#/definitions/Vulnerability"
+          }
+        },
+        "isVirtual" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "DeploymentDto" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "instances" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ContainerDto"
+          }
+        },
+        "lastUpdateTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        }
+      }
+    },
+    "DiffReportDto" : {
+      "type" : "object",
+      "properties" : {
+        "projectKey" : {
+          "type" : "string"
+        },
+        "serviceName" : {
+          "type" : "string"
+        },
+        "fromVersion" : {
+          "type" : "string"
+        },
+        "toVersion" : {
+          "type" : "string"
+        },
+        "tasks" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TaskDto"
+          }
+        },
+        "commits" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CommitDto"
+          }
+        }
+      }
+    },
+    "EnvironmentDto" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "deployments" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/DeploymentDto"
+          }
+        }
+      }
+    },
+    "Evidence" : {
+      "type" : "object",
+      "required" : [ "name", "source", "value" ],
+      "properties" : {
+        "source" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "value" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "confidence" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "Health" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "details" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        }
+      }
+    },
+    "HealthCheckDto" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "message" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Identifier" : {
+      "type" : "object",
+      "required" : [ "id" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "url" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "notes" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "confidence" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "Identifiers" : {
+      "type" : "object",
+      "properties" : {
+        "vulnerabilityIds" : {
+          "type" : "array",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          },
+          "items" : {
+            "$ref" : "#/definitions/Identifier"
+          }
+        },
+        "suppressedVulnerabilityIds" : {
+          "type" : "array",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          },
+          "items" : {
+            "$ref" : "#/definitions/Identifier"
+          }
+        },
+        "package" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Identifier"
+          }
+        }
+      }
+    },
+    "JsonNode" : {
+      "type" : "object",
+      "properties" : {
+        "array" : {
+          "type" : "boolean"
+        },
+        "null" : {
+          "type" : "boolean"
+        },
+        "float" : {
+          "type" : "boolean"
+        },
+        "number" : {
+          "type" : "boolean"
+        },
+        "boolean" : {
+          "type" : "boolean"
+        },
+        "double" : {
+          "type" : "boolean"
+        },
+        "int" : {
+          "type" : "boolean"
+        },
+        "containerNode" : {
+          "type" : "boolean"
+        },
+        "missingNode" : {
+          "type" : "boolean"
+        },
+        "object" : {
+          "type" : "boolean"
+        },
+        "pojo" : {
+          "type" : "boolean"
+        },
+        "integralNumber" : {
+          "type" : "boolean"
+        },
+        "floatingPointNumber" : {
+          "type" : "boolean"
+        },
+        "long" : {
+          "type" : "boolean"
+        },
+        "bigDecimal" : {
+          "type" : "boolean"
+        },
+        "bigInteger" : {
+          "type" : "boolean"
+        },
+        "textual" : {
+          "type" : "boolean"
+        },
+        "binary" : {
+          "type" : "boolean"
+        },
+        "valueNode" : {
+          "type" : "boolean"
+        },
+        "short" : {
+          "type" : "boolean"
+        },
+        "nodeType" : {
+          "type" : "string",
+          "enum" : [ "ARRAY", "BINARY", "BOOLEAN", "MISSING", "NULL", "NUMBER", "OBJECT", "POJO", "STRING" ]
+        }
+      }
+    },
+    "LastCommitDto" : {
+      "type" : "object",
+      "properties" : {
+        "buildStatus" : {
+          "type" : "string"
+        },
+        "buildUrl" : {
+          "type" : "string"
+        },
+        "timestamp" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "commitSha" : {
+          "type" : "string"
+        },
+        "commitUrl" : {
+          "type" : "string"
+        },
+        "qualityCheckPassed" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "MeasurementDto" : {
+      "type" : "object",
+      "properties" : {
+        "dateTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "value" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Project" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "key" : {
+          "type" : "string"
+        },
+        "displayName" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ProjectInfo" : {
+      "type" : "object",
+      "required" : [ "credits", "name", "reportDate" ],
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "groupID" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "artifactID" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "version" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "reportDate" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "credits" : {
+          "type" : "object",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          },
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "Reference" : {
+      "type" : "object",
+      "required" : [ "name", "source" ],
+      "properties" : {
+        "source" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "url" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        }
+      }
+    },
+    "RelatedDependency" : {
+      "type" : "object",
+      "required" : [ "filePath", "md5", "sha1", "sha256" ],
+      "properties" : {
+        "filePath" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "sha256" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "sha1" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "md5" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "identifiers" : {
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          },
+          "$ref" : "#/definitions/Identifiers"
+        },
+        "isVirtual" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "ReleaseCandidateVo" : {
+      "type" : "object",
+      "properties" : {
+        "projectKey" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "currentProdVersion" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ReleaseComponentUpdateForm" : {
+      "type" : "object",
+      "required" : [ "status" ],
+      "properties" : {
+        "projectKey" : {
+          "type" : "string"
+        },
+        "serviceName" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "string"
+        },
+        "environment" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "buildNumber" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "buildUrl" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ReleaseComponentVo" : {
+      "type" : "object",
+      "properties" : {
+        "serviceName" : {
+          "type" : "string"
+        },
+        "projectKey" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "string"
+        },
+        "currentVersion" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ReleaseDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "collect" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ReleaseComponentVo"
+          }
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "reviews" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ReleaseReviewDto"
+          }
+        },
+        "createdAt" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "lastUpdated" : {
+          "type" : "string",
+          "format" : "date-time"
+        }
+      }
+    },
+    "ReleaseForm" : {
+      "type" : "object",
+      "required" : [ "components" ],
+      "properties" : {
+        "description" : {
+          "type" : "string"
+        },
+        "components" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/ReleaseComponentVo"
+          }
+        }
+      }
+    },
+    "ReleaseReviewDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "reviewType" : {
+          "type" : "string"
+        },
+        "message" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "PENDING", "APPROVED", "REJECTED" ]
+        },
+        "reviewedAt" : {
+          "type" : "string",
+          "format" : "date-time"
+        }
+      }
+    },
+    "ServiceDetailsDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "projectKey" : {
+          "type" : "string"
+        },
+        "projectDisplayName" : {
+          "type" : "string"
+        },
+        "repositoryUrl" : {
+          "type" : "string"
+        },
+        "swaggerJsonUrl" : {
+          "type" : "string"
+        },
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "lastCommit" : {
+          "$ref" : "#/definitions/LastCommitDto"
+        },
+        "nclocHistogram" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/MeasurementDto"
+          }
+        },
+        "latestBuild" : {
+          "$ref" : "#/definitions/BuildVo"
+        },
+        "numberOfCommits" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "contributions" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/ContributionDto"
+          }
+        },
+        "metricValues" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "buildsInProgress" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/BuildVo"
+          }
+        }
+      }
+    },
+    "ServiceDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "projectKey" : {
+          "type" : "string"
+        },
+        "projectDisplayName" : {
+          "type" : "string"
+        },
+        "repositoryUrl" : {
+          "type" : "string"
+        },
+        "swaggerJsonUrl" : {
+          "type" : "string"
+        },
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "lastCommit" : {
+          "$ref" : "#/definitions/LastCommitDto"
+        },
+        "nclocHistogram" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/MeasurementDto"
+          }
+        },
+        "latestBuild" : {
+          "$ref" : "#/definitions/BuildVo"
+        }
+      }
+    },
+    "ServiceForm" : {
+      "type" : "object",
+      "properties" : {
+        "serviceName" : {
+          "type" : "string"
+        },
+        "bitbucketProjectKey" : {
+          "type" : "string"
+        },
+        "templateKey" : {
+          "type" : "string"
+        },
+        "variables" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "choiceVariables" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "boolean"
+          }
+        }
+      }
+    },
+    "ServiceTemplate" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "variables" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ServiceTemplateVariable"
+          }
+        },
+        "choiceVariables" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ServiceTemplateChoiceVariable"
+          }
+        }
+      }
+    },
+    "ServiceTemplateChoiceVariable" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "enabledByDefault" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "ServiceTemplateVariable" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "defaultValue" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ServiceVersionForm" : {
+      "type" : "object",
+      "properties" : {
+        "version" : {
+          "type" : "string"
+        },
+        "commitHash" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ServiceVersionReportDto" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "string"
+        },
+        "commitHash" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "metrics" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "ServiceVersionVo" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "tasks" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TaskDto"
+          }
+        },
+        "commits" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CommitDto"
+          }
+        }
+      }
+    },
+    "Software" : {
+      "type" : "object",
+      "properties" : {
+        "value" : {
+          "type" : "string"
+        },
+        "vulnerabilityIdMatched" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "versionStartIncluding" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "versionStartExcluding" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "versionEndIncluding" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "versionEndExcluding" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "vulnerable" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "Status" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string",
+          "readOnly" : true
+        }
+      }
+    },
+    "TaskDto" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string"
+        },
+        "summary" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "assigneeName" : {
+          "type" : "string"
+        },
+        "assigneeAvatar" : {
+          "type" : "string"
+        }
+      }
+    },
+    "TestCaseForm" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "classname" : {
+          "type" : "string"
+        },
+        "time" : {
+          "type" : "string"
+        },
+        "skipped" : {
+          "type" : "boolean"
+        },
+        "failed" : {
+          "type" : "boolean"
+        },
+        "failType" : {
+          "type" : "string"
+        },
+        "failMessage" : {
+          "type" : "string"
+        },
+        "failDetails" : {
+          "type" : "string"
+        }
+      }
+    },
+    "TestSuiteForm" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "time" : {
+          "type" : "string"
+        },
+        "tests" : {
+          "type" : "string"
+        },
+        "errors" : {
+          "type" : "string"
+        },
+        "skipped" : {
+          "type" : "string"
+        },
+        "failures" : {
+          "type" : "string"
+        },
+        "testCases" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TestCaseForm"
+          }
+        }
+      }
+    },
+    "TestsReportForm" : {
+      "type" : "object",
+      "properties" : {
+        "serviceName" : {
+          "type" : "string"
+        },
+        "projectKey" : {
+          "type" : "string"
+        },
+        "commitHash" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "string"
+        },
+        "branch" : {
+          "type" : "string"
+        },
+        "buildNumber" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "tests" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TestSuiteForm"
+          }
+        }
+      }
+    },
+    "Vulnerability" : {
+      "type" : "object",
+      "required" : [ "description", "name" ],
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "severity" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "cvssV2" : {
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          },
+          "$ref" : "#/definitions/CvssV2"
+        },
+        "cvssV3" : {
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          },
+          "$ref" : "#/definitions/CvssV3"
+        },
+        "cwes" : {
+          "type" : "array",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          },
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "notes" : {
+          "type" : "string",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          }
+        },
+        "references" : {
+          "type" : "array",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          },
+          "items" : {
+            "$ref" : "#/definitions/Reference"
+          }
+        },
+        "vulnerableSoftware" : {
+          "type" : "array",
+          "xml" : {
+            "namespace" : "https://jeremylong.github.io/DependencyCheck/dependency-check.2.2.xsd"
+          },
+          "items" : {
+            "$ref" : "#/definitions/Software"
+          }
+        },
+        "source" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    }
+  }
+}

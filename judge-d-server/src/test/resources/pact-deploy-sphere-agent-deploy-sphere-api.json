@@ -1,0 +1,68 @@
+{
+  "provider": {
+    "name": "deploy-sphere-api"
+  },
+  "consumer": {
+    "name": "deploy-sphere-agent"
+  },
+  "interactions": [
+    {
+      "description": "health request; 200 OK response",
+      "request": {
+        "method": "GET",
+        "path": "health",
+        "headers": {},
+        "query": ""
+      },
+      "response": {
+        "status": "200",
+        "headers": {}
+      }
+    },
+    {
+      "description": "updateEnvironment request; 200 OK response",
+      "request": {
+        "method": "PUT",
+        "path": "environments/ZPCBBP5PWl/instances",
+        "headers": {},
+        "query": "",
+        "body": [
+          {}
+        ]
+      },
+      "response": {
+        "status": "200",
+        "headers": {}
+      }
+    },
+    {
+      "description": "updateHealth request; 200 OK response",
+      "request": {
+        "method": "PUT",
+        "path": "environments/jtVW4j3Kf6/health",
+        "headers": {},
+        "query": "",
+        "body": [
+          {
+            "podId": "K6ccGlc_90",
+            "containerName": "4iWCYdXeff",
+            "checks": [
+              {
+                "status": "p7XSAaDRs4",
+                "name": "xc9b_SEIsa",
+                "message": "0SPymGp22x"
+              }
+            ]
+          }
+        ]
+      },
+      "response": {
+        "status": "200",
+        "headers": {}
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecificationVersion": "1.0.0"
+  }
+}
