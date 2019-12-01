@@ -4,6 +4,7 @@ import com.google.common.collect.Ordering;
 import dev.hltech.dredd.domain.ServiceVersion;
 import dev.hltech.dredd.domain.validation.EnvironmentValidatorResult;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class Converters {
     private Converters() {
     }
 
-    public static List<ContractValidationReportDto> toDtos(List<EnvironmentValidatorResult> validationResults, ServiceVersion serviceVersion) {
+    public static List<ContractValidationReportDto> toDtos(ServiceVersion serviceVersion, Collection<EnvironmentValidatorResult> validationResults) {
         Map<ConsumerAndProviderDto, ContractValidationReportDto> result = newHashMap();
         validationResults
             .stream()

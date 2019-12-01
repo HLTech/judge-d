@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public abstract class InterfaceContractValidator<C, E> {
         return this.communicationInterface;
     }
 
-    public List<CapabilitiesValidationResult> validateCapabilities(ServiceContracts provider, List<ServiceContracts> allConsumers) {
+    public List<CapabilitiesValidationResult> validateCapabilities(ServiceContracts provider, Collection<ServiceContracts> allConsumers) {
         return extractCapabilities(provider)
             .map(capabilities -> allConsumers
                 .stream()
@@ -51,7 +52,7 @@ public abstract class InterfaceContractValidator<C, E> {
         );
     }
 
-    public List<ExpectationValidationResult> validateExpectations(ServiceContracts consumer, List<ServiceContracts> allProviders) {
+    public List<ExpectationValidationResult> validateExpectations(ServiceContracts consumer, Collection<ServiceContracts> allProviders) {
         return extractExpectations(consumer)
             .entrySet()
             .stream()
@@ -59,7 +60,7 @@ public abstract class InterfaceContractValidator<C, E> {
             .collect(toList());
     }
 
-    private Stream<? extends ExpectationValidationResult> validateExpectations(E expectations, String providerName, List<ServiceContracts> allProviders) {
+    private Stream<? extends ExpectationValidationResult> validateExpectations(E expectations, String providerName, Collection<ServiceContracts> allProviders) {
         List<ServiceContracts> matchedProviders = allProviders
             .stream()
             .filter(it -> it.getName().equals(providerName))

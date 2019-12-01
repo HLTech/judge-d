@@ -6,6 +6,7 @@ import dev.hltech.dredd.domain.contracts.ServiceContracts
 import dev.hltech.dredd.domain.contracts.ServiceContractsRepository
 import dev.hltech.dredd.domain.validation.EnvironmentValidatorResult
 import dev.hltech.dredd.domain.validation.InterfaceContractValidator
+import dev.hltech.dredd.interfaces.rest.RequestValidationException
 import dev.hltech.dredd.interfaces.rest.ResourceNotFoundException
 import org.assertj.core.util.Lists
 import spock.lang.Specification
@@ -49,4 +50,28 @@ class ValidationControllerUT extends Specification {
             1 * serviceContractsRepository.findOne(new ServiceVersion("some-service", "service-version")) >> Optional.empty()
             thrown ResourceNotFoundException
     }
+
+    def "should throw 400 when invalid format of service id" (){
+        given:
+            def controller = new ValidationController(judgeD, serviceContractsRepository, [validator1, validator2] as List)
+        when:
+            controller.validateAgainstEnvironments(["service.version", "service-without-version"] as List, "some-env");
+        then:
+            thrown RequestValidationException;
+
+    }
+
+    def "should throw 400 when contracts not registered" (){
+        given:
+            def version = new ServiceVersion("service", "version")
+            serviceContractsRepository.findOne(version) >> Optional.empty()
+            def controller = new ValidationController(judgeD, serviceContractsRepository, [validator1, validator2] as List)
+        when:
+            controller.validateAgainstEnvironments(["service:version"] as List, "some-env");
+        then:
+            1 * serviceContractsRepository.findOne(version) >> Optional.empty()
+            thrown RequestValidationException;
+
+    }
+
 }

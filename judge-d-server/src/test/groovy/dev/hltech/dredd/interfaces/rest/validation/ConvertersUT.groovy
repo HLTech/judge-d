@@ -45,9 +45,8 @@ class ConvertersUT extends Specification {
                 ))
             )
         when:
-            def converted = toDtos(
-                newArrayList(ping1EnvironmentValidatorResult, ping2EnvironmentValidatorResult),
-                new ServiceVersion("validated-service","1.0")
+            def converted = toDtos(new ServiceVersion("validated-service", "1.0"),
+                    newArrayList(ping1EnvironmentValidatorResult, ping2EnvironmentValidatorResult)
             )
         then:
             converted.size() == 2
@@ -92,9 +91,8 @@ class ConvertersUT extends Specification {
                 ))
             )
         when:
-            def converted = toDtos(
-                newArrayList(environmentValidatorResult),
-                new ServiceVersion("validated-service","1.0")
+            def converted = toDtos(new ServiceVersion("validated-service", "1.0"),
+                    newArrayList(environmentValidatorResult)
             )
         then:
             converted.size() == 2
