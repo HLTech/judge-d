@@ -5,6 +5,7 @@ import dev.hltech.dredd.domain.contracts.InMemoryServiceContractsRepository
 import dev.hltech.dredd.domain.contracts.ServiceContracts
 import dev.hltech.dredd.domain.environment.EnvironmentAggregate
 import dev.hltech.dredd.domain.environment.InMemoryEnvironmentRepository
+import dev.hltech.dredd.domain.ServiceVersion
 import dev.hltech.dredd.domain.validation.ping.PingContractValidator
 import org.assertj.core.util.Lists
 import org.springframework.http.MediaType
@@ -51,7 +52,7 @@ class JudgeDUT extends Specification {
                 [:],
                 ["provider": ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)]]
             ))
-            environmentRepository.persist(new EnvironmentAggregate("test-env", [new EnvironmentAggregate.ServiceVersion("provider", "1.0")] as Set))
+            environmentRepository.persist(new EnvironmentAggregate("test-env", [new ServiceVersion("provider", "1.0")] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 validatedService,
@@ -78,7 +79,7 @@ class JudgeDUT extends Specification {
                 [:],
                 ["provider-x": ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)]]
             ))
-            environmentRepository.persist(new EnvironmentAggregate("test-env", [new EnvironmentAggregate.ServiceVersion("consumer", "1.0")] as Set))
+            environmentRepository.persist(new EnvironmentAggregate("test-env", [new ServiceVersion("consumer", "1.0")] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 provider,
@@ -98,7 +99,7 @@ class JudgeDUT extends Specification {
                 ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)],
                 [:]
             ))
-            environmentRepository.persist(new EnvironmentAggregate("test-env", [new EnvironmentAggregate.ServiceVersion("consumer", "1.0")] as Set))
+            environmentRepository.persist(new EnvironmentAggregate("test-env", [new ServiceVersion("consumer", "1.0")] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 provider,
@@ -130,8 +131,8 @@ class JudgeDUT extends Specification {
                 [:],
                 ["provider-x": ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)]]
             ))
-            environmentRepository.persist(new EnvironmentAggregate("test-env", [new EnvironmentAggregate.ServiceVersion("consumer", "1.0")] as Set))
-            environmentRepository.persist(new EnvironmentAggregate("test-env2", [new EnvironmentAggregate.ServiceVersion("consumer2", "1.0")] as Set))
+            environmentRepository.persist(new EnvironmentAggregate("test-env", [new ServiceVersion("consumer", "1.0")] as Set))
+            environmentRepository.persist(new EnvironmentAggregate("test-env2", [new ServiceVersion("consumer2", "1.0")] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 provider,

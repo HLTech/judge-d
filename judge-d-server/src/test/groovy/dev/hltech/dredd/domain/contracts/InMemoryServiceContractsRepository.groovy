@@ -1,24 +1,23 @@
 package dev.hltech.dredd.domain.contracts
 
 import com.google.common.collect.Maps
-import dev.hltech.dredd.domain.environment.EnvironmentAggregate
+import dev.hltech.dredd.domain.ServiceVersion
 
-import javax.persistence.EntityNotFoundException
 import javax.persistence.NoResultException
 
 class InMemoryServiceContractsRepository implements ServiceContractsRepository {
 
-    private Map<EnvironmentAggregate.ServiceVersion, ServiceContracts> storage = Maps.newHashMap()
+    private Map<ServiceVersion, ServiceContracts> storage = Maps.newHashMap()
 
     @Override
     ServiceContracts persist(ServiceContracts service) {
-        storage.put(new EnvironmentAggregate.ServiceVersion(service.name, service.version), service)
+        storage.put(new ServiceVersion(service.name, service.version), service)
         return service;
     }
 
     @Override
-    Optional<ServiceContracts> find(String name, String version) {
-        return Optional.ofNullable(storage.get(new EnvironmentAggregate.ServiceVersion(name, version)))
+    Optional<ServiceContracts> findOne(ServiceVersion serviceVersion) {
+        return Optional.ofNullable(storage.get(serviceVersion))
     }
 
     @Override
@@ -35,7 +34,7 @@ class InMemoryServiceContractsRepository implements ServiceContractsRepository {
     }
 
     @Override
-    List<ServiceContracts> find(String name) {
+    List<ServiceContracts> findAllByServiceName(String name) {
         return storage.entrySet()
             .stream()
             .filter { it -> it.getKey().name == name }

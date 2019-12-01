@@ -1,5 +1,6 @@
 package dev.hltech.dredd.domain.contracts;
 
+import dev.hltech.dredd.domain.ServiceVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,8 +26,11 @@ public class JpaServiceContractsRepository implements ServiceContractsRepository
     }
 
     @Override
-    public Optional<ServiceContracts> find(String name, String version) {
-        return ofNullable(entityManager.find(ServiceContracts.class, new ServiceContracts.ServiceContractsId(name, version)));
+    public Optional<ServiceContracts> findOne(ServiceVersion serviceVersion) {
+        return ofNullable(entityManager.find(
+            ServiceContracts.class,
+            new ServiceVersion(serviceVersion.getName(), serviceVersion.getVersion())
+        ));
     }
 
     @Override
@@ -38,7 +42,7 @@ public class JpaServiceContractsRepository implements ServiceContractsRepository
     }
 
     @Override
-    public List<ServiceContracts> find(String name) {
+    public List<ServiceContracts> findAllByServiceName(String name) {
         return entityManager
             .createQuery("select o from " + ServiceContracts.class.getName() + " o where o.id.name = :name", ServiceContracts.class)
             .setParameter("name", name)

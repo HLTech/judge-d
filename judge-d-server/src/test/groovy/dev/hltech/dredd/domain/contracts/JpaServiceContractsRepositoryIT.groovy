@@ -1,5 +1,6 @@
 package dev.hltech.dredd.domain.contracts
 
+import dev.hltech.dredd.domain.ServiceVersion
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
@@ -31,7 +32,7 @@ class JpaServiceContractsRepositoryIT extends Specification {
             )
             repository.persist(serviceContracts)
         when:
-            def retrieved = repository.find(serviceContracts.name, serviceContracts.version)
+            def retrieved = repository.findOne(new ServiceVersion(serviceContracts.name, serviceContracts.version))
         then:
             retrieved.get().id.name == 'provider'
             retrieved.get().id.version == '1.0'
@@ -59,7 +60,7 @@ class JpaServiceContractsRepositoryIT extends Specification {
             def s1 = repository.persist(new ServiceContracts(serviceName, randomAlphabetic(5), [:], [:]))
             def s2 = repository.persist(new ServiceContracts(serviceName, randomAlphabetic(5), [:], [:]))
         when:
-            def serviceContracts = repository.find(serviceName)
+            def serviceContracts = repository.findAllByServiceName(serviceName)
         then:
             serviceContracts.size() == 2
             serviceContracts.contains(s1)

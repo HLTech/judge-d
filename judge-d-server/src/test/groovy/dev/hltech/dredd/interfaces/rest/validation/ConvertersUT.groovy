@@ -1,5 +1,6 @@
 package dev.hltech.dredd.interfaces.rest.validation
 
+import dev.hltech.dredd.domain.ServiceVersion
 import dev.hltech.dredd.domain.validation.EnvironmentValidatorResult
 import spock.lang.Specification
 
@@ -46,8 +47,7 @@ class ConvertersUT extends Specification {
         when:
             def converted = toDtos(
                 newArrayList(ping1EnvironmentValidatorResult, ping2EnvironmentValidatorResult),
-                "validated-service",
-                "1.0"
+                new ServiceVersion("validated-service","1.0")
             )
         then:
             converted.size() == 2
@@ -94,8 +94,7 @@ class ConvertersUT extends Specification {
         when:
             def converted = toDtos(
                 newArrayList(environmentValidatorResult),
-                "validated-service",
-                "1.0"
+                new ServiceVersion("validated-service","1.0")
             )
         then:
             converted.size() == 2

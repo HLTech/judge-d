@@ -28,7 +28,7 @@ public class JudgeD {
     public <C, E> EnvironmentValidatorResult validateServiceAgainstEnvironments(ServiceContracts validatedService, List<String> environments, InterfaceContractValidator<C, E> validator) {
         List<ServiceContracts> environmentContracts = environments.stream()
             .flatMap(env -> this.environmentRepository.get(env).getAllServices().stream())
-            .map(sv -> this.serviceContractsRepository.find(sv.getName(), sv.getVersion()))
+            .map(sv -> this.serviceContractsRepository.findOne(sv))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(toList());
