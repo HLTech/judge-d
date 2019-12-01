@@ -1,0 +1,26 @@
+{
+  "provider": {
+    "name": "provider"
+  },
+  "consumer": {
+    "name": "consumer"
+  },
+  "interactions": [
+    {
+      "description": "health request; 200 OK response",
+      "request": {
+        "method": "GET",
+        "path": "health",
+        "headers": {},
+        "query": ""
+      },
+      "response": {
+        "status": "200",
+        "headers": {}
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecificationVersion": "1.0.0"
+  }
+}
