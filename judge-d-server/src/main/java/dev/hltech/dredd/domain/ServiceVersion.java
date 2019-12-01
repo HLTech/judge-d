@@ -1,6 +1,10 @@
 package dev.hltech.dredd.domain;
 
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -16,7 +20,6 @@ import static lombok.AccessLevel.PROTECTED;
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 @Access(AccessType.FIELD)
-@ToString
 public class ServiceVersion implements Serializable {
 
     private String name;
