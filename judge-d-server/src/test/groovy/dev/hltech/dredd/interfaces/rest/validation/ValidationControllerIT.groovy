@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
@@ -63,6 +64,45 @@ class ValidationControllerIT extends Specification {
         then: 'controller returns validation response in json'
             response.getStatus() == 404
     }
+
+    def "should return 200 when validate multiple services against env"(){
+        given:
+            def providerOld = serviceContractsRepository.persist(new ServiceContracts(
+                "provider",
+                "1.0",
+                ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)],
+                [:]
+            ))
+            def consumerOld = serviceContractsRepository.persist(new ServiceContracts(
+                "consumer",
+                "1.0",
+                [:],
+                ["provider": ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)]]
+            ))
+            def providerNew = serviceContractsRepository.persist(new ServiceContracts(
+                "provider",
+                "2.0",
+                ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)],
+                [:]
+            ))
+            def consumerNew = serviceContractsRepository.persist(new ServiceContracts(
+                "consumer",
+                "2.0",
+                [:],
+                ["provider": ["ping": new ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)]]
+            ))
+        when: 'rest validatePacts url is hit'
+            def response = mockMvc.perform(
+                get(new URI('/environment-compatibility-report?services=provider:2.0&services=consumer:2.0&environment=SIT'))
+                    .accept("application/json")
+            ).andReturn().getResponse()
+        then: 'controller returns validation response in json'
+            response.getStatus() == 200
+            response.getContentType().contains("application/json")
+            def string = response.getContentAsString()
+            objectMapper.readValue(string, new TypeReference<List<BatchValidationReportDto>>() {}) != null
+    }
+
 
     @TestConfiguration
     static class TestConfig extends BeanFactory {
