@@ -13,7 +13,7 @@ class UpdateServicesTaskUT extends Specification {
     JudgeDPublisher publisher = Mock()
 
     def setup(){
-        task = new UpdateServicesTask("TEST", locator, publisher)
+        task = new UpdateServicesTask("TEST", "default", locator, publisher)
     }
 
     def "UpdateServices"() {
@@ -22,7 +22,7 @@ class UpdateServicesTaskUT extends Specification {
         when:
             task.updateServices()
         then:
-            1* publisher.publish("TEST", {it.size() == 2})
+            1* publisher.publish("TEST", 'default', {it.size() == 2})
 
     }
 }

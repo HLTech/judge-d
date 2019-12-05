@@ -17,12 +17,19 @@ public class UpdateServicesTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateServicesTask.class);
 
     private String environment;
+    private String space;
     private ServiceLocator serviceLocator;
     private JudgeDPublisher publisher;
 
     @Autowired
-    public UpdateServicesTask(@Value("${hltech.contracts.judge-d.environment}") String environment, ServiceLocator serviceLocator, JudgeDPublisher publisher) {
+    public UpdateServicesTask(
+        @Value("${hltech.contracts.judge-d.environment}") String environment,
+        @Value("${hltech.contracts.judge-d.space:default}") String space,
+        ServiceLocator serviceLocator,
+        JudgeDPublisher publisher
+    ) {
         this.environment = environment;
+        this.space = space;
         this.serviceLocator = serviceLocator;
         this.publisher = publisher;
     }
@@ -34,6 +41,7 @@ public class UpdateServicesTask {
         LOGGER.debug("Done - found following services: " + serviceForms);
         publisher.publish(
             environment,
+            space,
             serviceForms.stream().map(UpdateServicesTask::toForm).collect(Collectors.toSet())
         );
     }
