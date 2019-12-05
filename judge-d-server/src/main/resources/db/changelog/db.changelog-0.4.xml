@@ -7,10 +7,10 @@
    http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <include file="/db/changelog/db.changelog-0.1.xml"/>
-    <include file="/db/changelog/db.changelog-0.2.xml"/>
-    <include file="/db/changelog/db.changelog-0.3.xml"/>
+    <changeSet id="add spaces" author="Tomasz Krzyzak">
+        <addColumn tableName="service_versions">
+            <column name="space" type="character varying" />
+        </addColumn>
 
-    <include file="/db/changelog/db.changelog-0.4.xml"/>
-
+    </changeSet>
 </databaseChangeLog>

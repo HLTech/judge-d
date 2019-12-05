@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 
+import static dev.hltech.dredd.domain.environment.EnvironmentAggregate.builder
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -64,5 +65,20 @@ class JPAEnvironmentRepositoryIT extends Specification {
             def names = repository.getNames()
         then:
             names.contains(environment1.name)
+    }
+
+    def 'should retrieve service versions of all spaces'(){
+        given:
+            def environment1 = builder(randomAlphabetic(10))
+                .withServiceVersion("s1", "v1")
+                .withServiceVersions("space", [new ServiceVersion("s2", "v2")] as Set)
+                .build();
+        when:
+            repository.persist(environment1);
+        then:
+            repository.get(environment1.name).with {
+                name == environment1.name
+                allServices.size() == 2
+            }
     }
 }
