@@ -32,7 +32,7 @@ public class JudgeD {
     }
 
     public <C, E> EnvironmentValidatorResult validateServiceAgainstEnvironments(
-        ServiceContracts validatedService,
+        ServiceContracts contractsToValidate,
         List<String> environments,
         InterfaceContractValidator<C, E> validator
     ) {
@@ -43,11 +43,11 @@ public class JudgeD {
             .map(Optional::get)
             .collect(toList());
 
-        return getValidatorResult(validatedService, environmentContracts, validator);
+        return getValidatorResult(contractsToValidate, environmentContracts, validator);
     }
 
     public <C, E> Map<ServiceVersion, EnvironmentValidatorResult> validatedServicesAgainstEnvironment(
-        List<ServiceContracts> validatedContracts,
+        List<ServiceContracts> contractToValidate,
         String env,
         InterfaceContractValidator<C, E> validator
     ){
@@ -60,7 +60,7 @@ public class JudgeD {
             .collect(toList());
 
         // replace environment contracts with validated ones
-        validatedContracts.forEach(validatedContract -> {
+        contractToValidate.forEach(validatedContract -> {
             Iterator<ServiceContracts> iterator = environmentContracts.iterator();
             while (iterator.hasNext()) {
                 if (iterator.next().getName().equals(validatedContract.getId().getName())) {
@@ -71,7 +71,7 @@ public class JudgeD {
         });
 
         Map<ServiceVersion, EnvironmentValidatorResult> hashMap = Maps.newHashMap();
-        for (ServiceContracts sc : validatedContracts) {
+        for (ServiceContracts sc : contractToValidate) {
             hashMap.put(sc.getId(), getValidatorResult(sc, environmentContracts, validator));
         }
         return hashMap;

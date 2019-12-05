@@ -10,7 +10,7 @@ import dev.hltech.dredd.domain.validation.ping.PingContractValidator
 import org.springframework.http.MediaType
 import spock.lang.Specification
 
-import static dev.hltech.dredd.domain.contracts.ServiceContracts.*
+import static dev.hltech.dredd.domain.contracts.ServiceContracts.Contract
 import static org.assertj.core.util.Lists.newArrayList
 
 class JudgeDUT extends Specification {
