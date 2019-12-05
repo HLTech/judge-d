@@ -1,13 +1,14 @@
 package dev.hltech.dredd.domain.environment;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import dev.hltech.dredd.domain.ServiceVersion;
 
 import javax.persistence.*;
 import java.util.Set;
 
+import static com.google.common.collect.HashMultimap.create;
 import static com.google.common.collect.Sets.newHashSet;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 @Entity
@@ -18,30 +19,59 @@ public class EnvironmentAggregate {
     @Id
     private String name;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = SpaceServiceVersion.class )
     @JoinTable(name = "service_versions", joinColumns = {
         @JoinColumn(name = "environment_name", referencedColumnName = "name"),
     })
-    private Set<ServiceVersion> serviceVersions;
+    private Set<SpaceServiceVersion> serviceVersions = newHashSet();
 
     protected EnvironmentAggregate() {
     }
 
-    private EnvironmentAggregate(String name, Set<ServiceVersion> serviceVersions) {
+    protected EnvironmentAggregate(String name, Set< ServiceVersion> deatulSpaceServiceVersions) {
         this.name = name;
-        this.serviceVersions = serviceVersions;
+        this.serviceVersions.addAll(
+            deatulSpaceServiceVersions
+                .stream()
+                .map(sv -> new SpaceServiceVersion("default", sv.getName(), sv.getVersion()))
+                .collect(toList())
+        );
+    }
+
+    private EnvironmentAggregate(String name, Multimap<String, ServiceVersion> serviceVersions) {
+        this.name = name;
+        this.serviceVersions.addAll(
+            serviceVersions.entries()
+                .stream()
+                .map(e -> new SpaceServiceVersion(e.getKey(), e.getValue().getName(), e.getValue().getVersion()))
+                .collect(toList())
+        );
     }
 
     public String getName() {
         return this.name;
     }
 
+    public Set<String> getSpaceNames() {
+        return serviceVersions.stream().map(SpaceServiceVersion::getSpace).collect(toSet());
+    }
+
+    public Set<ServiceVersion> getServices(String space) {
+       return serviceVersions
+           .stream()
+           .filter(ssv -> ssv.getSpace().equals(space))
+           .map(ssv -> new ServiceVersion(ssv.getName(), ssv.getVersion()))
+           .collect(toSet());
+    }
+
     public Set<ServiceVersion> getAllServices() {
-        return this.serviceVersions;
+        return serviceVersions.stream()
+            .map(ssv -> new ServiceVersion(ssv.getName(), ssv.getVersion()))
+            .collect(toSet());
     }
 
     public static EnvironmentAggregate empty(String environmentName) {
-        return new EnvironmentAggregate(environmentName, newHashSet());
+        return new EnvironmentAggregate(environmentName, create());
     }
 
     public static EnvironmentAggregateBuilder builder(String name) {
@@ -51,23 +81,26 @@ public class EnvironmentAggregate {
     public static class EnvironmentAggregateBuilder {
 
         private String name;
-        private Multimap<String, String> serviceVersions = HashMultimap.create();
+        private Multimap<String, ServiceVersion> serviceVersions = create();
 
         private EnvironmentAggregateBuilder(String name) {
             this.name = name;
         }
 
-        public void withServiceVersion(String name, String version) {
-            this.serviceVersions.put(name, version);
+        public EnvironmentAggregateBuilder withServiceVersion(String name, String version) {
+            this.serviceVersions.put("default", new ServiceVersion(name, version));
+            return this;
+        }
+
+        public EnvironmentAggregateBuilder withServiceVersions(String space, Set<ServiceVersion> serviceVersions) {
+            this.serviceVersions.putAll(space, serviceVersions);
+            return this;
         }
 
         public EnvironmentAggregate build() {
             return new EnvironmentAggregate(
                 this.name,
-                this.serviceVersions.entries()
-                    .stream()
-                    .map(e -> new ServiceVersion(e.getKey(), e.getValue()))
-                    .collect(toSet())
+                this.serviceVersions
             );
         }
 

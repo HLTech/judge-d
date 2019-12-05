@@ -24,9 +24,10 @@ class InterrelationshipControllerUT extends Specification {
     def "should return 200 when getting interrelationship for any environment"() {
         given:
             def env = 'SIT'
-            def services = [new ServiceVersion('1', '1'), new ServiceVersion('2', '2')]
+            def services = [new ServiceVersion('1', '1'), new ServiceVersion('2', '2')] as Set
+            def environment = new EnvironmentAggregate(env, services)
 
-            1 * environmentRepository.get(env) >> new EnvironmentAggregate('name': env, 'serviceVersions': services)
+            1 * environmentRepository.get(env) >> environment
             1 * serviceContractsRepository.findOne(new ServiceVersion('1', '1')) >> Optional.of(createServiceContracts('1', '1'))
             1 * serviceContractsRepository.findOne(new ServiceVersion('2', '2')) >> Optional.of(createServiceContracts('2', '2'))
 

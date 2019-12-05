@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Embeddable;
+import javax.persistence.MappedSuperclass;
 
 import java.io.Serializable;
 
@@ -18,6 +19,7 @@ import static lombok.AccessLevel.PROTECTED;
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 @Access(AccessType.FIELD)
+@MappedSuperclass
 public class ServiceVersion implements Serializable {
 
     private String name;

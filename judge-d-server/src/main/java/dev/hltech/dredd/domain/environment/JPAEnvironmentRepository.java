@@ -17,7 +17,7 @@ public class JPAEnvironmentRepository implements EnvironmentRepository {
 
     @Override
     public EnvironmentAggregate persist(EnvironmentAggregate environment) {
-        return springDataEnvironmentRepository.save(environment);
+        return springDataEnvironmentRepository.saveAndFlush(environment);
     }
 
     @Override
