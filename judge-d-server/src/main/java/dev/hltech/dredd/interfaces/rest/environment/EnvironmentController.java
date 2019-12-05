@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
+import static dev.hltech.dredd.domain.environment.EnvironmentAggregate.DEFAULT_NAMESPACE;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -57,10 +58,10 @@ public class EnvironmentController {
         @ApiResponse(code = 500, message = "Failure")})
     public void overwriteEnvironment(
         @PathVariable("name") String name,
-        @RequestHeader(value = "X-JUDGE-D-AGENT-SPACE", defaultValue = "default", required = false) String agentSpace,
+        @RequestHeader(value = "X-JUDGE-D-AGENT-SPACE", defaultValue = DEFAULT_NAMESPACE, required = false) String agentSpace,
         @RequestBody Set<ServiceForm> services
     ) {
-        agentSpace = firstNonNull(agentSpace, "default)");
+        agentSpace = firstNonNull(agentSpace, DEFAULT_NAMESPACE);
         EnvironmentAggregate environment = environmentRepository.get(name);
         Set<String> supportedSpaces = ImmutableSet.<String>builder().addAll(environment.getSpaceNames()).add(agentSpace).build();
         EnvironmentAggregateBuilder builder = EnvironmentAggregate.builder(name);
