@@ -11,6 +11,11 @@
         <addColumn tableName="service_versions">
             <column name="space" type="character varying" />
         </addColumn>
-
+        <update tableName="service_versions">
+            <column name="space" value="default" />
+        </update>
+        <dropPrimaryKey tableName="service_versions" />
+        <addNotNullConstraint tableName="service_versions" columnName="space" columnDataType="character varying" />
+        <addPrimaryKey tableName="service_versions" columnNames="environment_name, name, version, space" />
     </changeSet>
 </databaseChangeLog>
