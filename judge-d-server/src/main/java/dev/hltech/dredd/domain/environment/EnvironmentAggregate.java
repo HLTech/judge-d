@@ -16,6 +16,8 @@ import static java.util.stream.Collectors.toSet;
 @Access(AccessType.FIELD)
 public class EnvironmentAggregate {
 
+    public static final String DEFAULT_NAMESPACE = "default";
+
     @Id
     private String name;
 
@@ -33,7 +35,7 @@ public class EnvironmentAggregate {
         this.serviceVersions.addAll(
             deatulSpaceServiceVersions
                 .stream()
-                .map(sv -> new SpaceServiceVersion("default", sv.getName(), sv.getVersion()))
+                .map(sv -> new SpaceServiceVersion(DEFAULT_NAMESPACE, sv.getName(), sv.getVersion()))
                 .collect(toList())
         );
     }
@@ -88,7 +90,7 @@ public class EnvironmentAggregate {
         }
 
         public EnvironmentAggregateBuilder withServiceVersion(String name, String version) {
-            this.serviceVersions.put("default", new ServiceVersion(name, version));
+            this.serviceVersions.put(DEFAULT_NAMESPACE, new ServiceVersion(name, version));
             return this;
         }
 
