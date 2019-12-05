@@ -17,11 +17,11 @@ public class CachingDelegatingDPublisher {
         this.judgeDPublisher = judgeDPublisher;
     }
 
-    public void publish(String environment, Set<JudgeDPublisher.ServiceForm> serviceForms) {
+    public void publish(String environment, String space, Set<JudgeDPublisher.ServiceForm> serviceForms) {
         if (previouslySentEnvironment == null || !previouslySentEnvironment.equals(serviceForms)) {
             log.info("publishing services to Judge-D: " + serviceForms);
 
-            judgeDPublisher.publish(environment, serviceForms);
+            judgeDPublisher.publish(environment, space != null ? space : "default", serviceForms);
 
             previouslySentEnvironment = new HashSet<>(serviceForms);
         } else {
