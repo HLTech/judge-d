@@ -13,7 +13,7 @@ jobs:
       script:
       - mvn clean verify jacoco:report coveralls:report
     - stage: build & publish docker image for server
-      if: branch = master
+      if: branch = master AND NOT type IN (pull_request)
       script:
       - mvn docker:build@build-docker -P docker-app -f ./judge-d-server/pom.xml
       - echo "Pushing to docker registry"
@@ -24,11 +24,11 @@ jobs:
       - docker tag hltech/judge-d registry.heroku.com/judge-d/web
       - docker push registry.heroku.com/judge-d/web
     - stage: release app in heroku
-      if: branch = master
+      if: branch = master AND NOT type IN (pull_request)
       script:
       - heroku container:release web -a judge-d
     - stage: build & publish docker image for agent
-      if: branch = master
+      if: branch = master AND NOT type IN (pull_request)
       script:
       - mvn docker:build@build-docker -P docker-app -f ./judge-d-agent/pom.xml
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
