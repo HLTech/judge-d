@@ -5,31 +5,31 @@ jdk:
 
 cache:
   directories:
-  - $HOME/.m2
+    - $HOME/.m2
 
 jobs:
   include:
     - stage: build with maven & generate reporrts
       script:
-      - mvn clean verify jacoco:report coveralls:report
+        - mvn clean verify jacoco:report coveralls:report
     - stage: build & publish docker image for server
-      if: branch = master
+      if: branch = master AND NOT type IN (pull_request)
       script:
-      - mvn docker:build@build-docker -P docker-app -f ./judge-d-server/pom.xml
-      - echo "Pushing to docker registry"
-      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      - docker push hltech/judge-d
-      - echo "Pushing to heroku registry"
-      - docker login -u _ -p "$HEROKU_API_KEY" registry.heroku.com
-      - docker tag hltech/judge-d registry.heroku.com/judge-d/web
-      - docker push registry.heroku.com/judge-d/web
+        - mvn docker:build@build-docker -P docker-app -f ./judge-d-server/pom.xml
+        - echo "Pushing to docker registry"
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker push hltech/judge-d
+        - echo "Pushing to heroku registry"
+        - docker login -u _ -p "$HEROKU_API_KEY" registry.heroku.com
+        - docker tag hltech/judge-d registry.heroku.com/judge-d/web
+        - docker push registry.heroku.com/judge-d/web
     - stage: release app in heroku
-      if: branch = master
+      if: branch = master AND NOT type IN (pull_request)
       script:
-      - heroku container:release web -a judge-d
+        - heroku container:release web -a judge-d
     - stage: build & publish docker image for agent
-      if: branch = master
+      if: branch = master AND NOT type IN (pull_request)
       script:
-      - mvn docker:build@build-docker -P docker-app -f ./judge-d-agent/pom.xml
-      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      - docker push hltech/judge-d-agent
+        - mvn docker:build@build-docker -P docker-app -f ./judge-d-agent/pom.xml
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker push hltech/judge-d-agent
