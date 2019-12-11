@@ -1,11 +1,13 @@
 package dev.hltech.dredd.domain;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import dev.hltech.dredd.domain.contracts.ServiceContracts;
 import dev.hltech.dredd.domain.contracts.ServiceContractsRepository;
 import dev.hltech.dredd.domain.environment.EnvironmentRepository;
 import dev.hltech.dredd.domain.validation.EnvironmentValidatorResult;
 import dev.hltech.dredd.domain.validation.InterfaceContractValidator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,7 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
+@Slf4j
 @Component
 public class JudgeD {
 
@@ -58,6 +61,10 @@ public class JudgeD {
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(toList());
+
+        log.info("checking how " +
+            "["+ Joiner.on(", ").join(contractToValidate.stream().map(sc -> sc.getId().toString()).collect(toList()))+"] will impact the env " +
+            "["+ Joiner.on(", ").join(environmentContracts.stream().map(sc -> sc.getId().toString()).collect(toList()))+"]");
 
         // replace environment contracts with validated ones
         contractToValidate.forEach(validatedContract -> {
