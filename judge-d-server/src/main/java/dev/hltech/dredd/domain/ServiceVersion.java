@@ -1,10 +1,7 @@
 package dev.hltech.dredd.domain;
 
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -15,6 +12,7 @@ import java.io.Serializable;
 import static lombok.AccessLevel.PROTECTED;
 
 @Embeddable
+@ToString
 @Getter
 @EqualsAndHashCode
 @AllArgsConstructor
