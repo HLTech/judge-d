@@ -77,6 +77,8 @@ public class JudgeD {
             environmentContracts.add(validatedContract);
         });
 
+        log.info("after the deployment env will contain: ["+Joiner.on(", ").join(environmentContracts.stream().map(sc -> sc.getId().toString()).collect(toList()))+"]");
+
         Map<ServiceVersion, EnvironmentValidatorResult> hashMap = Maps.newHashMap();
         for (ServiceContracts sc : contractToValidate) {
             hashMap.put(sc.getId(), getValidatorResult(sc, environmentContracts, validator));
