@@ -48,7 +48,7 @@ public class ValidationController {
     @GetMapping(value = "/environment-compatibility-report", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get validation report for contract between set of services and given environment as if those services were first deployed", nickname = "Validate services against environment")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
+        @ApiResponse(code = 200, message = "Success", response = BatchValidationReportDto.class, responseContainer = "list"),
         @ApiResponse(code = 500, message = "Failure"),
         @ApiResponse(code = 404, message = "Service not found")
     })
@@ -97,7 +97,7 @@ public class ValidationController {
     @GetMapping(value = "/environment-compatibility-report/{serviceName}:{serviceVersion:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get validation report for contract between given service and given environment", nickname = "Validate service against environment")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
+        @ApiResponse(code = 200, message = "Success", response = ContractValidationReportDto.class, responseContainer = "list"),
         @ApiResponse(code = 500, message = "Failure"),
         @ApiResponse(code = 404, message = "Service not found")
     })

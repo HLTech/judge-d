@@ -2,7 +2,6 @@ package dev.hltech.dredd.interfaces.rest.interrelationship;
 
 import dev.hltech.dredd.domain.contracts.ServiceContracts;
 import dev.hltech.dredd.domain.contracts.ServiceContractsRepository;
-import dev.hltech.dredd.domain.environment.EnvironmentAggregate;
 import dev.hltech.dredd.domain.environment.EnvironmentRepository;
 import dev.hltech.dredd.domain.ServiceVersion;
 import dev.hltech.dredd.interfaces.rest.contracts.ContractsMapper;
@@ -41,7 +40,7 @@ public class InterrelationshipController {
     @GetMapping(value = "/interrelationship/{environment}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get interrelationship between services in given environment", nickname = "Validate against environment")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
+        @ApiResponse(code = 200, message = "Success", response = InterrelationshipDto.class),
         @ApiResponse(code = 500, message = "Failure")
     })
     public InterrelationshipDto getInterrelationship (@PathVariable("environment") String env) {
