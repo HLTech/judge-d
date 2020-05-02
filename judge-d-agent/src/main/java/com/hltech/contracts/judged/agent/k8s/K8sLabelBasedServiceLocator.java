@@ -1,6 +1,7 @@
 package com.hltech.contracts.judged.agent.k8s;
 
 import com.hltech.contracts.judged.agent.ServiceLocator;
+import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -51,22 +52,25 @@ public class K8sLabelBasedServiceLocator implements ServiceLocator {
             .filter(pod -> !isExcludedFromJurisdiction(pod))
             .filter(pod -> "running".equalsIgnoreCase(pod.getStatus().getPhase()))
             .flatMap(pod -> pod.getSpec().getContainers().stream())
-            .map(container -> {
-                if (container.getImage().contains(":")) {
-                    String imageName = container.getImage().split(":")[0];
-                    String imageVersion = container.getImage().split(":")[1];
-
-                    return Optional.of(new Service(
-                        imageName.contains("/") ? imageName.substring(imageName.lastIndexOf("/") + 1) : imageName,
-                        imageVersion
-                    ));
-                } else {
-                    return Optional.<Service>empty();
-                }
-            })
+            .map(Container::getImage)
+            .map(this::fromImage)
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(Collectors.toSet());
+    }
+
+    private Optional<ServiceLocator.Service> fromImage(String image) {
+        if (image.contains(":")) {
+            String imageName = image.split(":")[0];
+            String imageVersion = image.split(":")[1];
+
+            return Optional.of(new ServiceLocator.Service(
+                imageName.contains("/") ? imageName.substring(imageName.lastIndexOf("/") + 1) : imageName,
+                imageVersion
+            ));
+        } else {
+            return Optional.<ServiceLocator.Service>empty();
+        }
     }
 
     private boolean isExcludedFromJurisdiction(Pod pod) {
