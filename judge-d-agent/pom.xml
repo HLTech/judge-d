@@ -83,6 +83,11 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.7</version>
         </dependency>
+        <dependency>
+            <groupId>com.ecwid.consul</groupId>
+            <artifactId>consul-api</artifactId>
+            <version>1.4.5</version>
+        </dependency>
 
         <!--TEST-->
         <dependency>
