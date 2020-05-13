@@ -25,16 +25,15 @@ Judge Dredd is a tool used to test contracts between microservices.
 
 ## Overview
 
-In a microservices architecture it is of importance to ensure that communication between them is not broken after changes in 
-any of participating sides. One of the best approaches to tackle this problem is contract testing. Judge Dredd is 
-an open source project which aims at performing contract tests between any microservices deployed within any environment under 
+In a microservices architecture it is of importance to ensure that communication between them is not broken after changes in
+any of participating sides. One of the best approaches to tackle this problem is contract testing. Judge Dredd is
+an open source project which aims at performing contract tests between any microservices deployed within any environment under
 Judge Dredd jurisdiction.
 
 ## Idea
 
 Judge Dredd includes two functional roles - agent and server. Agents are deployed within any environment and gather information
-about names and versions of any service within this environment. For now Judge Dredd agents support Kubernetes environments, 
-however integration with another sources of information about environment (like Consul) is straightforward.
+about names and versions of any service within this environment. For now Judge Dredd agents support Kubernetes and Consul environments.
 Agents periodically collect information about any service within controlled environment and send it to Judge Dredd server
 (called Judge Dredd as well) using server's REST API.
 
@@ -45,11 +44,11 @@ Judge Dredd provides REST API. It allows:
 * Saving/getting information about contracts for given service name and version
 * Verifying contracts for service's name and version
 
-Basing on its knowledge of services (names and versions) belonging to particular environment obtained from an agent and 
-its knowledge of contracts obtained from services themselves Dredd is able to judge if deployment of a new version of 
+Basing on its knowledge of services (names and versions) belonging to particular environment obtained from an agent and
+its knowledge of contracts obtained from services themselves Dredd is able to judge if deployment of a new version of
 the service to the environment would break communication between this service and any other in this environment.
 
-For now Judge Dredd supports expectations specified in [Pact files](https://github.com/pact-foundation/pact-specification) 
+For now Judge Dredd supports expectations specified in [Pact files](https://github.com/pact-foundation/pact-specification)
 (json) and capabilities specified in [Swagger file](https://swagger.io/specification/) (json).
 
 ## Reference implementation <a name="ReferenceImplementation"></a>
@@ -57,7 +56,7 @@ Basically, there are 2 steps - contract publishing and contract verification. Th
 (like Jenkins). Both publishing and verification should be done before actual deployment into any environment.
 
 ### Contract Publishing
-Contract publishing should be done for both service expectations (what do I expect from the others? What message format 
+Contract publishing should be done for both service expectations (what do I expect from the others? What message format
 do I send?) and capabilities (What am I able to offer to the others? What message format do I accept and return?) for
 given service name and version. Publishing means sending a REST request to Judge Dredd's endpoint with information about
 expectations, capabilities and the protocol of communication. Currently only REST is supported.
@@ -205,12 +204,13 @@ Sample Swagger file is as follows:
 ````
 
 In the examples above a consumer called "judge-dredd-agent" relies on functionality from provider "judge-dredd-server".
-Expectations specified in Pact file are compared to capabilities in Swagger file. We can see that Pact file and Swagger file 
-are compatible.Judge Dredd internally uses Atlassian library [swagger-request-validator-pact](https://bitbucket.org/atlassian/swagger-request-validator) 
+Expectations specified in Pact file are compared to capabilities in Swagger file. We can see that Pact file and Swagger file
+are compatible.Judge Dredd internally uses Atlassian library [swagger-request-validator-pact](https://bitbucket.org/atlassian/swagger-request-validator)
 to compare Pact files and Swagger files.
 
 Judge Dredd server should be deployed on one environment. Judge Dredd agent should be deployed on each environment which
-is planned to be under Judge Dredd jurisdiction. For now Kubernetes environments are supported.  
+is planned to be under Judge Dredd jurisdiction. For now Kubernetes and Consul environments are supported.
+For more information about Judge Dredd agent please refer to [Judge Dredd agent readme](judge-d-agent/readme.md)
 
 ## Prerequisites
 
@@ -218,14 +218,14 @@ For development you need:
 * [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 * [PostgreSQL](https://www.postgresql.org/)
 
-You can use your local Maven distribution, but there is maven wrapper included in project. To use it just type `./mvnw {command}` 
+You can use your local Maven distribution, but there is maven wrapper included in project. To use it just type `./mvnw {command}`
 (for UNIX users) or `mvnw.cmd {command}` (for Windows users)
 
 
 ## Running
 
 ### Local development mode
-To compile code, run tests and build jar files simply use 
+To compile code, run tests and build jar files simply use
 
 ```
 mvn clean install
@@ -239,7 +239,7 @@ cd judge-d-server
 mvn spring-boot:run -D spring.profiles.active=dev
 ```
 
-To verify successful start you can go to the following url: _http://localhost:8080/v2/api-docs_. 
+To verify successful start you can go to the following url: _http://localhost:8080/v2/api-docs_.
 
 ### Docker based development mode
 
@@ -251,9 +251,9 @@ to run postgres db in background, then
 ```
 docker-compose -f judge-d-server/compose-judge-d.yml
 ```
-to run app. 
+to run app.
 
-By default you have to create new database called judge_d for the application to start, but jdbc connection properties 
+By default you have to create new database called judge_d for the application to start, but jdbc connection properties
 can be defined in judge-d-server/compose-judge-d.yml file.
 
 
@@ -267,15 +267,15 @@ mvn test
 
 ## Deployment
 
-Easiest way to run Judge D wherever you need is by using Docker - image is available in our 
+Easiest way to run Judge D wherever you need is by using Docker - image is available in our
 [Dockerhub](https://hub.docker.com/r/hltech/judge-d/).
 
-Of course you can use jar file generated during installation as well and deploy it on some application server like Tomcat.  
+Of course you can use jar file generated during installation as well and deploy it on some application server like Tomcat.
 
 ## Validation
 
 Validation behaviour can be modified using one of the options listed [here](https://bitbucket.org/atlassian/swagger-request-validator/src/0dff457f9ea7614d606ae8475d65cfe950570031/swagger-request-validator-core/README.md?fileviewer=file-view-default).
-If you want to run the application using docker container, you can pass environment variable `VALIDATION_OPTIONS` with comma-separated validation properties. 
+If you want to run the application using docker container, you can pass environment variable `VALIDATION_OPTIONS` with comma-separated validation properties.
 
 Below setting causes changing default validation level to IGNORE and emission of validation error `validation.schema.required` at ERROR level.
 ```
