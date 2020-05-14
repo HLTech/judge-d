@@ -14,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 
-import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 

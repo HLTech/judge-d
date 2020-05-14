@@ -7,7 +7,7 @@ import static au.com.dius.pact.model.PactReader.loadPact
 import static com.google.common.io.ByteStreams.toByteArray
 import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationStatus.FAILED
 import static dev.hltech.dredd.domain.validation.InterfaceContractValidator.InteractionValidationStatus.OK
-import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
 
 class RestContractValidatorUT extends Specification {
 

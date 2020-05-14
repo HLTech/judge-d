@@ -7,7 +7,7 @@ import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 
 import static dev.hltech.dredd.domain.environment.EnvironmentAggregate.builder
-import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["management.port=0"])
