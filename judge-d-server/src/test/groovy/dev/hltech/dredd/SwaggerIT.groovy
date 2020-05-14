@@ -2,21 +2,17 @@ package dev.hltech.dredd
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import dev.hltech.dredd.config.BeanFactory
-import dev.hltech.dredd.config.SwaggerConfig
 import dev.hltech.dredd.domain.JudgeD
 import dev.hltech.dredd.domain.contracts.ServiceContractsRepository
 import dev.hltech.dredd.domain.environment.EnvironmentRepository
-import dev.hltech.dredd.interfaces.rest.contracts.ContractsController
 import dev.hltech.dredd.interfaces.rest.contracts.ContractsMapper
-import dev.hltech.dredd.interfaces.rest.environment.EnvironmentController
-import dev.hltech.dredd.interfaces.rest.validation.ValidationController
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultHandler
 import spock.lang.Specification
@@ -26,8 +22,9 @@ import java.nio.file.Paths
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 
-@WebMvcTest
-@ContextConfiguration(classes = [SwaggerConfig, BeanFactory, ContractsController, EnvironmentController, ValidationController])
+@SpringBootTest
+@AutoConfigureMockMvc
+@AutoConfigureTestDatabase
 @ActiveProfiles("test")
 class SwaggerIT extends Specification {
 
@@ -60,14 +57,7 @@ class SwaggerIT extends Specification {
 
         and:
             JsonNode responseJson = objectMapper.readTree(response.contentAsString)
-            responseJson.findPath("tags").size() == 3
-
-        and:
-            def controllersNodes = responseJson.findPath("tags").findValues("name")
-            controllersNodes.size() == 3
-            controllersNodes.any { it.textValue() == "contracts-controller" }
-            controllersNodes.any { it.textValue() == "environment-controller" }
-            controllersNodes.any { it.textValue() == "validation-controller" }
+            responseJson.findPath("paths").size() == 12
     }
 
     def "should generate swagger json"() {
@@ -86,6 +76,6 @@ class SwaggerIT extends Specification {
     }
 
     private static String swaggerPath() {
-        "/v2/api-docs"
+        "/v3/api-docs"
     }
 }

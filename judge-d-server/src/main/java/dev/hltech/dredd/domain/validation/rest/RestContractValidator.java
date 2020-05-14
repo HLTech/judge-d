@@ -2,7 +2,7 @@ package dev.hltech.dredd.domain.validation.rest;
 
 import au.com.dius.pact.model.RequestResponseInteraction;
 import au.com.dius.pact.model.RequestResponsePact;
-import com.atlassian.oai.validator.SwaggerRequestResponseValidator;
+import com.atlassian.oai.validator.OpenApiInteractionValidator;
 import com.atlassian.oai.validator.pact.PactResponse;
 import com.atlassian.oai.validator.report.ValidationReport;
 import dev.hltech.dredd.domain.validation.InterfaceContractValidator;
@@ -29,7 +29,7 @@ public class RestContractValidator extends InterfaceContractValidator<String, Re
 
     @Override
     public List<InteractionValidationResult> validate(RequestResponsePact pact, String capabilities) {
-        SwaggerRequestResponseValidator swaggerValidator = SwaggerRequestResponseValidator.createFor(capabilities).build();
+        OpenApiInteractionValidator swaggerValidator = OpenApiInteractionValidator.createForInlineApiSpecification(capabilities).build();
 
         Map<RequestResponseInteraction, ValidationReport> validationReports = pact.getInteractions()
             .stream()

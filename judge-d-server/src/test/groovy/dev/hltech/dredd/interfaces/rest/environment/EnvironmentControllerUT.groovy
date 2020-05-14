@@ -6,7 +6,7 @@ import dev.hltech.dredd.domain.environment.InMemoryEnvironmentRepository
 import dev.hltech.dredd.domain.ServiceVersion
 import spock.lang.Specification
 
-import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
 
 class EnvironmentControllerUT extends Specification {
 

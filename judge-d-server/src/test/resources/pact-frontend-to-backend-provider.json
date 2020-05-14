@@ -10,10 +10,16 @@
       "description": "a request for details",
       "request": {
         "method": "GET",
-        "path": "/details/123456789012345678"
+        "path": "/details/123456789012345678",
+        "headers": {
+          "Accept": "application/json"
+        }
       },
       "response": {
         "status": 200,
+        "headers": {
+          "Content-Type": "application/json;charset=utf-8"
+        },
         "body": {
           "amount": {
             "currency": "GBP",
