@@ -12,9 +12,14 @@ if len(sys.argv) > 2:
         template = Template(template_file.read())
 
     with open(sys.argv[2], 'w') as result:
-        result.write(template.render(
-            validationResults = dredd_response["validationResults"]
-        ))
+        try:
+            result.write(template.render(
+                validationResults = dredd_response["validationResults"]
+            ))
+        except:
+            result.write(template.render(
+                errorMessage = dredd_response
+            ))
 
 else:
     print('''Script requires two arguments - first is path to validation result json file, second is path to output html file - 

@@ -67,7 +67,15 @@
             {% endfor %}
         </ul>
     {% else %}
-        There were no interactions
+        {% if (errorMessage is defined)%}
+        <h1 style="color:red"> Error </h2>
+        <h3> Status: {{ errorMessage.status }} </h3>
+        <h3> Message: </h3>
+        <h3> {{ errorMessage.message }} </h2>
+        <h3> Path: {{ errorMessage.path}} </h3>
+        {% else %}
+            There were no interactions
+        {% endif %}
     {% endif %}
 </div>
 
