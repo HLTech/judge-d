@@ -216,7 +216,7 @@ For more information about Judge-d agent please refer to [Judge-d agent readme](
 ## Prerequisites
 
 For development you need:
-* [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+* [Java 11](https://openjdk.java.net/projects/jdk/11/)
 * [PostgreSQL](https://www.postgresql.org/)
 
 You can use your local Maven distribution, but there is maven wrapper included in project. To use it just type `./mvnw {command}`

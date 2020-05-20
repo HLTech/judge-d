@@ -172,7 +172,7 @@ class ContractsControllerIT extends Specification {
     }
 
     @Deprecated
-    def '[deprecated] old return 404 when no contracts registered for given service'() {
+    def 'deprecated - return 404 when no contracts registered for given service'() {
         when: 'rest validatePacts url is hit'
         def serviceName = randomAlphabetic(10)
         def version = '1.0'
@@ -185,7 +185,7 @@ class ContractsControllerIT extends Specification {
     }
 
     @Deprecated
-    def '[deprecated] old should return 200 and json when get previously saved service contracts'() {
+    def 'deprecated - should return 200 and json when get previously saved service contracts'() {
         given: 'rest validatePacts url is hit'
         def serviceName = randomAlphabetic(10)
         def version = '1.0'
@@ -207,7 +207,7 @@ class ContractsControllerIT extends Specification {
     }
 
     @Deprecated
-    def '[deprecated] should successfully retrieve list of services'() {
+    def 'deprecated - should successfully retrieve list of services'() {
         given:
         when:
             def response = mockMvc.perform(
@@ -220,7 +220,7 @@ class ContractsControllerIT extends Specification {
     }
 
     @Deprecated
-    def '[deprecated] old should calling /contracts redirect to /contracts/services to improve api discovery'() {
+    def 'deprecated - should calling /contracts redirect to /contracts/services to improve api discovery'() {
         when:
         def response = mockMvc.perform(
             get('/contracts')
@@ -231,7 +231,7 @@ class ContractsControllerIT extends Specification {
     }
 
     @Deprecated
-    def '[deprecated] old should successfully retrieve list of service versions'() {
+    def 'deprecated - should successfully retrieve list of service versions'() {
         given:
         def serviceName = randomAlphabetic(10)
         def version = '1.0'
