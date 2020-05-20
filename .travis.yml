@@ -9,9 +9,14 @@ cache:
 
 jobs:
   include:
-    - stage: build with maven & generate reporrts
+    - stage: build with maven & generate reports
       script:
         - mvn clean verify jacoco:report coveralls:report
+    - stage: build docker images for server and agent
+      if: NOT branch = master OR type IN (pull_request)
+      script:
+        - mvn docker:build@build-docker -P docker-app -f ./judge-d-server/pom.xml
+        - mvn docker:build@build-docker -P docker-app -f ./judge-d-agent/pom.xml
     - stage: build & publish docker image for server
       if: branch = master AND NOT type IN (pull_request)
       script:
