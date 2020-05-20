@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk
+FROM adoptopenjdk/openjdk11:alpine-slim
 
 WORKDIR /root
 ADD ./judge-d-server-0.1-SNAPSHOT.jar /root/judge-d.jar
