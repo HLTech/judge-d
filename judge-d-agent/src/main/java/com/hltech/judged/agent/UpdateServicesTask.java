@@ -1,7 +1,6 @@
 package com.hltech.judged.agent;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -10,10 +9,9 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class UpdateServicesTask {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateServicesTask.class);
 
     private String environment;
     private String space;
@@ -35,9 +33,9 @@ public class UpdateServicesTask {
 
     @Scheduled(fixedDelay = 5_000, initialDelay = 10_000)
     public void updateServices() {
-        LOGGER.debug("Searching for available services...");
+        log.debug("Searching for available services...");
         Set<ServiceLocator.Service> serviceForms = serviceLocator.locateServices();
-        LOGGER.debug("Done - found following services: " + serviceForms);
+        log.debug("Done - found following services: " + serviceForms);
         publisher.publish(
             environment,
             space,
