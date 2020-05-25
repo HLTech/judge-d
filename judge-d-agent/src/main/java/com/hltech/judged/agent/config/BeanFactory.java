@@ -7,8 +7,6 @@ import feign.Feign;
 import feign.Retryer;
 import feign.Target;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -33,8 +31,6 @@ import java.security.cert.X509Certificate;
 @Configuration
 @EnableScheduling
 public class BeanFactory {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(BeanFactory.class);
 
     @Bean
     public ObjectMapper objectMapper() {
