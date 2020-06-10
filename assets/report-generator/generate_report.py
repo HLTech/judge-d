@@ -20,6 +20,7 @@ if len(sys.argv) > 2:
             result.write(template.render(
                 errorMessage = dredd_response
             ))
+            sys.exit(-1)
 
 else:
     print('''Script requires two arguments - first is path to validation result json file, second is path to output html file - 
