@@ -11,7 +11,7 @@
 
     <artifactId>judge-d-server</artifactId>
     <packaging>jar</packaging>
-    <name>Judge-D-server</name>
+    <name>Judge-D-Server</name>
 
     <properties>
         <springBootVersion>2.1.1.RELEASE</springBootVersion>
