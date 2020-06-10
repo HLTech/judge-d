@@ -5,7 +5,7 @@
 
     <parent>
         <artifactId>judge-d</artifactId>
-        <groupId>com.hltech.contrats</groupId>
+        <groupId>com.hltech.judged</groupId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
