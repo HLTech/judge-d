@@ -196,6 +196,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 
@@ -217,7 +221,6 @@
                                 <configuration>
                                     <imageName>hltech/judge-d-agent</imageName>
                                     <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
-
                                     <resources>
                                         <resource>
                                             <targetPath>/</targetPath>
@@ -225,6 +228,10 @@
                                             <include>${project.build.finalName}.jar</include>
                                         </resource>
                                     </resources>
+                                    <imageTags>
+                                        <imageTag>latest</imageTag>
+                                        <imageTag>${version.number}</imageTag>
+                                    </imageTags>
                                 </configuration>
                             </execution>
                         </executions>

@@ -307,7 +307,7 @@ Want to help? Have any problems or questions? Let us know!
 
 ## Versioning <a name="Versioning"></a>
 
-TODO - Gitflow versioning in plans.
+Each merge to master triggers release of Docker image tagged with both latest and x.<total commit count>.0_<git commit abbreviated>
 
 ## Authors <a name="Authors"></a>
 

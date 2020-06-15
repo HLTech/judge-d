@@ -28,6 +28,7 @@
         <groovyAllVersion>2.4.7</groovyAllVersion>
         <lombokVersion>1.18.12</lombokVersion>
         <spockVersion>1.1-groovy-2.4</spockVersion>
+        <version.number>1.${git.total.commit.count}.0_${git.commit.id.abbrev}</version.number>
     </properties>
 
     <dependencyManagement>
@@ -154,6 +155,28 @@
                             <version>2.2.3</version>
                         </dependency>
                     </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>pl.project13.maven</groupId>
+                    <artifactId>git-commit-id-plugin</artifactId>
+                    <version>4.0.0</version>
+                    <executions>
+                        <execution>
+                            <id>get-git-metadata</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>revision</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+                        <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                        <includeOnlyProperties>
+                            <includeOnlyProperty>git.commit.id.abbrev</includeOnlyProperty>
+                            <includeOnlyProperty>git.total.commit.count</includeOnlyProperty>
+                        </includeOnlyProperties>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
