@@ -15,12 +15,12 @@ jobs:
     - stage: build docker images for server and agent
       if: NOT branch = master OR type IN (pull_request)
       script:
-        - mvn docker:build@build-docker -P docker-app -f ./judge-d-server/pom.xml
-        - mvn docker:build@build-docker -P docker-app -f ./judge-d-agent/pom.xml
+        - mvn validate docker:build@build-docker -P docker-app -f ./judge-d-server/pom.xml
+        - mvn validate docker:build@build-docker -P docker-app -f ./judge-d-agent/pom.xml
     - stage: build & publish docker image for server
       if: branch = master AND NOT type IN (pull_request)
       script:
-        - mvn docker:build@build-docker -P docker-app -f ./judge-d-server/pom.xml
+        - mvn validate docker:build@build-docker -P docker-app -f ./judge-d-server/pom.xml
         - echo "Pushing to docker registry"
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker push hltech/judge-d
@@ -35,6 +35,6 @@ jobs:
     - stage: build & publish docker image for agent
       if: branch = master AND NOT type IN (pull_request)
       script:
-        - mvn docker:build@build-docker -P docker-app -f ./judge-d-agent/pom.xml
+        - mvn validate docker:build@build-docker -P docker-app -f ./judge-d-agent/pom.xml
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker push hltech/judge-d-agent
