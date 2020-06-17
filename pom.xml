@@ -29,6 +29,7 @@
         <lombokVersion>1.18.12</lombokVersion>
         <spockVersion>1.1-groovy-2.4</spockVersion>
         <version.number>1.${git.total.commit.count}.0_${git.commit.id.abbrev}</version.number>
+        <springBootVersion>2.1.1.RELEASE</springBootVersion>
     </properties>
 
     <dependencyManagement>
@@ -57,6 +58,13 @@
                 <artifactId>groovy-all</artifactId>
                 <version>${groovyAllVersion}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${springBootVersion}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
