@@ -21,6 +21,6 @@ class ContractTestsGeneratorIT extends Specification {
 
     def "should generate pact file"() {
         expect:
-        pactGenerator.writePactFiles("com.hltech.contracts.judged.agent", "judge-d-agent", objectMapper, new File("target/pacts"))
+        pactGenerator.writePactFiles("com.hltech.judged.agent", "judge-d-agent", objectMapper, new File("target/pacts"))
     }
 }

@@ -60,4 +60,18 @@ class RestContractValidatorUT extends Specification {
                 }
             }
     }
+
+    def 'should validate contracts specified in openapi v3'() {
+        given:
+            def swagger = new String(toByteArray(getClass().getResourceAsStream("/swagger-openapi3.json")))
+            def pact = (RequestResponsePact) loadPact(getClass().getResourceAsStream("/pact.json"))
+        when:
+            def validationResult = validator.validate(pact, swagger)
+        then:
+            for (report in validationResult) {
+                with(report) {
+                    status == OK
+                }
+            }
+    }
 }

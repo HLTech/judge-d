@@ -1,0 +1,34 @@
+{
+  "provider": {
+    "name": "judge-d-server"
+  },
+  "consumer": {
+    "name": "judge-d-agent"
+  },
+  "interactions": [
+    {
+      "description": "publish request; 200 OK response",
+      "request": {
+        "method": "PUT",
+        "path": "environments/nPUmfl0iF1",
+        "headers": {
+          "X-JUDGE-D-AGENT-SPACE": "dli0ONzhUW"
+        },
+        "query": "",
+        "body": [
+          {
+            "name": "_uss5_lSrR",
+            "version": "6PPZwQAg8G"
+          }
+        ]
+      },
+      "response": {
+        "status": "200",
+        "headers": {}
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecificationVersion": "1.0.0"
+  }
+}
