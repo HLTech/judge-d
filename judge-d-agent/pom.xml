@@ -14,22 +14,9 @@
     <name>Judge-D-Agent</name>
 
     <properties>
-        <springBootVersion>2.1.1.RELEASE</springBootVersion>
         <swaggerVersion>2.7.0</swaggerVersion>
         <pactGenVersion>1.3.3</pactGenVersion>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${springBootVersion}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
