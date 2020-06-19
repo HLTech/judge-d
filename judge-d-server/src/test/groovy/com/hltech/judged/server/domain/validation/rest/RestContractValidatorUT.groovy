@@ -61,17 +61,23 @@ class RestContractValidatorUT extends Specification {
             }
     }
 
-    def 'should validate contracts specified in openapi v3'() {
+    def 'should validate contracts specified in openapi v3 - should find failures when media type is specified'() {
         given:
             def swagger = new String(toByteArray(getClass().getResourceAsStream("/swagger-openapi3.json")))
             def pact = (RequestResponsePact) loadPact(getClass().getResourceAsStream("/pact.json"))
         when:
             def validationResult = validator.validate(pact, swagger)
         then:
-            for (report in validationResult) {
-                with(report) {
-                    status == OK
-                }
+            validationResult.size() == 2
+            validationResult.any { result ->
+                result.name == 'get envs; 200 OK response' &&
+                    result.status == FAILED &&
+                    result.errors.get(0) == "[Path '/0'] Instance type (integer) does not match any allowed primitive type (allowed: [\"string\"])"
+            }
+            validationResult.any { result ->
+                result.name == 'publish request; 200 OK response' &&
+                    result.status == FAILED &&
+                    result.errors.get(0) == "[Path '/0'] Object instance has properties which are not allowed by the schema: [\"gyyigi\"]"
             }
     }
 }
