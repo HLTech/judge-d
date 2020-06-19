@@ -2,6 +2,7 @@ package com.hltech.judged.server.domain.validation
 
 
 import com.hltech.judged.server.domain.JudgeD
+import com.hltech.judged.server.domain.contracts.InMemoryServiceContractsRepository
 import com.hltech.judged.server.domain.contracts.ServiceContracts
 import com.hltech.judged.server.domain.environment.EnvironmentAggregate
 import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
@@ -15,7 +16,7 @@ import static org.assertj.core.util.Lists.newArrayList
 
 class JudgeDUT extends Specification {
 
-    def serviceContractsRepository = new com.hltech.judged.server.domain.contracts.InMemoryServiceContractsRepository();
+    def serviceContractsRepository = new InMemoryServiceContractsRepository();
     def environmentRepository = new InMemoryEnvironmentRepository()
     def contractValidator = new PingContractValidator()
     def judgeD = new JudgeD(environmentRepository, serviceContractsRepository)

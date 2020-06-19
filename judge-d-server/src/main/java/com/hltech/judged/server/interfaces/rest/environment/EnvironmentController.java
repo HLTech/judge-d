@@ -51,7 +51,9 @@ public class EnvironmentController {
             .collect(toList());
     }
 
-    @PutMapping(value = "environments/{name}")
+    @PutMapping(
+        value = "environments/{name}",
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Update the environment", nickname = "update environment")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success"),

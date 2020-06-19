@@ -10,21 +10,43 @@
       "description": "publish request; 200 OK response",
       "request": {
         "method": "PUT",
-        "path": "environments/nPUmfl0iF1",
+        "path": "environments/9nUWkVyW25",
         "headers": {
-          "X-JUDGE-D-AGENT-SPACE": "dli0ONzhUW"
+          "X-JUDGE-D-AGENT-SPACE": "j3_OIa8MXC",
+          "Content-Type": "application/json"
         },
         "query": "",
         "body": [
           {
             "name": "_uss5_lSrR",
-            "version": "6PPZwQAg8G"
+            "version": "6PPZwQAg8G",
+            "gyyigi": "68tgygk"
           }
         ]
       },
       "response": {
+        "status": "200"
+      }
+    },
+    {
+      "description": "get envs; 200 OK response",
+      "request": {
+        "method": "GET",
+        "path": "environments",
+        "headers": {
+          "X-JUDGE-D-AGENT-SPACE": "j3_OIa8MXC",
+          "Accept": "application/json"
+        },
+        "query": ""
+      },
+      "response": {
         "status": "200",
-        "headers": {}
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": [
+          123
+        ]
       }
     }
   ],
