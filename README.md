@@ -240,7 +240,7 @@ cd judge-d-server
 mvn spring-boot:run -D spring.profiles.active=dev
 ```
 
-To verify successful start you can go to the following url: _http://localhost:8080/v2/api-docs_.
+To verify successful start you can go to the following url: _http://localhost:8080/v3/api-docs_.
 
 ### Docker based development mode
 
