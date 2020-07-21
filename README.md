@@ -211,7 +211,7 @@ to compare Pact files and Swagger files.
 
 Judge-d server should be deployed on one environment. Judge-d agent should be deployed on each environment which
 is planned to be under Judge-d jurisdiction. For now Kubernetes and Consul environments are supported.
-For more information about Judge-d agent please refer to [Judge-d agent readme](judge-d-agent/readme.md)
+For more information about Judge-d agent please refer to [Judge-d agent readme](judge-d-agent/README.md)
 
 ## Prerequisites
 
