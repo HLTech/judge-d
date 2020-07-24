@@ -120,30 +120,4 @@ public class ContractsController {
             )
         ));
     }
-
-    @GetMapping(value = "/{serviceName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get versions of a service with registered contracts", nickname = "get versions of a service")
-    @Deprecated
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = String.class, responseContainer = "list"),
-        @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Failure")})
-    public List<String> getServiceVersions(@PathVariable(name = "serviceName") String serviceName) {
-        return serviceContractsRepository.findAllByServiceName(serviceName)
-            .stream()
-            .map(ServiceContracts::getVersion).sorted()
-            .collect(toList());
-    }
-
-    @GetMapping(value = "/{provider}/{version:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get contracts for a version of a service", nickname = "get contracts")
-    @Deprecated
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
-        @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Failure")})
-    public ServiceContractsDto get(@PathVariable(name = "provider") String provider, @PathVariable(name = "version") String version) {
-        return mapper.toDto(this.serviceContractsRepository.findOne(new ServiceVersion(provider, version)).orElseThrow(ResourceNotFoundException::new));
-    }
-
 }
