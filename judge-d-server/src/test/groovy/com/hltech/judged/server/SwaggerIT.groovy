@@ -57,7 +57,7 @@ class SwaggerIT extends Specification {
 
         and:
             JsonNode responseJson = objectMapper.readTree(response.contentAsString)
-            responseJson.findPath("paths").size() == 12
+            responseJson.findPath("paths").size() == 10
     }
 
     def "should generate swagger json"() {
