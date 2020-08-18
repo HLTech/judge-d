@@ -1,7 +1,5 @@
 package com.hltech.judged.server
 
-import com.tngtech.archunit.base.DescribedPredicate
-import com.tngtech.archunit.core.domain.JavaAnnotation;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses
 import com.tngtech.archunit.junit.ArchTest;
@@ -16,6 +14,8 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
 @AnalyzeClasses(packagesOf = App.class, importOptions = ImportOption.DoNotIncludeTests.class)
 class ArchUnitUT {
     private static final DOMAIN_PACKAGE = '..domain..'
+    private static final INFRASTRUCTURE_PACKAGE = '..infrastructure..'
+    private static final INTERFACES_PACKAGE = '..interfaces'
 
     private static final DEFAULT_PACKAGE = ''
     private static final SLF4J_PACKAGE = 'org.slf4j..'
@@ -29,35 +29,25 @@ class ArchUnitUT {
 
     @ArchTest
     public static final ArchRule NO_CIRCULAR_DEPENDENCIES_BETWEEN_PACKAGES = SlicesRuleDefinition.slices()
-            .matching("com.hltech.judged.server.(*)..")
-            .should()
-            .beFreeOfCycles()
+        .matching("com.hltech.judged.server.(*)..")
+        .should()
+        .beFreeOfCycles()
 
     @ArchTest
     public static final ArchRule DOMAIN_SHOULD_NOT_HAVE_EXTERNAL_DEPENDENCIES = noClasses()
-            .that()
-            .resideInAPackage(DOMAIN_PACKAGE)
-            .should()
-            .dependOnClassesThat()
-            .resideOutsideOfPackages(DOMAIN_PACKAGE, DEFAULT_PACKAGE, SLF4J_PACKAGE, LOMBOK_PACKAGE, CORE_JAVA_PACKAGE,
-                JAVAX_PERSISTENCE_PACKAGE, VAUNT_PACKAGE, PACT_MODEL_PACKAGE, SWAGGER_PACT_VALIDATOR_PACKAGE,
-                GOOGLE_COMMON_PACKAGE)
-
-    @ArchTest
-    public static final ArchRule DOMAIN_CLASSES_SHOULD_HAVE_ONLY_CORE_JAVA_ANNOTATIONS = noClasses()
         .that()
         .resideInAPackage(DOMAIN_PACKAGE)
         .should()
-        .beAnnotatedWith(annotationsFromOutsideOfCoreJavaPackage())
+        .dependOnClassesThat()
+        .resideOutsideOfPackages(DOMAIN_PACKAGE, DEFAULT_PACKAGE, SLF4J_PACKAGE, LOMBOK_PACKAGE, CORE_JAVA_PACKAGE,
+            JAVAX_PERSISTENCE_PACKAGE, VAUNT_PACKAGE, PACT_MODEL_PACKAGE, SWAGGER_PACT_VALIDATOR_PACKAGE,
+            GOOGLE_COMMON_PACKAGE)
 
-    static annotationsFromOutsideOfCoreJavaPackage() {
-        return new DescribedPredicate<JavaAnnotation>("annotation from outside of core java package") {
-            @Override
-            boolean apply(JavaAnnotation input) {
-                return !input.getRawType().getPackageName().startsWith("java") &&
-                    !input.getRawType().getPackageName().startsWith("lombok") &&
-                    !input.getRawType().getPackageName().startsWith("org.springframework.stereotype") // todo: get rid of this from rules
-            }
-        }
-    }
+    @ArchTest
+    public static final ArchRule INFRASTRUCTURE_SHOULD_NOT_DEPEND_ON_INTERFACES = noClasses()
+        .that()
+        .resideInAPackage(INFRASTRUCTURE_PACKAGE)
+        .should()
+        .dependOnClassesThat()
+        .resideInAnyPackage(INTERFACES_PACKAGE)
 }
