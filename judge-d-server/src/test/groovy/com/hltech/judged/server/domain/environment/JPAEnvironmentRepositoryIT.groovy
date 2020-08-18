@@ -1,6 +1,7 @@
 package com.hltech.judged.server.domain.environment
 
 import com.hltech.judged.server.domain.ServiceVersion
+import com.hltech.judged.server.infrastructure.environment.JPAEnvironmentRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
