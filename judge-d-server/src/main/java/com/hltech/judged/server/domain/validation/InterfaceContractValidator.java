@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.toList;
 
 public abstract class InterfaceContractValidator<C, E> {
 
-    private String communicationInterface;
+    private final String communicationInterface;
 
     public InterfaceContractValidator(String communicationInterface) {
         this.communicationInterface = communicationInterface;

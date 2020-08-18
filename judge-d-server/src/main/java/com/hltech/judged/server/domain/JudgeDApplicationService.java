@@ -7,9 +7,8 @@ import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
 import com.hltech.judged.server.domain.validation.EnvironmentValidatorResult;
 import com.hltech.judged.server.domain.validation.InterfaceContractValidator;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -18,20 +17,13 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 @Slf4j
-@Component
+@RequiredArgsConstructor
 public class JudgeDApplicationService {
 
-    private EnvironmentRepository environmentRepository;
-    private ServiceContractsRepository serviceContractsRepository;
-
-    @Autowired
-    public JudgeDApplicationService(EnvironmentRepository environmentRepository, ServiceContractsRepository serviceContractsRepository) {
-        this.environmentRepository = environmentRepository;
-        this.serviceContractsRepository = serviceContractsRepository;
-    }
+    private final EnvironmentRepository environmentRepository;
+    private final ServiceContractsRepository serviceContractsRepository;
 
     public <C, E> EnvironmentValidatorResult validateServiceAgainstEnvironments(
         ServiceContracts contractsToValidate,

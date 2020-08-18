@@ -6,14 +6,12 @@ import com.hltech.vaunt.validator.ValidationResult;
 import com.hltech.vaunt.validator.VauntValidator;
 import com.hltech.judged.server.domain.validation.InterfaceContractValidator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.hltech.vaunt.validator.ValidationResult.ValidationStatus.FAILED;
 
-@Component
 @Slf4j
 public class JmsContractValidator extends InterfaceContractValidator<List<Contract>, List<Contract>> {
 

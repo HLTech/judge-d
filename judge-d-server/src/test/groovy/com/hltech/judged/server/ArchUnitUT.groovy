@@ -25,7 +25,6 @@ class ArchUnitUT {
     private static final PACT_MODEL_PACKAGE = 'au.com.dius.pact.model..'
     private static final SWAGGER_PACT_VALIDATOR_PACKAGE = 'com.atlassian.oai.validator..'
     private static final GOOGLE_COMMON_PACKAGE = 'com.google.common..'
-    private static final SPRING_STEREOTYPE_PACKAGE = 'org.springframework..' // todo: get rid of this from rules
     private static final JAVAX_PERSISTENCE_PACKAGE = 'javax.persistence..' // todo: get rid of this from rules
 
     @ArchTest
@@ -42,7 +41,7 @@ class ArchUnitUT {
             .dependOnClassesThat()
             .resideOutsideOfPackages(DOMAIN_PACKAGE, DEFAULT_PACKAGE, SLF4J_PACKAGE, LOMBOK_PACKAGE, CORE_JAVA_PACKAGE,
                 JAVAX_PERSISTENCE_PACKAGE, VAUNT_PACKAGE, PACT_MODEL_PACKAGE, SWAGGER_PACT_VALIDATOR_PACKAGE,
-                GOOGLE_COMMON_PACKAGE, SPRING_STEREOTYPE_PACKAGE)
+                GOOGLE_COMMON_PACKAGE)
 
     @ArchTest
     public static final ArchRule DOMAIN_CLASSES_SHOULD_HAVE_ONLY_CORE_JAVA_ANNOTATIONS = noClasses()
