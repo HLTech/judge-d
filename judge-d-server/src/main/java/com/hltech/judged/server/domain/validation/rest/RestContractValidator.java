@@ -6,7 +6,6 @@ import com.atlassian.oai.validator.OpenApiInteractionValidator;
 import com.atlassian.oai.validator.pact.PactResponse;
 import com.atlassian.oai.validator.report.ValidationReport;
 import com.hltech.judged.server.domain.validation.InterfaceContractValidator;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,6 @@ import static com.hltech.judged.server.domain.validation.InterfaceContractValida
 import static com.hltech.judged.server.domain.validation.InterfaceContractValidator.InteractionValidationResult.success;
 import static java.util.function.Function.identity;
 
-@Component
 public class RestContractValidator extends InterfaceContractValidator<String, RequestResponsePact> {
 
     public static final String COMMUNICATION_INTERFACE = "rest";
