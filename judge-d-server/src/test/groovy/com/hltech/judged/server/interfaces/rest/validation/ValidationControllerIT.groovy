@@ -2,6 +2,7 @@ package com.hltech.judged.server.interfaces.rest.validation
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.hltech.judged.server.domain.JudgeDApplicationService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -108,8 +109,8 @@ class ValidationControllerIT extends Specification {
         }
 
         @Bean
-        com.hltech.judged.server.domain.JudgeD repository(com.hltech.judged.server.domain.environment.EnvironmentRepository environmentRepository, com.hltech.judged.server.domain.contracts.ServiceContractsRepository serviceContractsRepository) {
-            return new com.hltech.judged.server.domain.JudgeD(environmentRepository, serviceContractsRepository)
+        JudgeDApplicationService repository(com.hltech.judged.server.domain.environment.EnvironmentRepository environmentRepository, com.hltech.judged.server.domain.contracts.ServiceContractsRepository serviceContractsRepository) {
+            return new JudgeDApplicationService(environmentRepository, serviceContractsRepository)
         }
 
         @Bean

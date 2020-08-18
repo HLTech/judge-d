@@ -22,13 +22,13 @@ import static java.util.stream.Collectors.toMap;
 
 @Slf4j
 @Component
-public class JudgeD {
+public class JudgeDApplicationService {
 
     private EnvironmentRepository environmentRepository;
     private ServiceContractsRepository serviceContractsRepository;
 
     @Autowired
-    public JudgeD(EnvironmentRepository environmentRepository, ServiceContractsRepository serviceContractsRepository) {
+    public JudgeDApplicationService(EnvironmentRepository environmentRepository, ServiceContractsRepository serviceContractsRepository) {
         this.environmentRepository = environmentRepository;
         this.serviceContractsRepository = serviceContractsRepository;
     }

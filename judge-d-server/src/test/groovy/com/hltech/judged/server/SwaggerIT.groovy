@@ -2,7 +2,7 @@ package com.hltech.judged.server
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.hltech.judged.server.domain.JudgeD
+import com.hltech.judged.server.domain.JudgeDApplicationService
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository
 import com.hltech.judged.server.domain.environment.EnvironmentRepository
 import com.hltech.judged.server.interfaces.rest.contracts.ContractsMapper
@@ -38,7 +38,7 @@ class SwaggerIT extends Specification {
     private EnvironmentRepository environmentRepository
 
     @MockBean
-    private JudgeD judgeD
+    private JudgeDApplicationService judgeD
 
     @Autowired
     private MockMvc mockMvc
