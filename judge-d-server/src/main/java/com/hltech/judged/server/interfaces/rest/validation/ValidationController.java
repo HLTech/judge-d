@@ -2,7 +2,7 @@ package com.hltech.judged.server.interfaces.rest.validation;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.hltech.judged.server.domain.JudgeD;
+import com.hltech.judged.server.domain.JudgeDApplicationService;
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
 import com.hltech.judged.server.domain.ServiceVersion;
@@ -30,13 +30,13 @@ import static java.util.stream.Collectors.toList;
 @RestController
 public class ValidationController {
 
-    private final JudgeD judgeD;
+    private final JudgeDApplicationService judgeD;
     private final ServiceContractsRepository serviceContractsRepository;
     private final List<InterfaceContractValidator<?, ?>> validators;
 
     @Autowired
     public ValidationController(
-        JudgeD judgeD,
+        JudgeDApplicationService judgeD,
         ServiceContractsRepository serviceContractsRepository,
         List<InterfaceContractValidator<?, ?>> validators
     ) {

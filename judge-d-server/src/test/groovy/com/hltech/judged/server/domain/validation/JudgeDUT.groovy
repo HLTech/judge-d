@@ -1,7 +1,7 @@
 package com.hltech.judged.server.domain.validation
 
 
-import com.hltech.judged.server.domain.JudgeD
+import com.hltech.judged.server.domain.JudgeDApplicationService
 import com.hltech.judged.server.domain.contracts.InMemoryServiceContractsRepository
 import com.hltech.judged.server.domain.contracts.ServiceContracts
 import com.hltech.judged.server.domain.environment.EnvironmentAggregate
@@ -19,7 +19,7 @@ class JudgeDUT extends Specification {
     def serviceContractsRepository = new InMemoryServiceContractsRepository();
     def environmentRepository = new InMemoryEnvironmentRepository()
     def contractValidator = new PingContractValidator()
-    def judgeD = new JudgeD(environmentRepository, serviceContractsRepository)
+    def judgeD = new JudgeDApplicationService(environmentRepository, serviceContractsRepository)
 
     def 'validate expectations against environment without provider'() {
         given:

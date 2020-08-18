@@ -1,6 +1,6 @@
 package com.hltech.judged.server.interfaces.rest.validation
 
-
+import com.hltech.judged.server.domain.JudgeDApplicationService
 import org.assertj.core.util.Lists
 import spock.lang.Specification
 
@@ -11,7 +11,7 @@ class ValidationControllerUT extends Specification {
     def serviceContractsRepository = Mock(com.hltech.judged.server.domain.contracts.ServiceContractsRepository)
     def validator1 = Mock(com.hltech.judged.server.domain.validation.InterfaceContractValidator)
     def validator2 = Mock(com.hltech.judged.server.domain.validation.InterfaceContractValidator)
-    def judgeD = Mock(com.hltech.judged.server.domain.JudgeD)
+    def judgeD = Mock(JudgeDApplicationService)
 
     def 'should validate against every validator available'() {
         given:
