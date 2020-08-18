@@ -9,7 +9,7 @@ import com.hltech.judged.server.interfaces.rest.contracts.ContractsMapper;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,20 +21,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 public class InterrelationshipController {
 
     private final EnvironmentRepository environmentRepository;
     private final ServiceContractsRepository serviceContractsRepository;
     private final ContractsMapper contractsMapper;
-
-    @Autowired
-    public InterrelationshipController(EnvironmentRepository environmentRepository,
-                                       ServiceContractsRepository serviceContractsRepository,
-                                       ContractsMapper contractsMapper) {
-        this.environmentRepository = environmentRepository;
-        this.serviceContractsRepository = serviceContractsRepository;
-        this.contractsMapper = contractsMapper;
-    }
 
     @CrossOrigin
     @GetMapping(value = "/interrelationship/{environment}", produces = MediaType.APPLICATION_JSON_VALUE)

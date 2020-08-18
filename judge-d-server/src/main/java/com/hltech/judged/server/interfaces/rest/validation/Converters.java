@@ -3,6 +3,7 @@ package com.hltech.judged.server.interfaces.rest.validation;
 import com.google.common.collect.Ordering;
 import com.hltech.judged.server.domain.ServiceVersion;
 import com.hltech.judged.server.domain.validation.EnvironmentValidatorResult;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -12,10 +13,8 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Maps.newHashMap;
 
+@NoArgsConstructor
 public class Converters {
-
-    private Converters() {
-    }
 
     public static List<ContractValidationReportDto> toDtos(ServiceVersion serviceVersion, Collection<EnvironmentValidatorResult> validationResults) {
         Map<ConsumerAndProviderDto, ContractValidationReportDto> result = newHashMap();

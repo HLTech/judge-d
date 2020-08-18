@@ -1,18 +1,18 @@
 package com.hltech.judged.server.interfaces.rest.validation;
 
 import com.hltech.judged.server.domain.validation.InterfaceContractValidator.InteractionValidationStatus;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class InteractionValidationReportDto {
 
-    private String communicationInterface;
-    private String interactionName;
-    private InteractionValidationStatus validationResult;
-    private List<String> errors;
+    private final String communicationInterface;
+    private final String interactionName;
+    private final InteractionValidationStatus validationResult;
+    private final List<String> errors;
 
 }

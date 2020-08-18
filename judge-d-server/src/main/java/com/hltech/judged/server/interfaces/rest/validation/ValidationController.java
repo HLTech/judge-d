@@ -14,7 +14,7 @@ import com.hltech.judged.server.interfaces.rest.environment.ServiceDto;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,22 +28,12 @@ import static com.hltech.judged.server.interfaces.rest.validation.Converters.toD
 import static java.util.stream.Collectors.toList;
 
 @RestController
+@RequiredArgsConstructor
 public class ValidationController {
 
     private final JudgeDApplicationService judgeD;
     private final ServiceContractsRepository serviceContractsRepository;
     private final List<InterfaceContractValidator<?, ?>> validators;
-
-    @Autowired
-    public ValidationController(
-        JudgeDApplicationService judgeD,
-        ServiceContractsRepository serviceContractsRepository,
-        List<InterfaceContractValidator<?, ?>> validators
-    ) {
-        this.judgeD = judgeD;
-        this.serviceContractsRepository = serviceContractsRepository;
-        this.validators = validators;
-    }
 
     @GetMapping(value = "/environment-compatibility-report", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get validation report for contract between set of services and given environment as if those services were first deployed", nickname = "Validate services against environment")
