@@ -1,5 +1,7 @@
-package com.hltech.judged.server.domain.environment;
+package com.hltech.judged.server.infrastructure.environment;
 
+import com.hltech.judged.server.domain.environment.EnvironmentAggregate;
+import com.hltech.judged.server.domain.environment.EnvironmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

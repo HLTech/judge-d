@@ -1,6 +1,8 @@
-package com.hltech.judged.server.domain.contracts;
+package com.hltech.judged.server.infrastructure.contracts;
 
 import com.hltech.judged.server.domain.ServiceVersion;
+import com.hltech.judged.server.domain.contracts.ServiceContracts;
+import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
