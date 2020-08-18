@@ -8,9 +8,14 @@ import com.hltech.judged.server.domain.environment.EnvironmentRepository;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Set;
@@ -21,14 +26,10 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 @RestController
+@RequiredArgsConstructor
 public class EnvironmentController {
 
     private final EnvironmentRepository environmentRepository;
-
-    @Autowired
-    public EnvironmentController(EnvironmentRepository environmentRepository) {
-        this.environmentRepository = environmentRepository;
-    }
 
     @GetMapping(value = "environments", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get names of all persisted environments", nickname = "Get environments")

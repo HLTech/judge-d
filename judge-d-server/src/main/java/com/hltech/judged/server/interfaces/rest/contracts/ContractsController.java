@@ -7,6 +7,7 @@ import com.hltech.judged.server.interfaces.rest.ResourceNotFoundException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,16 +30,11 @@ import static java.util.stream.Collectors.toList;
 @RestController
 @RequestMapping("/contracts")
 @Transactional
+@RequiredArgsConstructor
 public class ContractsController {
 
-    private ServiceContractsRepository serviceContractsRepository;
-    private ContractsMapper mapper;
-
-    @Autowired
-    public ContractsController(ServiceContractsRepository serviceContractsRepository, ContractsMapper mapper) {
-        this.serviceContractsRepository = serviceContractsRepository;
-        this.mapper = mapper;
-    }
+    private final ServiceContractsRepository serviceContractsRepository;
+    private final ContractsMapper mapper;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get registered contracts", nickname = "get names of services")

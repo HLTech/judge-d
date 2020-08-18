@@ -4,6 +4,7 @@ import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,13 +18,10 @@ import static com.hltech.judged.server.domain.validation.InterfaceContractValida
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
+@RequiredArgsConstructor
 public abstract class InterfaceContractValidator<C, E> {
 
     private final String communicationInterface;
-
-    public InterfaceContractValidator(String communicationInterface) {
-        this.communicationInterface = communicationInterface;
-    }
 
     public String getCommunicationInterface() {
         return this.communicationInterface;
@@ -116,19 +114,17 @@ public abstract class InterfaceContractValidator<C, E> {
     public abstract List<InteractionValidationResult> validate(E expectations, C capabilities);
 
     public enum InteractionValidationStatus {
-
         OK,
         FAILED
-
     }
 
     @Getter
-    @AllArgsConstructor
+    @RequiredArgsConstructor
     public static class CapabilitiesValidationResult {
 
-        private String consumerName;
-        private String consumerVersion;
-        private List<InteractionValidationResult> interactionValidationResults;
+        private final String consumerName;
+        private final String consumerVersion;
+        private final List<InteractionValidationResult> interactionValidationResults;
 
         public boolean isEmpty() {
             return this.interactionValidationResults.isEmpty();
@@ -137,18 +133,18 @@ public abstract class InterfaceContractValidator<C, E> {
     }
 
     @Getter
-    @AllArgsConstructor
+    @RequiredArgsConstructor
     public static class ExpectationValidationResult {
 
-        private String providerName;
-        private String providerVersion;
+        private final String providerName;
+        private final String providerVersion;
 
-        private List<InteractionValidationResult> interactionValidationResults;
+        private final List<InteractionValidationResult> interactionValidationResults;
 
     }
 
     @Getter
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class InteractionValidationResult {
 
         private final String name;
