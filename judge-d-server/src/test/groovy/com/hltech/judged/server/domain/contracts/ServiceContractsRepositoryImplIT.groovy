@@ -17,7 +17,7 @@ import static wiremock.org.apache.commons.lang3.RandomStringUtils.randomAlphabet
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["management.port=0"])
 @ActiveProfiles("test-integration")
 @Transactional
-class JpaServiceContractsRepositoryIT extends Specification {
+class ServiceContractsRepositoryImplIT extends Specification {
 
     @Autowired
     private ServiceContractsRepository repository

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,31 +18,16 @@ import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toMap;
 
-@Entity
 @Getter
 @Access(AccessType.FIELD)
+@AllArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class ServiceContracts {
 
-    @EmbeddedId
-    private ServiceVersion id;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @MapKeyColumn(name = "protocol")
-    @JoinTable(name = "capabilities", joinColumns = {
-        @JoinColumn(name = "service_name", referencedColumnName = "name"),
-        @JoinColumn(name = "service_version", referencedColumnName = "version")
-    })
-    private Map<String, Contract> capabilitiesPerProtocol;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @JoinTable(name = "expectations", joinColumns = {
-        @JoinColumn(name = "service_name", referencedColumnName = "name"),
-        @JoinColumn(name = "service_version", referencedColumnName = "version")
-    })
-    private Map<ProviderProtocol, Contract> expectations;
-
-    protected ServiceContracts() {
-    }
+    private final ServiceVersion id;
+    private final Map<String, Contract> capabilitiesPerProtocol;
+    private final Map<ProviderProtocol, Contract> expectations;
 
     public ServiceContracts(String name, String version, Map<String, Contract> capabilitiesPerProtocol, Map<String, Map<String, Contract>> expectationsPerProvider) {
         this.id = new ServiceVersion(name, version);
@@ -90,7 +76,6 @@ public class ServiceContracts {
     }
 
     @Getter
-    @Embeddable
     @AllArgsConstructor
     @NoArgsConstructor
     @Access(AccessType.FIELD)
@@ -101,7 +86,6 @@ public class ServiceContracts {
     }
 
     @Getter
-    @Embeddable
     @AllArgsConstructor
     @NoArgsConstructor
     @Access(AccessType.FIELD)
