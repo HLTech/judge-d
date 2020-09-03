@@ -1,4 +1,4 @@
-package com.hltech.judged.server.infrastructure.environment;
+package com.hltech.judged.server.infrastructure.persistence.environment;
 
 import com.hltech.judged.server.domain.environment.Environment;
 import org.springframework.data.jpa.repository.JpaRepository;
