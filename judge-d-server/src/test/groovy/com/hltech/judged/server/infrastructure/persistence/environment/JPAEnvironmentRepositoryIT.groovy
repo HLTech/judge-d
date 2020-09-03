@@ -1,13 +1,13 @@
-package com.hltech.judged.server.domain.environment
+package com.hltech.judged.server.infrastructure.persistence.environment
 
 import com.hltech.judged.server.domain.ServiceVersion
+import com.hltech.judged.server.domain.environment.Environment
 import com.hltech.judged.server.infrastructure.environment.JPAEnvironmentRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 
-import static Environment.builder
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -70,7 +70,7 @@ class JPAEnvironmentRepositoryIT extends Specification {
 
     def 'should retrieve service versions of all spaces'(){
         given:
-            def environment1 = builder(randomAlphabetic(10))
+            def environment1 = Environment.builder(randomAlphabetic(10))
                 .withServiceVersion("s1", "v1")
                 .withServiceVersions("space", [new ServiceVersion("s2", "v2")] as Set)
                 .build();
