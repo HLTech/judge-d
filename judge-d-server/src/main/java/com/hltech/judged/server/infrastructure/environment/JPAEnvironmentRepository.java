@@ -1,9 +1,8 @@
 package com.hltech.judged.server.infrastructure.environment;
 
-import com.hltech.judged.server.domain.environment.EnvironmentAggregate;
+import com.hltech.judged.server.domain.environment.Environment;
 import com.hltech.judged.server.domain.environment.EnvironmentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Set;
@@ -15,7 +14,7 @@ public class JPAEnvironmentRepository implements EnvironmentRepository {
     private final SpringDataEnvironmentRepository springDataEnvironmentRepository;
 
     @Override
-    public EnvironmentAggregate persist(EnvironmentAggregate environment) {
+    public Environment persist(Environment environment) {
         return springDataEnvironmentRepository.saveAndFlush(environment);
     }
 
@@ -25,7 +24,7 @@ public class JPAEnvironmentRepository implements EnvironmentRepository {
     }
 
     @Override
-    public EnvironmentAggregate get(String name) {
-        return springDataEnvironmentRepository.findById(name).orElse(EnvironmentAggregate.empty(name));
+    public Environment get(String name) {
+        return springDataEnvironmentRepository.findById(name).orElse(Environment.empty(name));
     }
 }

@@ -2,8 +2,8 @@ package com.hltech.judged.server.interfaces.rest.environment;
 
 import com.google.common.collect.ImmutableSet;
 import com.hltech.judged.server.domain.ServiceVersion;
-import com.hltech.judged.server.domain.environment.EnvironmentAggregate;
-import com.hltech.judged.server.domain.environment.EnvironmentAggregate.EnvironmentAggregateBuilder;
+import com.hltech.judged.server.domain.environment.Environment;
+import com.hltech.judged.server.domain.environment.Environment.EnvironmentAggregateBuilder;
 import com.hltech.judged.server.domain.environment.EnvironmentRepository;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.hltech.judged.server.domain.environment.EnvironmentAggregate.DEFAULT_NAMESPACE;
+import static com.hltech.judged.server.domain.environment.Environment.DEFAULT_NAMESPACE;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -65,9 +65,9 @@ public class EnvironmentController {
         @RequestBody Set<ServiceForm> services
     ) {
         agentSpace = firstNonNull(agentSpace, DEFAULT_NAMESPACE);
-        EnvironmentAggregate environment = environmentRepository.get(name);
+        Environment environment = environmentRepository.get(name);
         Set<String> supportedSpaces = ImmutableSet.<String>builder().addAll(environment.getSpaceNames()).add(agentSpace).build();
-        EnvironmentAggregateBuilder builder = EnvironmentAggregate.builder(name);
+        EnvironmentAggregateBuilder builder = Environment.builder(name);
         for (String space : supportedSpaces) {
             if (agentSpace.equals(space)) {
                 Set<ServiceVersion> collect = services.stream().map(sf -> new ServiceVersion(sf.getName(), sf.getVersion())).collect(toSet());

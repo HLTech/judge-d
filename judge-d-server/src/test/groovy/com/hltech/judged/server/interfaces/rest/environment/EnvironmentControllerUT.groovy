@@ -1,6 +1,6 @@
 package com.hltech.judged.server.interfaces.rest.environment
 
-
+import com.hltech.judged.server.domain.environment.Environment
 import spock.lang.Specification
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
@@ -12,7 +12,7 @@ class EnvironmentControllerUT extends Specification {
 
     def 'should return names of created environments'() {
         given:
-            def environment = new com.hltech.judged.server.domain.environment.EnvironmentAggregate(
+            def environment = new Environment(
                 randomAlphabetic(10),
                 [] as Set
             )
@@ -33,7 +33,7 @@ class EnvironmentControllerUT extends Specification {
     def 'should return list of services from and evironment given it was saved before'() {
         def serviceVersion = new com.hltech.judged.server.domain.ServiceVersion("service", "version")
         given:
-            def environment = new com.hltech.judged.server.domain.environment.EnvironmentAggregate(
+            def environment = new Environment(
                 randomAlphabetic(10),
                 [serviceVersion] as Set
             )

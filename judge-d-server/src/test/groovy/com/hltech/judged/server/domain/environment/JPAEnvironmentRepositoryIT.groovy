@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 
-import static EnvironmentAggregate.builder
+import static Environment.builder
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -22,7 +22,7 @@ class JPAEnvironmentRepositoryIT extends Specification {
         given:
             def serviceVersion = [new ServiceVersion('serviceName', 'serviceVersion')] as Set
         and:
-            def environment = new EnvironmentAggregate('environmentName', serviceVersion)
+            def environment = new Environment('environmentName', serviceVersion)
         when:
             def persisted = repository.persist(environment)
         then:
@@ -39,11 +39,11 @@ class JPAEnvironmentRepositoryIT extends Specification {
 
     def 'should overwrite what was persisted before'() {
         given:
-            def environment1 = repository.persist(new EnvironmentAggregate(
+            def environment1 = repository.persist(new Environment(
                 'environmentName',
                 [new ServiceVersion('serviceName1', 'serviceVersion1'), new ServiceVersion('serviceName2', 'serviceVersion2')] as Set
             ))
-            def environment2 = new EnvironmentAggregate(
+            def environment2 = new Environment(
                 environment1.name,
                 [new ServiceVersion('serviceName1', 'serviceVersion1')] as Set
             )
@@ -58,7 +58,7 @@ class JPAEnvironmentRepositoryIT extends Specification {
 
     def 'should retrieve names'() {
         given:
-            def environment1 = repository.persist(new EnvironmentAggregate(
+            def environment1 = repository.persist(new Environment(
                 randomAlphabetic(10),
                 [new ServiceVersion('serviceName1', 'serviceVersion1'), new ServiceVersion('serviceName2', 'serviceVersion2')] as Set
             ))
