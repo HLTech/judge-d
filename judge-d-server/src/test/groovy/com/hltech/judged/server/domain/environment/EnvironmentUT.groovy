@@ -4,13 +4,13 @@ import com.google.common.collect.ImmutableMultimap
 import com.hltech.judged.server.domain.ServiceVersion
 import spock.lang.Specification
 
-import static EnvironmentAggregate.DEFAULT_NAMESPACE
+import static Environment.DEFAULT_NAMESPACE
 
-class EnvironmentAggregateUT extends Specification {
+class EnvironmentUT extends Specification {
 
     def 'should return services by space'() {
         given:
-            def aggregate = new EnvironmentAggregate(
+            def aggregate = new Environment(
             'env',
             ImmutableMultimap.<String, ServiceVersion> builder()
                 .put(DEFAULT_NAMESPACE, new ServiceVersion("s1", "s1"))

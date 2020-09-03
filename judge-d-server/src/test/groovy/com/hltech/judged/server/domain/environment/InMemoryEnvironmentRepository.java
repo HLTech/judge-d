@@ -6,20 +6,20 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.hltech.judged.server.domain.environment.EnvironmentAggregate.empty;
+import static com.hltech.judged.server.domain.environment.Environment.empty;
 
 public class InMemoryEnvironmentRepository implements EnvironmentRepository {
 
-    private Map<String, EnvironmentAggregate> storage = Maps.newHashMap();
+    private Map<String, Environment> storage = Maps.newHashMap();
 
     @Override
-    public EnvironmentAggregate get(String environmentName) {
+    public Environment get(String environmentName) {
         return Optional.ofNullable(storage.get(environmentName))
             .orElseGet(() -> empty(environmentName));
     }
 
     @Override
-    public EnvironmentAggregate persist(EnvironmentAggregate environment) {
+    public Environment persist(Environment environment) {
         storage.put(environment.getName(), environment);
         return environment;
     }

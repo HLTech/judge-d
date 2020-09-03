@@ -14,7 +14,7 @@ import static java.util.stream.Collectors.toSet;
 @Entity
 @Table(name = "environments")
 @Access(AccessType.FIELD)
-public class EnvironmentAggregate {
+public class Environment {
 
     public static final String DEFAULT_NAMESPACE = "default";
 
@@ -25,12 +25,12 @@ public class EnvironmentAggregate {
     @JoinTable(name = "service_versions", joinColumns = {
         @JoinColumn(name = "environment_name", referencedColumnName = "name"),
     })
-    private Set<SpaceServiceVersion> serviceVersions = newHashSet();
+    private final Set<SpaceServiceVersion> serviceVersions = newHashSet();
 
-    protected EnvironmentAggregate() {
+    protected Environment() {
     }
 
-    protected EnvironmentAggregate(String name, Set< ServiceVersion> deatulSpaceServiceVersions) {
+    protected Environment(String name, Set< ServiceVersion> deatulSpaceServiceVersions) {
         this.name = name;
         this.serviceVersions.addAll(
             deatulSpaceServiceVersions
@@ -40,7 +40,7 @@ public class EnvironmentAggregate {
         );
     }
 
-    private EnvironmentAggregate(String name, Multimap<String, ServiceVersion> serviceVersions) {
+    private Environment(String name, Multimap<String, ServiceVersion> serviceVersions) {
         this.name = name;
         this.serviceVersions.addAll(
             serviceVersions.entries()
@@ -72,8 +72,8 @@ public class EnvironmentAggregate {
             .collect(toSet());
     }
 
-    public static EnvironmentAggregate empty(String environmentName) {
-        return new EnvironmentAggregate(environmentName, create());
+    public static Environment empty(String environmentName) {
+        return new Environment(environmentName, create());
     }
 
     public static EnvironmentAggregateBuilder builder(String name) {
@@ -82,8 +82,8 @@ public class EnvironmentAggregate {
 
     public static class EnvironmentAggregateBuilder {
 
-        private String name;
-        private Multimap<String, ServiceVersion> serviceVersions = create();
+        private final String name;
+        private final Multimap<String, ServiceVersion> serviceVersions = create();
 
         private EnvironmentAggregateBuilder(String name) {
             this.name = name;
@@ -99,8 +99,8 @@ public class EnvironmentAggregate {
             return this;
         }
 
-        public EnvironmentAggregate build() {
-            return new EnvironmentAggregate(
+        public Environment build() {
+            return new Environment(
                 this.name,
                 this.serviceVersions
             );

@@ -6,7 +6,7 @@ import com.hltech.judged.server.domain.contracts.Contract
 import com.hltech.judged.server.domain.contracts.Expectation
 import com.hltech.judged.server.domain.contracts.ServiceContracts
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository
-import com.hltech.judged.server.domain.environment.EnvironmentAggregate
+import com.hltech.judged.server.domain.environment.Environment
 import com.hltech.judged.server.domain.environment.EnvironmentRepository
 import com.hltech.judged.server.interfaces.rest.contracts.ContractsMapper
 import com.hltech.judged.server.interfaces.rest.contracts.ServiceContractsDto
@@ -28,7 +28,7 @@ class InterrelationshipControllerUT extends Specification {
         given:
             def env = 'SIT'
             def services = [new ServiceVersion('1', '1'), new ServiceVersion('2', '2')] as Set
-            def environment = new EnvironmentAggregate(env, services)
+            def environment = new Environment(env, services)
 
             1 * environmentRepository.get(env) >> environment
             1 * serviceContractsRepository.findOne(new ServiceVersion('1', '1')) >> Optional.of(createServiceContracts('1', '1'))

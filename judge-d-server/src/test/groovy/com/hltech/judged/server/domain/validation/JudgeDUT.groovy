@@ -7,7 +7,7 @@ import com.hltech.judged.server.domain.contracts.Contract
 import com.hltech.judged.server.domain.contracts.Expectation
 import com.hltech.judged.server.domain.contracts.InMemoryServiceContractsRepository
 import com.hltech.judged.server.domain.contracts.ServiceContracts
-import com.hltech.judged.server.domain.environment.EnvironmentAggregate
+import com.hltech.judged.server.domain.environment.Environment
 import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
 import com.hltech.judged.server.domain.ServiceVersion
 import com.hltech.judged.server.domain.validation.ping.PingContractValidator
@@ -30,7 +30,7 @@ class JudgeDUT extends Specification {
                 [],
                 [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-            environmentRepository.persist(new EnvironmentAggregate('test-env', [] as Set))
+            environmentRepository.persist(new Environment('test-env', [] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 consumer,
@@ -49,7 +49,7 @@ class JudgeDUT extends Specification {
                 [],
                 [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-            environmentRepository.persist(new EnvironmentAggregate("test-env", [new ServiceVersion("provider", "1.0")] as Set))
+            environmentRepository.persist(new Environment("test-env", [new ServiceVersion("provider", "1.0")] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 consumer,
@@ -74,7 +74,7 @@ class JudgeDUT extends Specification {
                 [],
                 [new Expectation('provider-x', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-            environmentRepository.persist(new EnvironmentAggregate("test-env", [new ServiceVersion("consumer", "1.0")] as Set))
+            environmentRepository.persist(new Environment("test-env", [new ServiceVersion("consumer", "1.0")] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 provider,
@@ -93,7 +93,7 @@ class JudgeDUT extends Specification {
                 [new Capability('ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))],
                 []
             ))
-            environmentRepository.persist(new EnvironmentAggregate("test-env", [new ServiceVersion("consumer", "1.0")] as Set))
+            environmentRepository.persist(new Environment("test-env", [new ServiceVersion("consumer", "1.0")] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 provider,
@@ -122,8 +122,8 @@ class JudgeDUT extends Specification {
                 [],
                 [new Expectation('provider-x', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-            environmentRepository.persist(new EnvironmentAggregate("test-env", [new ServiceVersion("consumer", "1.0")] as Set))
-            environmentRepository.persist(new EnvironmentAggregate("test-env2", [new ServiceVersion("consumer2", "1.0")] as Set))
+            environmentRepository.persist(new Environment("test-env", [new ServiceVersion("consumer", "1.0")] as Set))
+            environmentRepository.persist(new Environment("test-env2", [new ServiceVersion("consumer2", "1.0")] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 provider,
@@ -147,7 +147,7 @@ class JudgeDUT extends Specification {
                 [],
                 [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-            environmentRepository.persist(new EnvironmentAggregate("test-env", [] as Set))
+            environmentRepository.persist(new Environment("test-env", [] as Set))
         when:
             def validationResult = judgeD.validatedServicesAgainstEnvironment(
                 [provider, consumer] as List,
@@ -182,7 +182,7 @@ class JudgeDUT extends Specification {
                 [],
                 [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-        environmentRepository.persist(new EnvironmentAggregate("test-env", [providerOld.getId(), consumerOld.getId()] as Set))
+        environmentRepository.persist(new Environment("test-env", [providerOld.getId(), consumerOld.getId()] as Set))
         when:
             def validationResult = judgeD.validatedServicesAgainstEnvironment(
                 [providerNew, consumerNew] as List,

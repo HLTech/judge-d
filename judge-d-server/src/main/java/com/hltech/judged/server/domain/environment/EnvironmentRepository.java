@@ -4,9 +4,9 @@ import java.util.Set;
 
 public interface EnvironmentRepository {
 
-    EnvironmentAggregate get(String environmentName);
+    Environment get(String environmentName);
 
-    EnvironmentAggregate persist(EnvironmentAggregate environment);
+    Environment persist(Environment environment);
 
     Set<String> getNames();
 }
