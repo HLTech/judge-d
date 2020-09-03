@@ -1,6 +1,11 @@
-package com.hltech.judged.server.domain.contracts
+package com.hltech.judged.server.infrastructure.persistence.contracts
 
 import com.hltech.judged.server.domain.ServiceVersion
+import com.hltech.judged.server.domain.contracts.Capability
+import com.hltech.judged.server.domain.contracts.Contract
+import com.hltech.judged.server.domain.contracts.Expectation
+import com.hltech.judged.server.domain.contracts.ServiceContracts
+import com.hltech.judged.server.domain.contracts.ServiceContractsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType

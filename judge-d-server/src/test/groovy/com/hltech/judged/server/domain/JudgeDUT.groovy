@@ -1,7 +1,6 @@
-package com.hltech.judged.server.domain.validation
+package com.hltech.judged.server.domain
 
 
-import com.hltech.judged.server.domain.JudgeDApplicationService
 import com.hltech.judged.server.domain.contracts.Capability
 import com.hltech.judged.server.domain.contracts.Contract
 import com.hltech.judged.server.domain.contracts.Expectation
@@ -9,7 +8,7 @@ import com.hltech.judged.server.domain.contracts.InMemoryServiceContractsReposit
 import com.hltech.judged.server.domain.contracts.ServiceContracts
 import com.hltech.judged.server.domain.environment.Environment
 import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
-import com.hltech.judged.server.domain.ServiceVersion
+import com.hltech.judged.server.domain.validation.EnvironmentValidatorResult
 import com.hltech.judged.server.domain.validation.ping.PingContractValidator
 import org.springframework.http.MediaType
 import spock.lang.Specification
