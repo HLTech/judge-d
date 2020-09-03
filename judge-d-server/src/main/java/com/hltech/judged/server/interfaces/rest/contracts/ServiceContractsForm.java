@@ -8,7 +8,9 @@ import java.util.Map;
 @Data
 public class ServiceContractsForm {
 
+    //<protocol, contract>
     private final Map<String, ContractForm> capabilities;
+    //<provider, protocol, contract>
     private final Map<String, Map<String, ContractForm>> expectations;
 
     @Data

@@ -25,10 +25,9 @@ class ServiceContractsRepositoryImplIT extends Specification {
     def 'should find what was saved'() {
         given:
             def serviceContracts = new ServiceContracts(
-                "provider",
-                "1.0",
-                ["ping": new ServiceContracts.Contract("654321", MediaType.APPLICATION_JSON_VALUE)],
-                ['some-other-provider': ["ping": new ServiceContracts.Contract("098765", MediaType.APPLICATION_JSON_VALUE)]]
+                new ServiceVersion('provider', '1.0'),
+                [new Capability('ping', new Contract('654321', MediaType.APPLICATION_JSON_VALUE))],
+                [new Expectation('some-other-provider', 'ping', new Contract("098765", MediaType.APPLICATION_JSON_VALUE))]
             )
             repository.persist(serviceContracts)
         when:
@@ -45,8 +44,8 @@ class ServiceContractsRepositoryImplIT extends Specification {
 
     def 'should find all persisted service names'() {
         given:
-            def s1 = repository.persist(new ServiceContracts(randomAlphabetic(10), "1.0", [:], [:]))
-            def s2 = repository.persist(new ServiceContracts(randomAlphabetic(10), "1.0", [:], [:]))
+            def s1 = repository.persist(new ServiceContracts(new ServiceVersion(randomAlphabetic(10), "1.0"), [], []))
+            def s2 = repository.persist(new ServiceContracts(new ServiceVersion(randomAlphabetic(10), "1.0"), [], []))
         when:
             def serviceNames = repository.getServiceNames()
         then:
@@ -57,8 +56,8 @@ class ServiceContractsRepositoryImplIT extends Specification {
     def 'should find all persisted versions of a service'() {
         given:
             def serviceName = randomAlphabetic(10)
-            def s1 = repository.persist(new ServiceContracts(serviceName, randomAlphabetic(5), [:], [:]))
-            def s2 = repository.persist(new ServiceContracts(serviceName, randomAlphabetic(5), [:], [:]))
+            def s1 = repository.persist(new ServiceContracts(new ServiceVersion(serviceName, randomAlphabetic(5)), [], []))
+            def s2 = repository.persist(new ServiceContracts(new ServiceVersion(serviceName, randomAlphabetic(5)), [], []))
         when:
             def serviceContracts = repository.findAllByServiceName(serviceName)
         then:
@@ -70,7 +69,7 @@ class ServiceContractsRepositoryImplIT extends Specification {
     def 'should find persisted service by name'() {
         given:
             def serviceName = randomAlphabetic(10)
-            def s1 = repository.persist(new ServiceContracts(serviceName, randomAlphabetic(5), [:], [:]))
+            def s1 = repository.persist(new ServiceContracts(new ServiceVersion(serviceName, randomAlphabetic(5)), [], []))
         when:
             String service = repository.getService(serviceName)
         then:

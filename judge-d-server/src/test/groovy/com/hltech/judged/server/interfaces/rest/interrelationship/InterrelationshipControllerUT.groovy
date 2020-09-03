@@ -1,6 +1,9 @@
 package com.hltech.judged.server.interfaces.rest.interrelationship
 
 import com.hltech.judged.server.domain.ServiceVersion
+import com.hltech.judged.server.domain.contracts.Capability
+import com.hltech.judged.server.domain.contracts.Contract
+import com.hltech.judged.server.domain.contracts.Expectation
 import com.hltech.judged.server.domain.contracts.ServiceContracts
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository
 import com.hltech.judged.server.domain.environment.EnvironmentAggregate
@@ -54,7 +57,7 @@ class InterrelationshipControllerUT extends Specification {
     def createServiceContracts(def name, def version) {
         new ServiceContracts(
             new ServiceVersion(name, version),
-            ['jms': new ServiceContracts.Contract('contract-jms', 'json')],
-            [(new ServiceContracts.ProviderProtocol('prov', 'rest')): new ServiceContracts.Contract('contract-rest', 'json')])
+            [new Capability('jms', new Contract('contract-jms', 'json'))],
+            [new Expectation('prov', 'rest', new Contract('contract-rest', 'json'))])
     }
 }

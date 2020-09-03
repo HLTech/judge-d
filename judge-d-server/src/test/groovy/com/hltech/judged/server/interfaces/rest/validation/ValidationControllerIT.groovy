@@ -2,7 +2,20 @@ package com.hltech.judged.server.interfaces.rest.validation
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.hltech.judged.server.config.BeanFactory
 import com.hltech.judged.server.domain.JudgeDApplicationService
+import com.hltech.judged.server.domain.ServiceVersion
+import com.hltech.judged.server.domain.contracts.Capability
+import com.hltech.judged.server.domain.contracts.Contract
+import com.hltech.judged.server.domain.contracts.Expectation
+import com.hltech.judged.server.domain.contracts.InMemoryServiceContractsRepository
+import com.hltech.judged.server.domain.contracts.ServiceContracts
+import com.hltech.judged.server.domain.contracts.ServiceContractsRepository
+import com.hltech.judged.server.domain.environment.EnvironmentRepository
+import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
+import com.hltech.judged.server.domain.validation.InterfaceContractValidator
+import com.hltech.judged.server.domain.validation.ping.PingContractValidator
+import com.hltech.judged.server.interfaces.rest.environment.ServiceDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -22,18 +35,17 @@ class ValidationControllerIT extends Specification {
     ObjectMapper objectMapper
 
     @Autowired
-    com.hltech.judged.server.domain.contracts.ServiceContractsRepository serviceContractsRepository
+    ServiceContractsRepository serviceContractsRepository
 
     @Autowired
     MockMvc mockMvc
 
     def "should return 200 when validate given all went fine"() {
         given:
-            serviceContractsRepository.persist(new com.hltech.judged.server.domain.contracts.ServiceContracts(
-                "service-name",
-                "1.0",
-                [:] as Map,
-                [:] as Map
+            serviceContractsRepository.persist(new ServiceContracts(
+                new ServiceVersion('service-name', '1.0'),
+                [],
+                []
             ))
         when: 'rest validatePacts url is hit'
             def response = mockMvc.perform(
@@ -43,7 +55,7 @@ class ValidationControllerIT extends Specification {
         then: 'controller returns validation response in json'
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<com.hltech.judged.server.interfaces.rest.environment.ServiceDto>>() {}) != null
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<ServiceDto>>() {}) != null
     }
 
     def "should return 404 when validate service contracts against env given contracts have not been registered"() {
@@ -58,29 +70,25 @@ class ValidationControllerIT extends Specification {
 
     def "should return 200 when validate multiple services against env"(){
         given:
-            def providerOld = serviceContractsRepository.persist(new com.hltech.judged.server.domain.contracts.ServiceContracts(
-                "provider",
-                "1.0",
-                ["ping": new com.hltech.judged.server.domain.contracts.ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)],
-                [:]
+            serviceContractsRepository.persist(new ServiceContracts(
+                new ServiceVersion('provider', '1.0'),
+                [new Capability('ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))],
+                []
             ))
-            def consumerOld = serviceContractsRepository.persist(new com.hltech.judged.server.domain.contracts.ServiceContracts(
-                "consumer",
-                "1.0",
-                [:],
-                ["provider": ["ping": new com.hltech.judged.server.domain.contracts.ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)]]
+            serviceContractsRepository.persist(new ServiceContracts(
+                new ServiceVersion('consumer', '1.0'),
+                [],
+                [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-            def providerNew = serviceContractsRepository.persist(new com.hltech.judged.server.domain.contracts.ServiceContracts(
-                "provider",
-                "2.0",
-                ["ping": new com.hltech.judged.server.domain.contracts.ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)],
-                [:]
+            serviceContractsRepository.persist(new ServiceContracts(
+                new ServiceVersion('provider', '2.0'),
+                [new Capability('ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))],
+                []
             ))
-            def consumerNew = serviceContractsRepository.persist(new com.hltech.judged.server.domain.contracts.ServiceContracts(
-                "consumer",
-                "2.0",
-                [:],
-                ["provider": ["ping": new com.hltech.judged.server.domain.contracts.ServiceContracts.Contract("123456", MediaType.APPLICATION_JSON_VALUE)]]
+            serviceContractsRepository.persist(new ServiceContracts(
+                new ServiceVersion('consumer', '2.0'),
+                [],
+                [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
         when: 'rest validatePacts url is hit'
             def response = mockMvc.perform(
@@ -96,26 +104,26 @@ class ValidationControllerIT extends Specification {
 
 
     @TestConfiguration
-    static class TestConfig extends com.hltech.judged.server.config.BeanFactory {
+    static class TestConfig extends BeanFactory {
 
         @Bean
-        com.hltech.judged.server.domain.environment.EnvironmentRepository environmentRepository() {
-            return new com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository()
+        EnvironmentRepository environmentRepository() {
+            return new InMemoryEnvironmentRepository()
         }
 
         @Bean
-        com.hltech.judged.server.domain.contracts.ServiceContractsRepository serviceContractsRepository() {
-            return new com.hltech.judged.server.domain.contracts.InMemoryServiceContractsRepository()
+        ServiceContractsRepository serviceContractsRepository() {
+            return new InMemoryServiceContractsRepository()
         }
 
         @Bean
-        JudgeDApplicationService repository(com.hltech.judged.server.domain.environment.EnvironmentRepository environmentRepository, com.hltech.judged.server.domain.contracts.ServiceContractsRepository serviceContractsRepository) {
+        JudgeDApplicationService repository(EnvironmentRepository environmentRepository, ServiceContractsRepository serviceContractsRepository) {
             return new JudgeDApplicationService(environmentRepository, serviceContractsRepository)
         }
 
         @Bean
-        com.hltech.judged.server.domain.validation.InterfaceContractValidator<String, String> validator() {
-            return new com.hltech.judged.server.domain.validation.ping.PingContractValidator()
+        InterfaceContractValidator<String, String> validator() {
+            return new PingContractValidator()
         }
 
     }
