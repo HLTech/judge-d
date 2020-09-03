@@ -1,9 +1,13 @@
 package com.hltech.judged.server.interfaces.rest.contracts;
 
+import com.hltech.judged.server.domain.contracts.Capability;
+import com.hltech.judged.server.domain.contracts.Contract;
+import com.hltech.judged.server.domain.contracts.Expectation;
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -12,54 +16,59 @@ import static com.google.common.collect.Maps.newHashMap;
 @Service
 public class ContractsMapper {
 
-    Map<String, Map<String, ServiceContracts.Contract>> mapExpectationsForm(Map<String, Map<String, ServiceContractsForm.ContractForm>> expectations) {
-        return expectations.entrySet().stream()
-            .collect(Collectors.toMap(
-                Map.Entry::getKey,
-                entry -> mapCapabilitiesForm(entry.getValue())
-                )
-            );
+    List<Capability> mapCapabilitiesForm(Map<String, ServiceContractsForm.ContractForm> capabilities) {
+        return capabilities.keySet().stream()
+            .map(protocol -> new Capability(protocol, new Contract(capabilities.get(protocol).getValue(), capabilities.get(protocol).getMimeType())))
+            .collect(Collectors.toList());
     }
 
-    Map<String, ServiceContracts.Contract> mapCapabilitiesForm(Map<String, ServiceContractsForm.ContractForm> capabilities) {
-        return mapContractsForm(capabilities);
-    }
-
-    private Map<String, ServiceContracts.Contract> mapContractsForm(Map<String, ServiceContractsForm.ContractForm> protocolToContractForms) {
-        return protocolToContractForms.entrySet().stream()
-            .collect(Collectors.toMap(
-                Map.Entry::getKey,
-                entry -> new ServiceContracts.Contract(entry.getValue().getValue(), entry.getValue().getMimeType())
-            ));
+    List<Expectation> mapExpectationsForm(Map<String, Map<String, ServiceContractsForm.ContractForm>> expectations) {
+        return expectations.keySet().stream()
+            .flatMap(provider -> expectations.get(provider).keySet().stream()
+                .map(protocol -> new Expectation(
+                    provider, protocol,
+                    new Contract(
+                        expectations.get(provider).get(protocol).getValue(),
+                        expectations.get(provider).get(protocol).getMimeType()
+                    )
+                ))
+            )
+            .collect(Collectors.toList());
     }
 
     public ServiceContractsDto toDto(ServiceContracts serviceContracts) {
         return new ServiceContractsDto(
             serviceContracts.getName(),
             serviceContracts.getVersion(),
-            mapCapabilitiesToDto(serviceContracts.getCapabilitiesPerProtocol()),
+            mapCapabilitiesToDto(serviceContracts.getCapabilities()),
             mapExpectationsToDto(serviceContracts.getExpectations())
         );
     }
 
-    private Map<String, Map<String, ServiceContractsDto.ContractDto>> mapExpectationsToDto(Map<ServiceContracts.ProviderProtocol, ServiceContracts.Contract> expectations) {
+    private Map<String, Map<String, ServiceContractsDto.ContractDto>> mapExpectationsToDto(List<Expectation> expectations) {
         HashMap<String, Map<String, ServiceContractsDto.ContractDto>> result = newHashMap();
-        for (Map.Entry<ServiceContracts.ProviderProtocol, ServiceContracts.Contract> e : expectations.entrySet()) {
-            ServiceContracts.ProviderProtocol pp = e.getKey();
-            ServiceContracts.Contract contract = e.getValue();
-            if (!result.containsKey(pp.getProvider())) {
-                result.put(pp.getProvider(), newHashMap());
+        for (Expectation expectation : expectations) {
+            if (!result.containsKey(expectation.getProvider())) {
+                result.put(expectation.getProvider(), newHashMap());
             }
-            result.get(pp.getProvider()).put(pp.getProtocol(), new ServiceContractsDto.ContractDto(contract.getValue(), contract.getMimeType()));
+            result.get(expectation.getProvider()).put(
+                expectation.getProtocol(),
+                new ServiceContractsDto.ContractDto(
+                    expectation.getContract().getValue(),
+                    expectation.getContract().getMimeType()
+                )
+            );
         }
         return result;
     }
 
-    private Map<String, ServiceContractsDto.ContractDto> mapCapabilitiesToDto(Map<String, ServiceContracts.Contract> capabilities) {
-        return capabilities.entrySet().stream()
+    private Map<String, ServiceContractsDto.ContractDto> mapCapabilitiesToDto(List<Capability> capabilities) {
+        return capabilities.stream()
             .collect(Collectors.toMap(
-                Map.Entry::getKey,
-                entry -> new ServiceContractsDto.ContractDto(entry.getValue().getValue(), entry.getValue().getMimeType())
+                Capability::getProtocol,
+                capability -> new ServiceContractsDto.ContractDto(
+                    capability.getContract().getValue(),
+                    capability.getContract().getMimeType())
             ));
     }
 }

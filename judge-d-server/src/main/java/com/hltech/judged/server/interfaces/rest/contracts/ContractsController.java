@@ -109,8 +109,7 @@ public class ContractsController {
     public ServiceContractsDto registerContract(@PathVariable(name = "serviceName") String serviceName, @PathVariable(name = "version") String version, @RequestBody ServiceContractsForm form) {
         return mapper.toDto(this.serviceContractsRepository.persist(
             new ServiceContracts(
-                serviceName,
-                version,
+                new ServiceVersion(serviceName, version),
                 mapper.mapCapabilitiesForm(form.getCapabilities()),
                 mapper.mapExpectationsForm(form.getExpectations())
             )

@@ -1,6 +1,9 @@
 package com.hltech.judged.server.infrastructure.persistence.contracts;
 
 import com.hltech.judged.server.domain.ServiceVersion;
+import com.hltech.judged.server.domain.contracts.Capability;
+import com.hltech.judged.server.domain.contracts.Contract;
+import com.hltech.judged.server.domain.contracts.Expectation;
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.NoResultException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -51,50 +54,65 @@ public class ServiceContractsRepositoryImpl implements ServiceContractsRepositor
     }
 
     private ServiceContractsTuple toServiceContractsTuple(ServiceContracts serviceContracts) {
-        return new ServiceContractsTuple(serviceContracts.getId(),
-            serviceContracts.getCapabilitiesPerProtocol().keySet().stream()
-                .collect(Collectors.toMap(
-                    Function.identity(),
-                    key -> new ServiceContractsTuple.ContractTuple(
-                        serviceContracts.getCapabilitiesPerProtocol().get(key).getValue(),
-                        serviceContracts.getCapabilitiesPerProtocol().get(key).getMimeType()
-                    )
-                )),
-            serviceContracts.getExpectations().keySet().stream()
-                .collect(Collectors.toMap(
-                    key -> new ServiceContractsTuple.ProviderProtocolTuple(
-                        key.getProvider(),
-                        key.getProtocol()
-                    ),
-                    key -> new ServiceContractsTuple.ContractTuple(
-                        serviceContracts.getExpectations().get(key).getValue(),
-                        serviceContracts.getExpectations().get(key).getMimeType()
-                    )
-                ))
+        return new ServiceContractsTuple(
+            serviceContracts.getId(),
+            toCapabilities(serviceContracts),
+            toExpectations(serviceContracts)
         );
     }
 
+    private Map<ServiceContractsTuple.ProviderProtocolTuple, ServiceContractsTuple.ContractTuple>
+        toExpectations(ServiceContracts serviceContracts) {
+        return serviceContracts.getExpectations().stream()
+            .collect(Collectors.toMap(
+                expectation -> new ServiceContractsTuple.ProviderProtocolTuple(
+                    expectation.getProvider(),
+                    expectation.getProtocol()
+                ),
+                expectation -> new ServiceContractsTuple.ContractTuple(
+                    expectation.getContract().getValue(),
+                    expectation.getContract().getMimeType()
+                )
+            ));
+    }
+
+    private Map<String, ServiceContractsTuple.ContractTuple> toCapabilities(ServiceContracts serviceContracts) {
+        return serviceContracts.getCapabilities().stream()
+            .collect(Collectors.toMap(
+                Capability::getProtocol,
+                capability -> new ServiceContractsTuple.ContractTuple(
+                    capability.getContract().getValue(),
+                    capability.getContract().getMimeType()
+                )
+            ));
+    }
+
     private ServiceContracts toServiceContracts(ServiceContractsTuple serviceContractsTuple) {
-        return new ServiceContracts(serviceContractsTuple.getId(),
-            serviceContractsTuple.getCapabilitiesPerProtocol().keySet().stream()
-                .collect(Collectors.toMap(
-                    Function.identity(),
-                    key -> new ServiceContracts.Contract(
-                        serviceContractsTuple.getCapabilitiesPerProtocol().get(key).getValue(),
-                        serviceContractsTuple.getCapabilitiesPerProtocol().get(key).getMimeType()
-                    )
-                )),
-            serviceContractsTuple.getExpectations().keySet().stream()
-                .collect(Collectors.toMap(
-                    key -> new ServiceContracts.ProviderProtocol(
-                        key.getProvider(),
-                        key.getProtocol()
-                    ),
-                    key -> new ServiceContracts.Contract(
-                        serviceContractsTuple.getExpectations().get(key).getValue(),
-                        serviceContractsTuple.getExpectations().get(key).getMimeType()
-                    )
-                ))
+        return new ServiceContracts(
+            serviceContractsTuple.getId(),
+            toCapabilities(serviceContractsTuple),
+            toExpectations(serviceContractsTuple)
         );
+    }
+
+    private List<Expectation> toExpectations(ServiceContractsTuple serviceContractsTuple) {
+        return serviceContractsTuple.getExpectations().keySet().stream()
+            .map(providerProtocol -> new Expectation(
+                providerProtocol.getProvider(),
+                providerProtocol.getProtocol(),
+                new Contract(
+                    serviceContractsTuple.getExpectations().get(providerProtocol).getValue(),
+                    serviceContractsTuple.getExpectations().get(providerProtocol).getMimeType())))
+            .collect(Collectors.toList());
+    }
+
+    private List<Capability> toCapabilities(ServiceContractsTuple serviceContractsTuple) {
+        return serviceContractsTuple.getCapabilitiesPerProtocol().keySet().stream()
+            .map(protocol -> new Capability(
+                protocol,
+                new Contract(
+                    serviceContractsTuple.getCapabilitiesPerProtocol().get(protocol).getValue(),
+                    serviceContractsTuple.getCapabilitiesPerProtocol().get(protocol).getMimeType())))
+            .collect(Collectors.toList());
     }
 }
