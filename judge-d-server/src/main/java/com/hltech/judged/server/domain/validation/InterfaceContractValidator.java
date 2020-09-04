@@ -2,7 +2,6 @@ package com.hltech.judged.server.domain.validation;
 
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -1,6 +1,5 @@
 package com.hltech.judged.server.infrastructure.persistence.environment;
 
-import com.hltech.judged.server.domain.SpaceServiceVersion;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,9 +29,9 @@ public class EnvironmentTuple {
     @Id
     private String name;
 
-    @ElementCollection(fetch = FetchType.EAGER, targetClass = SpaceServiceVersion.class)
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = ServiceVersion.class)
     @JoinTable(name = "service_versions", joinColumns = {
         @JoinColumn(name = "environment_name", referencedColumnName = "name"),
     })
-    private Set<SpaceServiceVersion> spaceServiceVersions;
+    private Set<ServiceVersion> serviceVersions;
 }

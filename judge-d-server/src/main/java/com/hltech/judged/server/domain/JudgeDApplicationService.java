@@ -32,7 +32,7 @@ public class JudgeDApplicationService {
     ) {
         List<ServiceContracts> environmentContracts = environments.stream()
             .flatMap(env -> this.environmentRepository.get(env).getAllServices().stream())
-            .map(sv -> this.serviceContractsRepository.findOne(sv))
+            .map(service -> this.serviceContractsRepository.findOne(new ServiceVersion(service.getName(), service.getVersion())))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(toList());
@@ -48,7 +48,7 @@ public class JudgeDApplicationService {
         // find contracts on given env
         List<ServiceContracts> environmentContracts = this.environmentRepository.get(env).getAllServices()
             .stream()
-            .map(sv -> this.serviceContractsRepository.findOne(sv))
+            .map(service -> this.serviceContractsRepository.findOne(new ServiceVersion(service.getName(), service.getVersion())))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(toList());

@@ -1,7 +1,5 @@
 package com.hltech.judged.server.domain.environment
 
-import com.google.common.collect.ImmutableSetMultimap
-import com.hltech.judged.server.domain.ServiceVersion
 import spock.lang.Specification
 
 import static Environment.DEFAULT_NAMESPACE
@@ -12,17 +10,15 @@ class EnvironmentUT extends Specification {
         given:
             def aggregate = new Environment(
             'env',
-            ImmutableSetMultimap.<String, ServiceVersion> builder()
-                .put(DEFAULT_NAMESPACE, new ServiceVersion("s1", "s1"))
-                .put("space1", new ServiceVersion("s2", "s2"))
-                .build()
+            [new Space(DEFAULT_NAMESPACE, [new Service("s1", "s1")] as Set), new Space("space1", [new Service("s2", "s2")] as Set)] as Set
         )
         when:
-            def defaultSpaceServiceVersions = aggregate.getServices(DEFAULT_NAMESPACE);
-            def space1ServiceVersions = aggregate.getServices("space1");
+            def defaultSpaceServices = aggregate.getServices(DEFAULT_NAMESPACE);
+            def space1Services = aggregate.getServices("space1");
         then:
-            defaultSpaceServiceVersions == [new ServiceVersion("s1", "s1")] as Set
-            space1ServiceVersions == [new ServiceVersion("s2", "s2")] as Set
-
+            defaultSpaceServices[0].name == 's1'
+            defaultSpaceServices[0].version == 's1'
+            space1Services[0].name == 's2'
+            space1Services[0].version == 's2'
     }
 }

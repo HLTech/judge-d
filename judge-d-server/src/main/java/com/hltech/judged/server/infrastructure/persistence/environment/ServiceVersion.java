@@ -1,26 +1,24 @@
-package com.hltech.judged.server.domain;
+package com.hltech.judged.server.infrastructure.persistence.environment;
 
-
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Embeddable;
-import javax.persistence.MappedSuperclass;
-
-import java.io.Serializable;
 
 import static lombok.AccessLevel.PROTECTED;
 
 @Embeddable
-@ToString
 @Getter
 @EqualsAndHashCode
-@AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor
 @Access(AccessType.FIELD)
-@MappedSuperclass
-public class ServiceVersion implements Serializable {
+public class ServiceVersion {
+    private String space;
     private String name;
     private String version;
 }

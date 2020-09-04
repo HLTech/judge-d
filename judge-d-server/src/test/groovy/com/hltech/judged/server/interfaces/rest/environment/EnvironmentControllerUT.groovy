@@ -1,8 +1,9 @@
 package com.hltech.judged.server.interfaces.rest.environment
 
-import com.hltech.judged.server.domain.ServiceVersion
 import com.hltech.judged.server.domain.environment.Environment
 import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
+import com.hltech.judged.server.domain.environment.Service
+import com.hltech.judged.server.domain.environment.Space
 import spock.lang.Specification
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
@@ -32,18 +33,18 @@ class EnvironmentControllerUT extends Specification {
             services.isEmpty()
     }
 
-    def 'should return list of services from and evironment given it was saved before'() {
-        def serviceVersion = new ServiceVersion("service", "version")
+    def 'should return list of services from and environment given it was saved before'() {
+        def service = new Service("service", "version")
         given:
             def environment = new Environment(
                 randomAlphabetic(10),
-                [serviceVersion] as Set
+                [new Space('def', [service] as Set)] as Set
             )
             environmentRepository.persist(environment)
         when:
             def services = environmentController.getEnvironment(environment.name)
         then:
-            services == [new ServiceDto(serviceVersion.name, serviceVersion.version)] as List
+            services == [new ServiceDto(service.name, service.version)] as List
     }
 
     def 'should return two services given agents from two different spaces saved before'(){

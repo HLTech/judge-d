@@ -1,10 +1,10 @@
 package com.hltech.judged.server.interfaces.rest.environment;
 
 import com.google.common.collect.ImmutableSet;
-import com.hltech.judged.server.domain.ServiceVersion;
 import com.hltech.judged.server.domain.environment.Environment;
-import com.hltech.judged.server.domain.environment.Environment.EnvironmentBuilder;
 import com.hltech.judged.server.domain.environment.EnvironmentRepository;
+import com.hltech.judged.server.domain.environment.Service;
+import com.hltech.judged.server.domain.environment.Space;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -62,7 +63,7 @@ public class EnvironmentController {
     public void overwriteEnvironment(
         @PathVariable("name") String name,
         @RequestHeader(value = "X-JUDGE-D-AGENT-SPACE", defaultValue = DEFAULT_NAMESPACE, required = false) String agentSpace,
-        @RequestBody Set<ServiceForm> services
+        @RequestBody Set<ServiceForm> serviceForms
     ) {
         agentSpace = firstNonNull(agentSpace, DEFAULT_NAMESPACE);
         Environment environment = environmentRepository.get(name);
@@ -71,19 +72,19 @@ public class EnvironmentController {
             .add(agentSpace)
             .build();
 
-        EnvironmentBuilder builder = Environment.builder(name);
-        for (String space : supportedSpaces) {
-            if (agentSpace.equals(space)) {
-                Set<ServiceVersion> serviceVersions = services.stream()
-                    .map(sf -> new ServiceVersion(sf.getName(), sf.getVersion()))
+        Set<Space> spaces = new HashSet<>();
+        for (String spaceName : supportedSpaces) {
+            if (agentSpace.equals(spaceName)) {
+                Set<Service> services = serviceForms.stream()
+                    .map(sf -> new Service(sf.getName(), sf.getVersion()))
                     .collect(toSet());
 
-                builder.withServiceVersions(agentSpace, serviceVersions);
+                spaces.add(new Space(spaceName, services));
             } else {
-                builder.withServiceVersions(space, environment.getServices(space));
+                spaces.add(new Space(spaceName, environment.getServices(spaceName)));
             }
         }
 
-        environmentRepository.persist(builder.build());
+        environmentRepository.persist(new Environment(name, spaces));
     }
 }
