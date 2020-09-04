@@ -1,6 +1,5 @@
-package com.hltech.judged.server.domain.environment;
+package com.hltech.judged.server.domain;
 
-import com.hltech.judged.server.domain.ServiceVersion;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
