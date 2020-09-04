@@ -1,12 +1,14 @@
 package com.hltech.judged.server.infrastructure.persistence.environment;
 
-import com.hltech.judged.server.domain.ServiceVersion;
-import com.hltech.judged.server.domain.SpaceServiceVersion;
 import com.hltech.judged.server.domain.environment.Environment;
 import com.hltech.judged.server.domain.environment.EnvironmentRepository;
+import com.hltech.judged.server.domain.environment.Service;
+import com.hltech.judged.server.domain.environment.Space;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,30 +33,41 @@ public class JPAEnvironmentRepository implements EnvironmentRepository {
     public Environment get(String name) {
         return springDataEnvironmentRepository.findById(name)
             .map(this::toEnvironment)
-            .orElse(Environment.empty(name));
+            .orElse(new Environment(name, new HashSet<>()));
     }
 
     private EnvironmentTuple toEnvironmentTuple(Environment environment) {
         return new EnvironmentTuple(environment.getName(), getSpaceServiceVersions(environment));
     }
 
-    private Set<SpaceServiceVersion> getSpaceServiceVersions(Environment environment) {
+    private Set<ServiceVersion> getSpaceServiceVersions(Environment environment) {
         return environment.getSpaceNames().stream()
             .flatMap(space -> environment.getServices(space).stream()
-                .map(serviceVersion -> new SpaceServiceVersion(space, serviceVersion.getName(), serviceVersion.getVersion())))
+                .map(service -> new ServiceVersion(space, service.getName(), service.getVersion())))
             .collect(Collectors.toUnmodifiableSet());
     }
 
     private Environment toEnvironment(EnvironmentTuple environmentTuple) {
-        Environment.EnvironmentBuilder environmentBuilder = Environment.builder(environmentTuple.getName());
+        Set<Space> spaces = new HashSet<>();
 
-        environmentTuple.getSpaceServiceVersions().forEach(spaceServiceVersion ->
-            environmentBuilder.withServiceVersion(
-                spaceServiceVersion.getSpace(),
-                new ServiceVersion(spaceServiceVersion.getName(), spaceServiceVersion.getVersion())
-            )
-        );
+        environmentTuple.getServiceVersions()
+            .forEach(serviceVersion -> {
+                Optional<Space> foundSpace = spaces.stream()
+                    .filter(space -> space.getName().equals(serviceVersion.getSpace()))
+                    .findAny();
 
-        return environmentBuilder.build();
+                if (foundSpace.isPresent()) {
+                    Set<Service> services = new HashSet<>(foundSpace.get().getServices());
+                    services.add(new Service(serviceVersion.getName(), serviceVersion.getVersion()));
+
+                    spaces.add(new Space(foundSpace.get().getName(), services));
+                    return;
+                }
+
+                spaces.add(new Space(serviceVersion.getSpace(), Set.of(new Service(serviceVersion.getName(), serviceVersion.getVersion()))));
+            });
+
+        return new Environment(environmentTuple.getName(), spaces);
     }
+
 }

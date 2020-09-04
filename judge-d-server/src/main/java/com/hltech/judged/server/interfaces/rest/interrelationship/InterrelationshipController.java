@@ -1,5 +1,6 @@
 package com.hltech.judged.server.interfaces.rest.interrelationship;
 
+import com.hltech.judged.server.domain.environment.Service;
 import com.hltech.judged.server.interfaces.rest.contracts.ServiceContractsDto;
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
@@ -45,8 +46,8 @@ public class InterrelationshipController {
         return new InterrelationshipDto(env, serviceContractsSet);
     }
 
-    private ServiceContracts getServiceContracts(ServiceVersion service) {
-        return serviceContractsRepository.findOne(service)
+    private ServiceContracts getServiceContracts(Service service) {
+        return serviceContractsRepository.findOne(new ServiceVersion(service.getName(), service.getVersion()))
             .orElseGet(() ->
                 new ServiceContracts(
                     new ServiceVersion(service.getName(), service.getVersion()),

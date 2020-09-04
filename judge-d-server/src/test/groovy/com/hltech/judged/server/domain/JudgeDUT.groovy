@@ -8,6 +8,8 @@ import com.hltech.judged.server.domain.contracts.InMemoryServiceContractsReposit
 import com.hltech.judged.server.domain.contracts.ServiceContracts
 import com.hltech.judged.server.domain.environment.Environment
 import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
+import com.hltech.judged.server.domain.environment.Service
+import com.hltech.judged.server.domain.environment.Space
 import com.hltech.judged.server.domain.validation.EnvironmentValidatorResult
 import com.hltech.judged.server.domain.validation.ping.PingContractValidator
 import org.springframework.http.MediaType
@@ -17,7 +19,7 @@ import static org.assertj.core.util.Lists.newArrayList
 
 class JudgeDUT extends Specification {
 
-    def serviceContractsRepository = new InMemoryServiceContractsRepository();
+    def serviceContractsRepository = new InMemoryServiceContractsRepository()
     def environmentRepository = new InMemoryEnvironmentRepository()
     def contractValidator = new PingContractValidator()
     def judgeD = new JudgeDApplicationService(environmentRepository, serviceContractsRepository)
@@ -48,7 +50,7 @@ class JudgeDUT extends Specification {
                 [],
                 [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-            environmentRepository.persist(new Environment("test-env", [new ServiceVersion("provider", "1.0")] as Set))
+            environmentRepository.persist(new Environment("test-env", [new Space('def', [new Service("provider", "1.0")] as Set)] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 consumer,
@@ -73,7 +75,7 @@ class JudgeDUT extends Specification {
                 [],
                 [new Expectation('provider-x', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-            environmentRepository.persist(new Environment("test-env", [new ServiceVersion("consumer", "1.0")] as Set))
+            environmentRepository.persist(new Environment("test-env", [new Space('def', [new Service("consumer", "1.0")] as Set)] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 provider,
@@ -92,7 +94,7 @@ class JudgeDUT extends Specification {
                 [new Capability('ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))],
                 []
             ))
-            environmentRepository.persist(new Environment("test-env", [new ServiceVersion("consumer", "1.0")] as Set))
+            environmentRepository.persist(new Environment("test-env", [new Space('def', [new Service("consumer", "1.0")] as Set)] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 provider,
@@ -111,18 +113,18 @@ class JudgeDUT extends Specification {
                 [new Capability('ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))],
                 []
             ))
-            def consumer = serviceContractsRepository.persist(new ServiceContracts(
+            serviceContractsRepository.persist(new ServiceContracts(
                 new ServiceVersion('consumer', '1.0'),
                 [],
                 [new Expectation('provider-x', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-            def consumer2 = serviceContractsRepository.persist(new ServiceContracts(
+            serviceContractsRepository.persist(new ServiceContracts(
                 new ServiceVersion('consumer2', '1.0'),
                 [],
                 [new Expectation('provider-x', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-            environmentRepository.persist(new Environment("test-env", [new ServiceVersion("consumer", "1.0")] as Set))
-            environmentRepository.persist(new Environment("test-env2", [new ServiceVersion("consumer2", "1.0")] as Set))
+            environmentRepository.persist(new Environment("test-env", [new Space('def', [new Service("consumer", "1.0")] as Set)] as Set))
+            environmentRepository.persist(new Environment("test-env2", [new Space('def', [new Service("consumer2", "1.0")] as Set)] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 provider,
@@ -154,8 +156,8 @@ class JudgeDUT extends Specification {
                 contractValidator
             )
         then:
-            validationResult.containsKey(provider.getId());
-            validationResult.containsKey(consumer.getId());
+            validationResult.containsKey(provider.getId())
+            validationResult.containsKey(consumer.getId())
 
     }
 
@@ -181,7 +183,10 @@ class JudgeDUT extends Specification {
                 [],
                 [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-        environmentRepository.persist(new Environment("test-env", [providerOld.getId(), consumerOld.getId()] as Set))
+        environmentRepository.persist(new Environment("test-env", [new Space('def', [
+            new Service(providerOld.id.name, providerOld.id.version),
+            new Service(consumerOld.id.name, consumerOld.id.version)
+        ] as Set)] as Set))
         when:
             def validationResult = judgeD.validatedServicesAgainstEnvironment(
                 [providerNew, consumerNew] as List,
@@ -189,10 +194,10 @@ class JudgeDUT extends Specification {
                 contractValidator
             )
         then:
-            !validationResult.containsKey(providerOld.getId());
-            !validationResult.containsKey(consumerOld.getId());
-            validationResult.containsKey(providerNew.getId());
-            validationResult.containsKey(consumerNew.getId());
+            !validationResult.containsKey(providerOld.getId())
+            !validationResult.containsKey(consumerOld.getId())
+            validationResult.containsKey(providerNew.getId())
+            validationResult.containsKey(consumerNew.getId())
 
     }
 }
