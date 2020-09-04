@@ -1,13 +1,15 @@
 package com.hltech.judged.server.interfaces.rest.environment
 
+import com.hltech.judged.server.domain.ServiceVersion
 import com.hltech.judged.server.domain.environment.Environment
+import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
 import spock.lang.Specification
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
 
 class EnvironmentControllerUT extends Specification {
 
-    def environmentRepository = new com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository()
+    def environmentRepository = new InMemoryEnvironmentRepository()
     def environmentController = new EnvironmentController(environmentRepository)
 
     def 'should return names of created environments'() {
@@ -31,7 +33,7 @@ class EnvironmentControllerUT extends Specification {
     }
 
     def 'should return list of services from and evironment given it was saved before'() {
-        def serviceVersion = new com.hltech.judged.server.domain.ServiceVersion("service", "version")
+        def serviceVersion = new ServiceVersion("service", "version")
         given:
             def environment = new Environment(
                 randomAlphabetic(10),
@@ -49,8 +51,8 @@ class EnvironmentControllerUT extends Specification {
             def sv1 = new ServiceForm("service1", "version1")
             def sv2 = new ServiceForm("service2", "version2")
 
-            environmentController.overwriteEnvironment("env", null, [sv1] as Set);
-            environmentController.overwriteEnvironment("env", "space", [sv2] as Set);
+            environmentController.overwriteEnvironment("env", null, [sv1] as Set)
+            environmentController.overwriteEnvironment("env", "space", [sv2] as Set)
         when:
             def environment = environmentController.getEnvironment("env")
         then:
@@ -64,9 +66,9 @@ class EnvironmentControllerUT extends Specification {
             def sv2 = new ServiceForm("service2", "version2")
             def sv3 = new ServiceForm("service3", "version3")
 
-            environmentController.overwriteEnvironment("env", null, [sv1] as Set);
-            environmentController.overwriteEnvironment("env", null, [sv2] as Set);
-            environmentController.overwriteEnvironment("env", "space", [sv3] as Set);
+            environmentController.overwriteEnvironment("env", null, [sv1] as Set)
+            environmentController.overwriteEnvironment("env", null, [sv2] as Set)
+            environmentController.overwriteEnvironment("env", "space", [sv3] as Set)
         when:
             def environment = environmentController.getEnvironment("env")
         then:

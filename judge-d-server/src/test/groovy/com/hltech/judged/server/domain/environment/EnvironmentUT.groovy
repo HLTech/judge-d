@@ -1,6 +1,6 @@
 package com.hltech.judged.server.domain.environment
 
-import com.google.common.collect.ImmutableMultimap
+import com.google.common.collect.ImmutableSetMultimap
 import com.hltech.judged.server.domain.ServiceVersion
 import spock.lang.Specification
 
@@ -12,7 +12,7 @@ class EnvironmentUT extends Specification {
         given:
             def aggregate = new Environment(
             'env',
-            ImmutableMultimap.<String, ServiceVersion> builder()
+            ImmutableSetMultimap.<String, ServiceVersion> builder()
                 .put(DEFAULT_NAMESPACE, new ServiceVersion("s1", "s1"))
                 .put("space1", new ServiceVersion("s2", "s2"))
                 .build()

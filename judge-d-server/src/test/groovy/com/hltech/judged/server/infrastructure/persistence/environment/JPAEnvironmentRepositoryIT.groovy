@@ -23,7 +23,7 @@ class JPAEnvironmentRepositoryIT extends Specification {
         and:
             def environment = new Environment('environmentName', serviceVersion)
         when:
-            def persisted = repository.persist(environment)
+            repository.persist(environment)
         then:
             repository.get(environment.name).with {
                 name == environment.name
@@ -70,11 +70,11 @@ class JPAEnvironmentRepositoryIT extends Specification {
     def 'should retrieve service versions of all spaces'(){
         given:
             def environment1 = Environment.builder(randomAlphabetic(10))
-                .withServiceVersion("s1", "v1")
+                .withServiceVersion("space2", new ServiceVersion("s1", "v1"))
                 .withServiceVersions("space", [new ServiceVersion("s2", "v2")] as Set)
                 .build();
         when:
-            repository.persist(environment1);
+            repository.persist(environment1)
         then:
             repository.get(environment1.name).with {
                 name == environment1.name

@@ -3,7 +3,7 @@ package com.hltech.judged.server.interfaces.rest.environment;
 import com.google.common.collect.ImmutableSet;
 import com.hltech.judged.server.domain.ServiceVersion;
 import com.hltech.judged.server.domain.environment.Environment;
-import com.hltech.judged.server.domain.environment.Environment.EnvironmentAggregateBuilder;
+import com.hltech.judged.server.domain.environment.Environment.EnvironmentBuilder;
 import com.hltech.judged.server.domain.environment.EnvironmentRepository;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -66,13 +66,19 @@ public class EnvironmentController {
     ) {
         agentSpace = firstNonNull(agentSpace, DEFAULT_NAMESPACE);
         Environment environment = environmentRepository.get(name);
-        Set<String> supportedSpaces = ImmutableSet.<String>builder().addAll(environment.getSpaceNames()).add(agentSpace).build();
-        EnvironmentAggregateBuilder builder = Environment.builder(name);
+        Set<String> supportedSpaces = ImmutableSet.<String>builder()
+            .addAll(environment.getSpaceNames())
+            .add(agentSpace)
+            .build();
+
+        EnvironmentBuilder builder = Environment.builder(name);
         for (String space : supportedSpaces) {
             if (agentSpace.equals(space)) {
-                Set<ServiceVersion> collect = services.stream().map(sf -> new ServiceVersion(sf.getName(), sf.getVersion())).collect(toSet());
+                Set<ServiceVersion> serviceVersions = services.stream()
+                    .map(sf -> new ServiceVersion(sf.getName(), sf.getVersion()))
+                    .collect(toSet());
 
-                builder.withServiceVersions(agentSpace, collect);
+                builder.withServiceVersions(agentSpace, serviceVersions);
             } else {
                 builder.withServiceVersions(space, environment.getServices(space));
             }
