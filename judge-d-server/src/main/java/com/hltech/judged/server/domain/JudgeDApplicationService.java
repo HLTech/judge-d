@@ -2,11 +2,14 @@ package com.hltech.judged.server.domain;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.hltech.judged.server.domain.environment.Environment;
 import com.hltech.judged.server.domain.environment.EnvironmentRepository;
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
+import com.hltech.judged.server.domain.environment.Space;
 import com.hltech.judged.server.domain.validation.EnvironmentValidatorResult;
 import com.hltech.judged.server.domain.validation.InterfaceContractValidator;
 import com.hltech.judged.server.interfaces.rest.RequestValidationException;
@@ -15,10 +18,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
+import static com.google.common.base.MoreObjects.firstNonNull;
+import static com.hltech.judged.server.domain.environment.Environment.DEFAULT_NAMESPACE;
 import static com.hltech.judged.server.domain.validation.EnvironmentValidatorResult.getValidatorResult;
 import static java.util.stream.Collectors.toList;
 
@@ -29,6 +36,27 @@ public class JudgeDApplicationService {
     private final EnvironmentRepository environmentRepository;
     private final ServiceContractsRepository serviceContractsRepository;
     private final List<InterfaceContractValidator<?, ?>> validators;
+
+    public void overwriteEnvironment(String environmentName, String agentSpace, Set<ServiceId> serviceIds) {
+        String space = firstNonNull(agentSpace, DEFAULT_NAMESPACE);
+
+        Environment environment = environmentRepository.get(environmentName);
+        Set<String> supportedSpaces = ImmutableSet.<String>builder()
+            .addAll(environment.getSpaceNames())
+            .add(space)
+            .build();
+
+        Set<Space> spaces = new HashSet<>();
+        for (String spaceName : supportedSpaces) {
+            if (space.equals(spaceName)) {
+                spaces.add(new Space(spaceName, serviceIds));
+            } else {
+                spaces.add(new Space(spaceName, environment.getServices(spaceName)));
+            }
+        }
+
+        environmentRepository.persist(new Environment(environmentName, spaces));
+    }
 
     public Collection<EnvironmentValidatorResult> validateServiceAgainstEnvironments(
         ServiceId serviceId,
