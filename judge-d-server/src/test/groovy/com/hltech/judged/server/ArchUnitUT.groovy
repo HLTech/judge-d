@@ -25,7 +25,6 @@ class ArchUnitUT {
     private static final PACT_MODEL_PACKAGE = 'au.com.dius.pact.model..'
     private static final SWAGGER_PACT_VALIDATOR_PACKAGE = 'com.atlassian.oai.validator..'
     private static final GOOGLE_COMMON_PACKAGE = 'com.google.common..'
-    private static final JAVAX_PERSISTENCE_PACKAGE = 'javax.persistence..' // todo: get rid of this from rules
 
     @ArchTest
     public static final ArchRule NO_CIRCULAR_DEPENDENCIES_BETWEEN_PACKAGES = SlicesRuleDefinition.slices()
@@ -40,8 +39,7 @@ class ArchUnitUT {
         .should()
         .dependOnClassesThat()
         .resideOutsideOfPackages(DOMAIN_PACKAGE, DEFAULT_PACKAGE, SLF4J_PACKAGE, LOMBOK_PACKAGE, CORE_JAVA_PACKAGE,
-            JAVAX_PERSISTENCE_PACKAGE, VAUNT_PACKAGE, PACT_MODEL_PACKAGE, SWAGGER_PACT_VALIDATOR_PACKAGE,
-            GOOGLE_COMMON_PACKAGE)
+            VAUNT_PACKAGE, PACT_MODEL_PACKAGE, SWAGGER_PACT_VALIDATOR_PACKAGE, GOOGLE_COMMON_PACKAGE)
 
     @ArchTest
     public static final ArchRule INFRASTRUCTURE_SHOULD_NOT_DEPEND_ON_INTERFACES = noClasses()
