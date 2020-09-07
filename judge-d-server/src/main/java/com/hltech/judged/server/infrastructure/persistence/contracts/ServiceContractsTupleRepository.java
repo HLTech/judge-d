@@ -1,6 +1,5 @@
 package com.hltech.judged.server.infrastructure.persistence.contracts;
 
-import com.hltech.judged.server.domain.ServiceVersion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;

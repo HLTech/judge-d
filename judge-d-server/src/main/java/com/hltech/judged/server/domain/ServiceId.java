@@ -1,4 +1,4 @@
-package com.hltech.judged.server.domain.environment;
+package com.hltech.judged.server.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 @EqualsAndHashCode
-public class Service {
+public class ServiceId {
     private final String name;
     private final String version;
 }

@@ -1,23 +1,23 @@
 package com.hltech.judged.server.domain.contracts
 
 import com.google.common.collect.Maps
-import com.hltech.judged.server.domain.ServiceVersion
+import com.hltech.judged.server.domain.ServiceId
 
 import javax.persistence.NoResultException
 
 class InMemoryServiceContractsRepository implements ServiceContractsRepository {
 
-    private Map<ServiceVersion, ServiceContracts> storage = Maps.newHashMap()
+    private Map<ServiceId, ServiceContracts> storage = Maps.newHashMap()
 
     @Override
     ServiceContracts persist(ServiceContracts service) {
-        storage.put(new ServiceVersion(service.name, service.version), service)
-        return service;
+        storage.put(new ServiceId(service.name, service.version), service)
+        return service
     }
 
     @Override
-    Optional<ServiceContracts> findOne(ServiceVersion serviceVersion) {
-        return Optional.ofNullable(storage.get(serviceVersion))
+    Optional<ServiceContracts> findOne(ServiceId serviceId) {
+        return Optional.ofNullable(storage.get(serviceId))
     }
 
     @Override
@@ -27,7 +27,7 @@ class InMemoryServiceContractsRepository implements ServiceContractsRepository {
                 .keySet()
                 .grep {it.name == name}
                 .first().name
-        } catch (NoSuchElementException nsee) {
+        } catch (NoSuchElementException ex) {
             throw new NoResultException("Not found")
         }
 

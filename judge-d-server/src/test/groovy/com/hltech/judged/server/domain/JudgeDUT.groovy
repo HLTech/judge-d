@@ -8,7 +8,6 @@ import com.hltech.judged.server.domain.contracts.InMemoryServiceContractsReposit
 import com.hltech.judged.server.domain.contracts.ServiceContracts
 import com.hltech.judged.server.domain.environment.Environment
 import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
-import com.hltech.judged.server.domain.environment.Service
 import com.hltech.judged.server.domain.environment.Space
 import com.hltech.judged.server.domain.validation.EnvironmentValidatorResult
 import com.hltech.judged.server.domain.validation.ping.PingContractValidator
@@ -27,7 +26,7 @@ class JudgeDUT extends Specification {
     def 'validate expectations against environment without provider'() {
         given:
             def consumer = serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('validated-consumer', '1.0'),
+                new ServiceId('validated-consumer', '1.0'),
                 [],
                 [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
@@ -46,11 +45,11 @@ class JudgeDUT extends Specification {
     def 'validate expectations against environment with provider '() {
         given:
             def consumer = serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('validated-consumer', '1.0'),
+                new ServiceId('validated-consumer', '1.0'),
                 [],
                 [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-            environmentRepository.persist(new Environment("test-env", [new Space('def', [new Service("provider", "1.0")] as Set)] as Set))
+            environmentRepository.persist(new Environment("test-env", [new Space('def', [new ServiceId("provider", "1.0")] as Set)] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 consumer,
@@ -66,16 +65,16 @@ class JudgeDUT extends Specification {
     def 'validate capabilities against environment with consumer'() {
         given:
             def provider = serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('provider-x', '1.0'),
+                new ServiceId('provider-x', '1.0'),
                 [new Capability('ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))],
                 []
             ))
             serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('consumer', '1.0'),
+                new ServiceId('consumer', '1.0'),
                 [],
                 [new Expectation('provider-x', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-            environmentRepository.persist(new Environment("test-env", [new Space('def', [new Service("consumer", "1.0")] as Set)] as Set))
+            environmentRepository.persist(new Environment("test-env", [new Space('def', [new ServiceId("consumer", "1.0")] as Set)] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 provider,
@@ -90,11 +89,11 @@ class JudgeDUT extends Specification {
     def 'validate capabilities against environment without a consumer'() {
         given:
             def provider = serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('provider-x', '1.0'),
+                new ServiceId('provider-x', '1.0'),
                 [new Capability('ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))],
                 []
             ))
-            environmentRepository.persist(new Environment("test-env", [new Space('def', [new Service("consumer", "1.0")] as Set)] as Set))
+            environmentRepository.persist(new Environment("test-env", [new Space('def', [new ServiceId("consumer", "1.0")] as Set)] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 provider,
@@ -109,22 +108,22 @@ class JudgeDUT extends Specification {
     def 'validate capabilities against multiple environments'() {
         given:
             def provider = serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('provider-x', '1.0'),
+                new ServiceId('provider-x', '1.0'),
                 [new Capability('ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))],
                 []
             ))
             serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('consumer', '1.0'),
+                new ServiceId('consumer', '1.0'),
                 [],
                 [new Expectation('provider-x', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
             serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('consumer2', '1.0'),
+                new ServiceId('consumer2', '1.0'),
                 [],
                 [new Expectation('provider-x', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
-            environmentRepository.persist(new Environment("test-env", [new Space('def', [new Service("consumer", "1.0")] as Set)] as Set))
-            environmentRepository.persist(new Environment("test-env2", [new Space('def', [new Service("consumer2", "1.0")] as Set)] as Set))
+            environmentRepository.persist(new Environment("test-env", [new Space('def', [new ServiceId("consumer", "1.0")] as Set)] as Set))
+            environmentRepository.persist(new Environment("test-env2", [new Space('def', [new ServiceId("consumer2", "1.0")] as Set)] as Set))
         when:
             EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
                 provider,
@@ -139,12 +138,12 @@ class JudgeDUT extends Specification {
     def 'validate contracts of set of services against empty environment'() {
         given:
             def provider = serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('provider', '1.0'),
+                new ServiceId('provider', '1.0'),
                 [new Capability('ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))],
                 []
             ))
             def consumer = serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('consumer', '1.0'),
+                new ServiceId('consumer', '1.0'),
                 [],
                 [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
@@ -164,28 +163,28 @@ class JudgeDUT extends Specification {
     def 'validate contracts of set of services against env containing all services but with different version'() {
         given:
             def providerOld = serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('provider', '1.0'),
+                new ServiceId('provider', '1.0'),
                 [new Capability('ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))],
                 []
             ))
             def consumerOld = serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('consumer', '1.0'),
+                new ServiceId('consumer', '1.0'),
                 [],
                 [new Expectation('provider', 'ping', new Contract('1233456', MediaType.APPLICATION_JSON_VALUE))]
             ))
             def providerNew = serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('provider', '2.0'),
+                new ServiceId('provider', '2.0'),
                 [new Capability('ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))],
                 []
             ))
             def consumerNew = serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('consumer', '2.0'),
+                new ServiceId('consumer', '2.0'),
                 [],
                 [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
         environmentRepository.persist(new Environment("test-env", [new Space('def', [
-            new Service(providerOld.id.name, providerOld.id.version),
-            new Service(consumerOld.id.name, consumerOld.id.version)
+            new ServiceId(providerOld.id.name, providerOld.id.version),
+            new ServiceId(consumerOld.id.name, consumerOld.id.version)
         ] as Set)] as Set))
         when:
             def validationResult = judgeD.validatedServicesAgainstEnvironment(

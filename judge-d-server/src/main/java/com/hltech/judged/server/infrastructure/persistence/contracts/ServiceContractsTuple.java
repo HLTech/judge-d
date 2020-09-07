@@ -1,6 +1,5 @@
 package com.hltech.judged.server.infrastructure.persistence.contracts;
 
-import com.hltech.judged.server.domain.ServiceVersion;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

@@ -2,7 +2,7 @@ package com.hltech.judged.server.infrastructure.persistence.environment;
 
 import com.hltech.judged.server.domain.environment.Environment;
 import com.hltech.judged.server.domain.environment.EnvironmentRepository;
-import com.hltech.judged.server.domain.environment.Service;
+import com.hltech.judged.server.domain.ServiceId;
 import com.hltech.judged.server.domain.environment.Space;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -57,14 +57,14 @@ public class JPAEnvironmentRepository implements EnvironmentRepository {
                     .findAny();
 
                 if (foundSpace.isPresent()) {
-                    Set<Service> services = new HashSet<>(foundSpace.get().getServices());
-                    services.add(new Service(serviceVersion.getName(), serviceVersion.getVersion()));
+                    Set<ServiceId> serviceIds = new HashSet<>(foundSpace.get().getServiceIds());
+                    serviceIds.add(new ServiceId(serviceVersion.getName(), serviceVersion.getVersion()));
 
-                    spaces.add(new Space(foundSpace.get().getName(), services));
+                    spaces.add(new Space(foundSpace.get().getName(), serviceIds));
                     return;
                 }
 
-                spaces.add(new Space(serviceVersion.getSpace(), Set.of(new Service(serviceVersion.getName(), serviceVersion.getVersion()))));
+                spaces.add(new Space(serviceVersion.getSpace(), Set.of(new ServiceId(serviceVersion.getName(), serviceVersion.getVersion()))));
             });
 
         return new Environment(environmentTuple.getName(), spaces);

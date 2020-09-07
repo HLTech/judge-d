@@ -1,6 +1,6 @@
 package com.hltech.judged.server.infrastructure.persistence.contracts
 
-import com.hltech.judged.server.domain.ServiceVersion
+import com.hltech.judged.server.domain.ServiceId
 import com.hltech.judged.server.domain.contracts.Capability
 import com.hltech.judged.server.domain.contracts.Contract
 import com.hltech.judged.server.domain.contracts.Expectation
@@ -22,7 +22,7 @@ import static wiremock.org.apache.commons.lang3.RandomStringUtils.randomAlphabet
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["management.port=0"])
 @ActiveProfiles("test-integration")
 @Transactional
-class ServiceContractsRepositoryImplIT extends Specification {
+class ServiceIdContractsRepositoryImplIT extends Specification {
 
     @Autowired
     private ServiceContractsRepository repository
@@ -30,13 +30,13 @@ class ServiceContractsRepositoryImplIT extends Specification {
     def 'should find what was saved'() {
         given:
             def serviceContracts = new ServiceContracts(
-                new ServiceVersion('provider', '1.0'),
+                new ServiceId('provider', '1.0'),
                 [new Capability('ping', new Contract('654321', MediaType.APPLICATION_JSON_VALUE))],
                 [new Expectation('some-other-provider', 'ping', new Contract("098765", MediaType.APPLICATION_JSON_VALUE))]
             )
             repository.persist(serviceContracts)
         when:
-            def retrieved = repository.findOne(new ServiceVersion(serviceContracts.name, serviceContracts.version))
+            def retrieved = repository.findOne(new ServiceId(serviceContracts.name, serviceContracts.version))
         then:
             retrieved.get().id.name == 'provider'
             retrieved.get().id.version == '1.0'
@@ -49,8 +49,8 @@ class ServiceContractsRepositoryImplIT extends Specification {
 
     def 'should find all persisted service names'() {
         given:
-            def s1 = repository.persist(new ServiceContracts(new ServiceVersion(randomAlphabetic(10), "1.0"), [], []))
-            def s2 = repository.persist(new ServiceContracts(new ServiceVersion(randomAlphabetic(10), "1.0"), [], []))
+            def s1 = repository.persist(new ServiceContracts(new ServiceId(randomAlphabetic(10), "1.0"), [], []))
+            def s2 = repository.persist(new ServiceContracts(new ServiceId(randomAlphabetic(10), "1.0"), [], []))
         when:
             def serviceNames = repository.getServiceNames()
         then:
@@ -61,8 +61,8 @@ class ServiceContractsRepositoryImplIT extends Specification {
     def 'should find all persisted versions of a service'() {
         given:
             def serviceName = randomAlphabetic(10)
-            def s1 = repository.persist(new ServiceContracts(new ServiceVersion(serviceName, randomAlphabetic(5)), [], []))
-            def s2 = repository.persist(new ServiceContracts(new ServiceVersion(serviceName, randomAlphabetic(5)), [], []))
+            def s1 = repository.persist(new ServiceContracts(new ServiceId(serviceName, randomAlphabetic(5)), [], []))
+            def s2 = repository.persist(new ServiceContracts(new ServiceId(serviceName, randomAlphabetic(5)), [], []))
         when:
             def serviceContracts = repository.findAllByServiceName(serviceName)
         then:
@@ -74,7 +74,7 @@ class ServiceContractsRepositoryImplIT extends Specification {
     def 'should find persisted service by name'() {
         given:
             def serviceName = randomAlphabetic(10)
-            def s1 = repository.persist(new ServiceContracts(new ServiceVersion(serviceName, randomAlphabetic(5)), [], []))
+            def s1 = repository.persist(new ServiceContracts(new ServiceId(serviceName, randomAlphabetic(5)), [], []))
         when:
             String service = repository.getService(serviceName)
         then:

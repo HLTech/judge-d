@@ -1,7 +1,7 @@
 package com.hltech.judged.server.infrastructure.persistence.environment
 
 import com.hltech.judged.server.domain.environment.Environment
-import com.hltech.judged.server.domain.environment.Service
+import com.hltech.judged.server.domain.ServiceId
 import com.hltech.judged.server.domain.environment.Space
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -20,7 +20,7 @@ class JPAEnvironmentRepositoryIT extends Specification {
 
     def 'should retrieve what was persisted'() {
         given:
-            def service = new Service('serviceName', 'serviceVersion')
+            def service = new ServiceId('serviceName', 'serviceVersion')
         and:
             def environment = new Environment('environmentName', [new Space('def', [service] as Set)] as Set)
         when:
@@ -39,11 +39,11 @@ class JPAEnvironmentRepositoryIT extends Specification {
         given:
             def environment1 = repository.persist(new Environment(
                 'environmentName',
-                [new Space('def', [new Service('serviceName1', 'serviceVersion1'), new Service('serviceName2', 'serviceVersion2')] as Set)] as Set
+                [new Space('def', [new ServiceId('serviceName1', 'serviceVersion1'), new ServiceId('serviceName2', 'serviceVersion2')] as Set)] as Set
             ))
             def environment2 = new Environment(
                 environment1.name,
-                [ new Space('def', [new Service('serviceName1', 'serviceVersion1')] as Set)] as Set
+                [ new Space('def', [new ServiceId('serviceName1', 'serviceVersion1')] as Set)] as Set
             )
         when:
             repository.persist(environment2)
@@ -58,7 +58,7 @@ class JPAEnvironmentRepositoryIT extends Specification {
         given:
             def environment1 = repository.persist(new Environment(
                 randomAlphabetic(10),
-                [new Space('def', [new Service('serviceName1', 'serviceVersion1'), new Service('serviceName2', 'serviceVersion2')] as Set)] as Set
+                [new Space('def', [new ServiceId('serviceName1', 'serviceVersion1'), new ServiceId('serviceName2', 'serviceVersion2')] as Set)] as Set
             ))
         when:
             def names = repository.getNames()
@@ -70,8 +70,8 @@ class JPAEnvironmentRepositoryIT extends Specification {
         given:
             def environment1 = new Environment(randomAlphabetic(10),
                 [
-                    new Space('space2', [new Service('s1', 'v1')] as Set),
-                    new Space('space', [new Service('s2', 'v2')] as Set)
+                    new Space('space2', [new ServiceId('s1', 'v1')] as Set),
+                    new Space('space', [new ServiceId('s2', 'v2')] as Set)
                 ] as Set
             )
         when:

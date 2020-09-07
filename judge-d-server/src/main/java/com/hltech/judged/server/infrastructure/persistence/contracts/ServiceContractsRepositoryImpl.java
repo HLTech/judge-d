@@ -1,6 +1,6 @@
 package com.hltech.judged.server.infrastructure.persistence.contracts;
 
-import com.hltech.judged.server.domain.ServiceVersion;
+import com.hltech.judged.server.domain.ServiceId;
 import com.hltech.judged.server.domain.contracts.Capability;
 import com.hltech.judged.server.domain.contracts.Contract;
 import com.hltech.judged.server.domain.contracts.Expectation;
@@ -27,7 +27,7 @@ public class ServiceContractsRepositoryImpl implements ServiceContractsRepositor
     }
 
     @Override
-    public Optional<ServiceContracts> findOne(ServiceVersion serviceVersion) {
+    public Optional<ServiceContracts> findOne(ServiceId serviceVersion) {
         return serviceContractsTupleRepository
             .findById_NameAndId_Version(serviceVersion.getName(), serviceVersion.getVersion())
             .map(this::toServiceContracts);
@@ -55,7 +55,7 @@ public class ServiceContractsRepositoryImpl implements ServiceContractsRepositor
 
     private ServiceContractsTuple toServiceContractsTuple(ServiceContracts serviceContracts) {
         return new ServiceContractsTuple(
-            serviceContracts.getId(),
+            new ServiceVersion(serviceContracts.getId().getName(), serviceContracts.getId().getVersion()),
             toCapabilities(serviceContracts),
             toExpectations(serviceContracts)
         );
@@ -89,7 +89,7 @@ public class ServiceContractsRepositoryImpl implements ServiceContractsRepositor
 
     private ServiceContracts toServiceContracts(ServiceContractsTuple serviceContractsTuple) {
         return new ServiceContracts(
-            serviceContractsTuple.getId(),
+            new ServiceId(serviceContractsTuple.getId().getName(), serviceContractsTuple.getId().getVersion()),
             toCapabilities(serviceContractsTuple),
             toExpectations(serviceContractsTuple)
         );

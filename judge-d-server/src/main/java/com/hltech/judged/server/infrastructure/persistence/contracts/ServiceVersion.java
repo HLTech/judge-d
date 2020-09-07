@@ -1,4 +1,4 @@
-package com.hltech.judged.server.domain;
+package com.hltech.judged.server.infrastructure.persistence.contracts;
 
 
 import lombok.*;

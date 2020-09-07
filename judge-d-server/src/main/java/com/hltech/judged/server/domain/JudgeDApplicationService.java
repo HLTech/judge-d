@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +31,7 @@ public class JudgeDApplicationService {
     ) {
         List<ServiceContracts> environmentContracts = environments.stream()
             .flatMap(env -> this.environmentRepository.get(env).getAllServices().stream())
-            .map(service -> this.serviceContractsRepository.findOne(new ServiceVersion(service.getName(), service.getVersion())))
+            .map(service -> this.serviceContractsRepository.findOne(new ServiceId(service.getName(), service.getVersion())))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(toList());
@@ -40,7 +39,7 @@ public class JudgeDApplicationService {
         return getValidatorResult(contractsToValidate, environmentContracts, validator);
     }
 
-    public <C, E> Map<ServiceVersion, EnvironmentValidatorResult> validatedServicesAgainstEnvironment(
+    public <C, E> Map<ServiceId, EnvironmentValidatorResult> validatedServicesAgainstEnvironment(
         List<ServiceContracts> contractToValidate,
         String env,
         InterfaceContractValidator<C, E> validator
@@ -48,7 +47,7 @@ public class JudgeDApplicationService {
         // find contracts on given env
         List<ServiceContracts> environmentContracts = this.environmentRepository.get(env).getAllServices()
             .stream()
-            .map(service -> this.serviceContractsRepository.findOne(new ServiceVersion(service.getName(), service.getVersion())))
+            .map(service -> this.serviceContractsRepository.findOne(new ServiceId(service.getName(), service.getVersion())))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(toList());
@@ -59,18 +58,13 @@ public class JudgeDApplicationService {
 
         // replace environment contracts with validated ones
         contractToValidate.forEach(validatedContract -> {
-            Iterator<ServiceContracts> iterator = environmentContracts.iterator();
-            while (iterator.hasNext()) {
-                if (iterator.next().getName().equals(validatedContract.getId().getName())) {
-                    iterator.remove();
-                }
-            }
+            environmentContracts.removeIf(serviceContracts -> serviceContracts.getName().equals(validatedContract.getId().getName()));
             environmentContracts.add(validatedContract);
         });
 
         log.info("after the deployment env will contain: ["+Joiner.on(", ").join(environmentContracts.stream().map(sc -> sc.getId().toString()).collect(toList()))+"]");
 
-        Map<ServiceVersion, EnvironmentValidatorResult> hashMap = Maps.newHashMap();
+        Map<ServiceId, EnvironmentValidatorResult> hashMap = Maps.newHashMap();
         for (ServiceContracts sc : contractToValidate) {
             hashMap.put(sc.getId(), getValidatorResult(sc, environmentContracts, validator));
         }

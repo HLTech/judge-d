@@ -1,6 +1,6 @@
 package com.hltech.judged.server.domain.contracts;
 
-import com.hltech.judged.server.domain.ServiceVersion;
+import com.hltech.judged.server.domain.ServiceId;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.toMap;
 @EqualsAndHashCode
 public class ServiceContracts {
 
-    private final ServiceVersion id;
+    private final ServiceId id;
     private final List<Capability> capabilities;
     private final List<Expectation> expectations;
 
