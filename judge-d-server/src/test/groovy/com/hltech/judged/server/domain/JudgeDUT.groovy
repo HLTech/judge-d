@@ -9,10 +9,13 @@ import com.hltech.judged.server.domain.contracts.ServiceContracts
 import com.hltech.judged.server.domain.environment.Environment
 import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
 import com.hltech.judged.server.domain.environment.Space
-import com.hltech.judged.server.domain.validation.EnvironmentValidatorResult
+import com.hltech.judged.server.domain.validation.InterfaceContractValidator
 import com.hltech.judged.server.domain.validation.ping.PingContractValidator
+import com.hltech.judged.server.interfaces.rest.RequestValidationException
+import com.hltech.judged.server.interfaces.rest.ResourceNotFoundException
 import org.springframework.http.MediaType
 import spock.lang.Specification
+import spock.lang.Subject
 
 import static org.assertj.core.util.Lists.newArrayList
 
@@ -21,7 +24,10 @@ class JudgeDUT extends Specification {
     def serviceContractsRepository = new InMemoryServiceContractsRepository()
     def environmentRepository = new InMemoryEnvironmentRepository()
     def contractValidator = new PingContractValidator()
-    def judgeD = new JudgeDApplicationService(environmentRepository, serviceContractsRepository)
+    def mockedValidator = Mock(InterfaceContractValidator)
+
+    @Subject
+    def judgeD = new JudgeDApplicationService(environmentRepository, serviceContractsRepository, [contractValidator, mockedValidator])
 
     def 'validate expectations against environment without provider'() {
         given:
@@ -31,15 +37,15 @@ class JudgeDUT extends Specification {
                 [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
             environmentRepository.persist(new Environment('test-env', [] as Set))
+
         when:
-            EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
-                consumer,
-                ["test-env"] as List,
-                contractValidator
+            def evrs = judgeD.validateServiceAgainstEnvironments(
+                consumer.id,
+                ["test-env"] as List
             )
         then:
-            evr.getCapabilitiesValidationResults().size() == 0
-            evr.getExpectationValidationResults().size() == 1
+            evrs[0].getCapabilitiesValidationResults().size() == 0
+            evrs[0].getExpectationValidationResults().size() == 1
     }
 
     def 'validate expectations against environment with provider '() {
@@ -51,14 +57,12 @@ class JudgeDUT extends Specification {
             ))
             environmentRepository.persist(new Environment("test-env", [new Space('def', [new ServiceId("provider", "1.0")] as Set)] as Set))
         when:
-            EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
-                consumer,
-                newArrayList("test-env"),
-                contractValidator
-            )
+            def evrs = judgeD.validateServiceAgainstEnvironments(
+                consumer.id,
+                newArrayList("test-env"))
         then:
-            evr.getCapabilitiesValidationResults().size() == 0
-            evr.getExpectationValidationResults().size() == 1
+            evrs[0].getCapabilitiesValidationResults().size() == 0
+            evrs[0].getExpectationValidationResults().size() == 1
 
     }
 
@@ -76,14 +80,12 @@ class JudgeDUT extends Specification {
             ))
             environmentRepository.persist(new Environment("test-env", [new Space('def', [new ServiceId("consumer", "1.0")] as Set)] as Set))
         when:
-            EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
-                provider,
-                newArrayList("test-env"),
-                contractValidator
-            )
+            def evrs = judgeD.validateServiceAgainstEnvironments(
+                provider.id,
+                newArrayList("test-env"))
         then:
-            evr.getCapabilitiesValidationResults().size() == 1
-            evr.getExpectationValidationResults().size() == 0
+            evrs[0].getCapabilitiesValidationResults().size() == 1
+            evrs[0].getExpectationValidationResults().size() == 0
     }
 
     def 'validate capabilities against environment without a consumer'() {
@@ -95,14 +97,12 @@ class JudgeDUT extends Specification {
             ))
             environmentRepository.persist(new Environment("test-env", [new Space('def', [new ServiceId("consumer", "1.0")] as Set)] as Set))
         when:
-            EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
-                provider,
-                newArrayList("test-env"),
-                contractValidator
-            )
+            def evrs = judgeD.validateServiceAgainstEnvironments(
+                provider.id,
+                newArrayList("test-env"))
         then:
-            evr.getCapabilitiesValidationResults().size() == 0
-            evr.getExpectationValidationResults().size() == 0
+            evrs[0].getCapabilitiesValidationResults().size() == 0
+            evrs[0].getExpectationValidationResults().size() == 0
     }
 
     def 'validate capabilities against multiple environments'() {
@@ -125,14 +125,12 @@ class JudgeDUT extends Specification {
             environmentRepository.persist(new Environment("test-env", [new Space('def', [new ServiceId("consumer", "1.0")] as Set)] as Set))
             environmentRepository.persist(new Environment("test-env2", [new Space('def', [new ServiceId("consumer2", "1.0")] as Set)] as Set))
         when:
-            EnvironmentValidatorResult evr = judgeD.validateServiceAgainstEnvironments(
-                provider,
-                newArrayList("test-env", "test-env2"),
-                contractValidator
-            )
+            def evrs = judgeD.validateServiceAgainstEnvironments(
+                provider.id,
+                newArrayList("test-env", "test-env2"))
         then:
-            evr.getCapabilitiesValidationResults().size() == 2
-            evr.getExpectationValidationResults().size() == 0
+            evrs[0].getCapabilitiesValidationResults().size() == 2
+            evrs[0].getExpectationValidationResults().size() == 0
     }
 
     def 'validate contracts of set of services against empty environment'() {
@@ -150,10 +148,8 @@ class JudgeDUT extends Specification {
             environmentRepository.persist(new Environment("test-env", [] as Set))
         when:
             def validationResult = judgeD.validatedServicesAgainstEnvironment(
-                [provider, consumer] as List,
-                "test-env",
-                contractValidator
-            )
+                [provider.id, consumer.id] as List,
+                "test-env")
         then:
             validationResult.containsKey(provider.getId())
             validationResult.containsKey(consumer.getId())
@@ -188,15 +184,20 @@ class JudgeDUT extends Specification {
         ] as Set)] as Set))
         when:
             def validationResult = judgeD.validatedServicesAgainstEnvironment(
-                [providerNew, consumerNew] as List,
-                "test-env",
-                contractValidator
-            )
+                [providerNew.id, consumerNew.id] as List,
+                "test-env")
         then:
             !validationResult.containsKey(providerOld.getId())
             !validationResult.containsKey(consumerOld.getId())
             validationResult.containsKey(providerNew.getId())
             validationResult.containsKey(consumerNew.getId())
+    }
 
+    def 'should throw NotFound exception when validate service against env given contracts for given service have not been registered'() {
+        when:
+            judgeD.validateServiceAgainstEnvironments(new ServiceId('n', 'v'), ["test-env"] as List)
+
+        then:
+            thrown ResourceNotFoundException
     }
 }

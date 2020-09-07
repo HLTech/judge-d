@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.hltech.judged.server.config.BeanFactory
 import com.hltech.judged.server.domain.JudgeDApplicationService
 import com.hltech.judged.server.domain.ServiceId
-import com.hltech.judged.server.infrastructure.persistence.contracts.ServiceVersion
 import com.hltech.judged.server.domain.contracts.Capability
 import com.hltech.judged.server.domain.contracts.Contract
 import com.hltech.judged.server.domain.contracts.Expectation
@@ -118,8 +117,10 @@ class ValidationControllerIT extends Specification {
         }
 
         @Bean
-        JudgeDApplicationService repository(EnvironmentRepository environmentRepository, ServiceContractsRepository serviceContractsRepository) {
-            return new JudgeDApplicationService(environmentRepository, serviceContractsRepository)
+        JudgeDApplicationService repository(EnvironmentRepository environmentRepository,
+                                            ServiceContractsRepository serviceContractsRepository,
+                                            List<InterfaceContractValidator<String, String>> validators) {
+            return new JudgeDApplicationService(environmentRepository, serviceContractsRepository, validators)
         }
 
         @Bean

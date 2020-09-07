@@ -1,12 +1,16 @@
 package com.hltech.judged.server.domain;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.hltech.judged.server.domain.environment.EnvironmentRepository;
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
 import com.hltech.judged.server.domain.validation.EnvironmentValidatorResult;
 import com.hltech.judged.server.domain.validation.InterfaceContractValidator;
+import com.hltech.judged.server.interfaces.rest.RequestValidationException;
+import com.hltech.judged.server.interfaces.rest.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.hltech.judged.server.domain.validation.EnvironmentValidatorResult.getValidatorResult;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
@@ -23,8 +28,49 @@ public class JudgeDApplicationService {
 
     private final EnvironmentRepository environmentRepository;
     private final ServiceContractsRepository serviceContractsRepository;
+    private final List<InterfaceContractValidator<?, ?>> validators;
 
-    public <C, E> EnvironmentValidatorResult validateServiceAgainstEnvironments(
+    public Collection<EnvironmentValidatorResult> validateServiceAgainstEnvironments(
+        ServiceId serviceId,
+        List<String> environments) {
+
+        ServiceContracts validatedServiceContracts = this.serviceContractsRepository.findOne(serviceId)
+            .orElseThrow(ResourceNotFoundException::new);
+
+        return this.validators.stream()
+            .map(validator ->
+                validateServiceAgainstEnvironments(
+                    validatedServiceContracts,
+                    environments,
+                    validator
+                ))
+            .collect(toList());
+    }
+
+    public Multimap<ServiceId, EnvironmentValidatorResult> validatedServicesAgainstEnvironment(
+        List<ServiceId> serviceIds,
+        String environment) {
+
+        List<ServiceContracts> validatedServiceContracts = serviceIds.stream()
+            .map(serviceContractsRepository::findOne)
+            .map(o -> o.orElseThrow(RequestValidationException::new))
+            .collect(toList());
+
+        Multimap<ServiceId, EnvironmentValidatorResult> validationResults = HashMultimap.create();
+        this.validators
+            .forEach(validator ->
+                validatedServicesAgainstEnvironment(
+                    validatedServiceContracts,
+                    environment,
+                    validator
+                )
+                    .forEach(validationResults::put)
+            );
+
+        return validationResults;
+    }
+
+    private <C, E> EnvironmentValidatorResult validateServiceAgainstEnvironments(
         ServiceContracts contractsToValidate,
         List<String> environments,
         InterfaceContractValidator<C, E> validator
@@ -39,7 +85,7 @@ public class JudgeDApplicationService {
         return getValidatorResult(contractsToValidate, environmentContracts, validator);
     }
 
-    public <C, E> Map<ServiceId, EnvironmentValidatorResult> validatedServicesAgainstEnvironment(
+    private <C, E> Map<ServiceId, EnvironmentValidatorResult> validatedServicesAgainstEnvironment(
         List<ServiceContracts> contractToValidate,
         String env,
         InterfaceContractValidator<C, E> validator
@@ -69,17 +115,5 @@ public class JudgeDApplicationService {
             hashMap.put(sc.getId(), getValidatorResult(sc, environmentContracts, validator));
         }
         return hashMap;
-    }
-
-    public <C, E> EnvironmentValidatorResult getValidatorResult(
-        ServiceContracts validatedService,
-        Collection<ServiceContracts> environmentContracts,
-        InterfaceContractValidator<C, E> validator
-    ) {
-        return new EnvironmentValidatorResult(
-            validator.getCommunicationInterface(),
-            validator.validateCapabilities(validatedService, environmentContracts),
-            validator.validateExpectations(validatedService, environmentContracts)
-        );
     }
 }
