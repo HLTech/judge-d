@@ -11,8 +11,8 @@ import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
 import com.hltech.judged.server.domain.environment.Space
 import com.hltech.judged.server.domain.validation.InterfaceContractValidator
 import com.hltech.judged.server.domain.validation.ping.PingContractValidator
-import com.hltech.judged.server.interfaces.rest.RequestValidationException
 import com.hltech.judged.server.interfaces.rest.ResourceNotFoundException
+import com.hltech.judged.server.interfaces.rest.environment.ServiceDto
 import org.springframework.http.MediaType
 import spock.lang.Specification
 import spock.lang.Subject
@@ -48,7 +48,7 @@ class JudgeDUT extends Specification {
             evrs[0].getExpectationValidationResults().size() == 1
     }
 
-    def 'validate expectations against environment with provider '() {
+    def 'validate expectations against environment with provider'() {
         given:
             def consumer = serviceContractsRepository.persist(new ServiceContracts(
                 new ServiceId('validated-consumer', '1.0'),
@@ -199,5 +199,43 @@ class JudgeDUT extends Specification {
 
         then:
             thrown ResourceNotFoundException
+    }
+
+    def 'should return two services given agents from two different spaces saved before'(){
+        given:
+            def sv1 = new ServiceId("service1", "version1")
+            def sv2 = new ServiceId("service2", "version2")
+
+            judgeD.overwriteEnvironment("env", null, [sv1] as Set)
+            judgeD.overwriteEnvironment("env", "space", [sv2] as Set)
+
+        when:
+            def environment = environmentRepository.get("env")
+
+        then:
+            environment.allServices.size() == 2
+    }
+
+    def 'should override dfault space only given additional non-empty space exists and both are overwriten'(){
+        given:
+            def sv1 = new ServiceId("service1", "version1")
+            def sv2 = new ServiceId("service2", "version2")
+            def sv3 = new ServiceId("service3", "version3")
+
+            judgeD.overwriteEnvironment("env", null, [sv1] as Set)
+            judgeD.overwriteEnvironment("env", null, [sv2] as Set)
+            judgeD.overwriteEnvironment("env", "space", [sv3] as Set)
+
+        when:
+            def environment = environmentRepository.get("env")
+
+        then:
+            environment.allServices.size() == 2
+            environment.allServices.any{
+                it.name == "service2" && it.version == "version2"
+            }
+            environment.allServices.any{
+                it.name == "service3" && it.version == "version3"
+            }
     }
 }

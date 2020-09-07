@@ -2,6 +2,12 @@ package com.hltech.judged.server.interfaces.rest.environment
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.hltech.judged.server.config.BeanFactory
+import com.hltech.judged.server.domain.JudgeDApplicationService
+import com.hltech.judged.server.domain.contracts.InMemoryServiceContractsRepository
+import com.hltech.judged.server.domain.contracts.ServiceContractsRepository
+import com.hltech.judged.server.domain.environment.EnvironmentRepository
+import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -54,11 +60,16 @@ class EnvironmentControllerIT extends Specification {
     }
 
     @TestConfiguration
-    static class TestConfig extends com.hltech.judged.server.config.BeanFactory {
+    static class TestConfig extends BeanFactory {
 
         @Bean
-        com.hltech.judged.server.domain.environment.EnvironmentRepository environmentRepository() {
-            return new com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository()
+        EnvironmentRepository environmentRepository() {
+            return new InMemoryEnvironmentRepository()
+        }
+
+        @Bean
+        JudgeDApplicationService judgeDApplicationService(EnvironmentRepository environmentRepository) {
+            return new JudgeDApplicationService(environmentRepository, new InMemoryServiceContractsRepository(), [] as List)
         }
     }
 
