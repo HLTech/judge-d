@@ -3,9 +3,9 @@ package com.hltech.judged.server.interfaces.rest.validation;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.hltech.judged.server.domain.JudgeDApplicationService;
+import com.hltech.judged.server.domain.ServiceId;
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
-import com.hltech.judged.server.domain.ServiceVersion;
 import com.hltech.judged.server.domain.validation.EnvironmentValidatorResult;
 import com.hltech.judged.server.domain.validation.InterfaceContractValidator;
 import com.hltech.judged.server.interfaces.rest.RequestValidationException;
@@ -50,7 +50,7 @@ public class ValidationController {
             .map(service -> {
                 if (service.contains(":") && service.indexOf(":") == service.lastIndexOf(":")) {
                     String[] serviceNameAndVersion = service.split(":");
-                    return new ServiceVersion(serviceNameAndVersion[0], serviceNameAndVersion[1]);
+                    return new ServiceId(serviceNameAndVersion[0], serviceNameAndVersion[1]);
                 } else {
                     throw new RequestValidationException();
                 }
@@ -59,17 +59,15 @@ public class ValidationController {
             .map(o -> o.orElseThrow(RequestValidationException::new))
             .collect(toList());
 
-        Multimap<ServiceVersion, EnvironmentValidatorResult> validationResults = HashMultimap.create();
-        this.validators.stream()
+        Multimap<ServiceId, EnvironmentValidatorResult> validationResults = HashMultimap.create();
+        this.validators
             .forEach(validator ->
                 judgeD.validatedServicesAgainstEnvironment(
                     validatedServiceContracts,
                     environment,
                     validator
                 )
-                    .entrySet()
-                    .stream()
-                    .forEach(e -> validationResults.put(e.getKey(), e.getValue()))
+                    .forEach(validationResults::put)
             );
 
         return validationResults.asMap()
@@ -96,8 +94,8 @@ public class ValidationController {
         @PathVariable("serviceVersion") String version,
         @RequestParam("environment") List<String> environments
     ) {
-        ServiceVersion serviceVersion = new ServiceVersion(name, version);
-        ServiceContracts validatedServiceContracts = this.serviceContractsRepository.findOne(serviceVersion)
+        ServiceId serviceId = new ServiceId(name, version);
+        ServiceContracts validatedServiceContracts = this.serviceContractsRepository.findOne(serviceId)
             .orElseThrow(ResourceNotFoundException::new);
 
         Collection<EnvironmentValidatorResult> collect = this.validators.stream()
@@ -108,6 +106,6 @@ public class ValidationController {
                     validator
                 ))
             .collect(toList());
-        return toDtos(serviceVersion, collect);
+        return toDtos(serviceId, collect);
     }
 }

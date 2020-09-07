@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hltech.judged.server.config.BeanFactory
 import com.hltech.judged.server.domain.JudgeDApplicationService
-import com.hltech.judged.server.domain.ServiceVersion
+import com.hltech.judged.server.domain.ServiceId
+import com.hltech.judged.server.infrastructure.persistence.contracts.ServiceVersion
 import com.hltech.judged.server.domain.contracts.Capability
 import com.hltech.judged.server.domain.contracts.Contract
 import com.hltech.judged.server.domain.contracts.Expectation
@@ -43,7 +44,7 @@ class ValidationControllerIT extends Specification {
     def "should return 200 when validate given all went fine"() {
         given:
             serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('service-name', '1.0'),
+                new ServiceId('service-name', '1.0'),
                 [],
                 []
             ))
@@ -71,22 +72,22 @@ class ValidationControllerIT extends Specification {
     def "should return 200 when validate multiple services against env"(){
         given:
             serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('provider', '1.0'),
+                new ServiceId('provider', '1.0'),
                 [new Capability('ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))],
                 []
             ))
             serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('consumer', '1.0'),
+                new ServiceId('consumer', '1.0'),
                 [],
                 [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
             serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('provider', '2.0'),
+                new ServiceId('provider', '2.0'),
                 [new Capability('ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))],
                 []
             ))
             serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceVersion('consumer', '2.0'),
+                new ServiceId('consumer', '2.0'),
                 [],
                 [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))

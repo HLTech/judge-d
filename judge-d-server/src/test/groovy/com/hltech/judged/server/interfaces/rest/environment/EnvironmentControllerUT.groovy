@@ -2,7 +2,7 @@ package com.hltech.judged.server.interfaces.rest.environment
 
 import com.hltech.judged.server.domain.environment.Environment
 import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
-import com.hltech.judged.server.domain.environment.Service
+import com.hltech.judged.server.domain.ServiceId
 import com.hltech.judged.server.domain.environment.Space
 import spock.lang.Specification
 
@@ -34,7 +34,7 @@ class EnvironmentControllerUT extends Specification {
     }
 
     def 'should return list of services from and environment given it was saved before'() {
-        def service = new Service("service", "version")
+        def service = new ServiceId("service", "version")
         given:
             def environment = new Environment(
                 randomAlphabetic(10),

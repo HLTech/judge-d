@@ -1,14 +1,13 @@
 package com.hltech.judged.server.interfaces.rest.contracts;
 
+import com.hltech.judged.server.domain.ServiceId;
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
-import com.hltech.judged.server.domain.ServiceVersion;
 import com.hltech.judged.server.interfaces.rest.ResourceNotFoundException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,7 +96,7 @@ public class ContractsController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
     public ServiceContractsDto getContracts(@PathVariable(name = "serviceName") String serviceName, @PathVariable(name = "version") String version) {
-        return mapper.toDto(this.serviceContractsRepository.findOne(new ServiceVersion(serviceName, version)).orElseThrow(ResourceNotFoundException::new));
+        return mapper.toDto(this.serviceContractsRepository.findOne(new ServiceId(serviceName, version)).orElseThrow(ResourceNotFoundException::new));
     }
 
     @PostMapping(value = "services/{serviceName}/versions/{version:.+}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -109,7 +108,7 @@ public class ContractsController {
     public ServiceContractsDto registerContract(@PathVariable(name = "serviceName") String serviceName, @PathVariable(name = "version") String version, @RequestBody ServiceContractsForm form) {
         return mapper.toDto(this.serviceContractsRepository.persist(
             new ServiceContracts(
-                new ServiceVersion(serviceName, version),
+                new ServiceId(serviceName, version),
                 mapper.mapCapabilitiesForm(form.getCapabilities()),
                 mapper.mapExpectationsForm(form.getExpectations())
             )

@@ -1,6 +1,7 @@
 package com.hltech.judged.server.interfaces.rest.validation
 
-
+import com.hltech.judged.server.domain.ServiceId
+import com.hltech.judged.server.domain.validation.EnvironmentValidatorResult
 import com.hltech.judged.server.domain.validation.InterfaceContractValidator
 import spock.lang.Specification
 
@@ -13,7 +14,7 @@ class ConvertersUT extends Specification {
 
     def "should merge interactions for all available communication interfaces"() {
         given:
-            def ping1EnvironmentValidatorResult = new com.hltech.judged.server.domain.validation.EnvironmentValidatorResult(
+            def ping1EnvironmentValidatorResult = new EnvironmentValidatorResult(
                 "ping",
                 newArrayList(new InterfaceContractValidator.CapabilitiesValidationResult(
                     "consumer",
@@ -28,7 +29,7 @@ class ConvertersUT extends Specification {
                     newArrayList(InterfaceContractValidator.InteractionValidationResult.fail("some-interaction-2", newArrayList("because")))
                 ))
             )
-            def ping2EnvironmentValidatorResult = new com.hltech.judged.server.domain.validation.EnvironmentValidatorResult(
+            def ping2EnvironmentValidatorResult = new EnvironmentValidatorResult(
                 "ping2",
                 newArrayList(new InterfaceContractValidator.CapabilitiesValidationResult(
                     "consumer",
@@ -44,7 +45,7 @@ class ConvertersUT extends Specification {
                 ))
             )
         when:
-            def converted = toDtos(new com.hltech.judged.server.domain.ServiceVersion("validated-service", "1.0"),
+            def converted = toDtos(new ServiceId("validated-service", "1.0"),
                     newArrayList(ping1EnvironmentValidatorResult, ping2EnvironmentValidatorResult)
             )
         then:
@@ -74,7 +75,7 @@ class ConvertersUT extends Specification {
 
     def "should include both capabilitiesValidationResults and expectationsValidationResults"() {
         given:
-            def environmentValidatorResult = new com.hltech.judged.server.domain.validation.EnvironmentValidatorResult(
+            def environmentValidatorResult = new EnvironmentValidatorResult(
                 "ping",
                 newArrayList(new InterfaceContractValidator.CapabilitiesValidationResult(
                     "consumer",
@@ -90,7 +91,7 @@ class ConvertersUT extends Specification {
                 ))
             )
         when:
-            def converted = toDtos(new com.hltech.judged.server.domain.ServiceVersion("validated-service", "1.0"),
+            def converted = toDtos(new ServiceId("validated-service", "1.0"),
                     newArrayList(environmentValidatorResult)
             )
         then:

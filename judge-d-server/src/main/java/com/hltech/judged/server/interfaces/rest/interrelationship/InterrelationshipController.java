@@ -1,11 +1,10 @@
 package com.hltech.judged.server.interfaces.rest.interrelationship;
 
-import com.hltech.judged.server.domain.environment.Service;
+import com.hltech.judged.server.domain.ServiceId;
 import com.hltech.judged.server.interfaces.rest.contracts.ServiceContractsDto;
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
 import com.hltech.judged.server.domain.environment.EnvironmentRepository;
-import com.hltech.judged.server.domain.ServiceVersion;
 import com.hltech.judged.server.interfaces.rest.contracts.ContractsMapper;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -46,11 +45,11 @@ public class InterrelationshipController {
         return new InterrelationshipDto(env, serviceContractsSet);
     }
 
-    private ServiceContracts getServiceContracts(Service service) {
-        return serviceContractsRepository.findOne(new ServiceVersion(service.getName(), service.getVersion()))
+    private ServiceContracts getServiceContracts(ServiceId serviceId) {
+        return serviceContractsRepository.findOne(new ServiceId(serviceId.getName(), serviceId.getVersion()))
             .orElseGet(() ->
                 new ServiceContracts(
-                    new ServiceVersion(service.getName(), service.getVersion()),
+                    new ServiceId(serviceId.getName(), serviceId.getVersion()),
                     new ArrayList<>(),
                     new ArrayList<>()));
     }

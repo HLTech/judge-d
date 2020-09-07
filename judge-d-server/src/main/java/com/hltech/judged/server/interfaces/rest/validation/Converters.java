@@ -1,7 +1,7 @@
 package com.hltech.judged.server.interfaces.rest.validation;
 
 import com.google.common.collect.Ordering;
-import com.hltech.judged.server.domain.ServiceVersion;
+import com.hltech.judged.server.domain.ServiceId;
 import com.hltech.judged.server.domain.validation.EnvironmentValidatorResult;
 import lombok.NoArgsConstructor;
 
@@ -16,15 +16,13 @@ import static com.google.common.collect.Maps.newHashMap;
 @NoArgsConstructor
 public class Converters {
 
-    public static List<ContractValidationReportDto> toDtos(ServiceVersion serviceVersion, Collection<EnvironmentValidatorResult> validationResults) {
+    public static List<ContractValidationReportDto> toDtos(ServiceId serviceId, Collection<EnvironmentValidatorResult> validationResults) {
         Map<ConsumerAndProviderDto, ContractValidationReportDto> result = newHashMap();
         validationResults
-            .stream()
             .forEach(environmentValidatorResult -> {
                 environmentValidatorResult.getCapabilitiesValidationResults()
-                    .stream()
                     .forEach(cvr -> {
-                        ConsumerAndProviderDto key = new ConsumerAndProviderDto(cvr.getConsumerName(), cvr.getConsumerVersion(), serviceVersion.getName(), serviceVersion.getVersion());
+                        ConsumerAndProviderDto key = new ConsumerAndProviderDto(cvr.getConsumerName(), cvr.getConsumerVersion(), serviceId.getName(), serviceId.getVersion());
                         if (!result.containsKey(key)) {
                             result.put(
                                 key,
@@ -44,9 +42,8 @@ public class Converters {
                         );
                     });
                 environmentValidatorResult.getExpectationValidationResults()
-                    .stream()
                     .forEach(evr -> {
-                        ConsumerAndProviderDto key = new ConsumerAndProviderDto(serviceVersion.getName(), serviceVersion.getVersion(), evr.getProviderName(), evr.getProviderVersion());
+                        ConsumerAndProviderDto key = new ConsumerAndProviderDto(serviceId.getName(), serviceId.getVersion(), evr.getProviderName(), evr.getProviderVersion());
                         if (!result.containsKey(key)) {
                             result.put(
                                 key,

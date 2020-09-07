@@ -1,6 +1,6 @@
 package com.hltech.judged.server.interfaces.rest.contracts
 
-import com.hltech.judged.server.domain.ServiceVersion
+import com.hltech.judged.server.domain.ServiceId
 import com.hltech.judged.server.domain.contracts.Capability
 import com.hltech.judged.server.domain.contracts.Contract
 import com.hltech.judged.server.domain.contracts.Expectation
@@ -76,7 +76,7 @@ class ContractsMapperUT extends Specification {
 
     def generateServiceContracts() {
         new ServiceContracts(
-            new ServiceVersion('name', 'version'),
+            new ServiceId('name', 'version'),
             [new Capability('rest', new Contract('value', 'mime-type'))],
             [new Expectation('provider', 'rest', new Contract('value', 'mime-type'))]
         )

@@ -1,7 +1,7 @@
 package com.hltech.judged.server.interfaces.rest.validation
 
 import com.hltech.judged.server.domain.JudgeDApplicationService
-import com.hltech.judged.server.domain.ServiceVersion
+import com.hltech.judged.server.domain.ServiceId
 import com.hltech.judged.server.domain.contracts.ServiceContracts
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository
 import com.hltech.judged.server.domain.validation.EnvironmentValidatorResult
@@ -24,14 +24,14 @@ class ValidationControllerUT extends Specification {
         given:
             def env = "test-env"
             def env2 = "test-env-2"
-            def sc = new ServiceContracts(new ServiceVersion('serviceName', '1.0'), [], []
+            def sc = new ServiceContracts(new ServiceId('serviceName', '1.0'), [], []
             )
             def validatorResult = new EnvironmentValidatorResult("ping", newArrayList(), newArrayList())
         when:
             def controller = new ValidationController(judgeD, serviceContractsRepository, [validator1, validator2] as List)
             controller.validateAgainstEnvironments(sc.getName(), sc.getVersion(), Lists.newArrayList(env, env2))
         then:
-            1 * serviceContractsRepository.findOne(new ServiceVersion(sc.name, sc.version)) >> Optional.of(sc)
+            1 * serviceContractsRepository.findOne(new ServiceId(sc.name, sc.version)) >> Optional.of(sc)
             1 * judgeD.validateServiceAgainstEnvironments(sc, Lists.newArrayList(env, env2), validator1) >> validatorResult
             1 * judgeD.validateServiceAgainstEnvironments(sc, Lists.newArrayList(env, env2), validator2) >> validatorResult
     }
@@ -43,7 +43,7 @@ class ValidationControllerUT extends Specification {
             def controller = new ValidationController(judgeD, serviceContractsRepository, [validator1, validator2] as List)
             controller.validateAgainstEnvironments("some-service", "service-version", Lists.newArrayList(env))
         then:
-            1 * serviceContractsRepository.findOne(new ServiceVersion("some-service", "service-version")) >> Optional.empty()
+            1 * serviceContractsRepository.findOne(new ServiceId("some-service", "service-version")) >> Optional.empty()
             thrown ResourceNotFoundException
     }
 
@@ -59,13 +59,13 @@ class ValidationControllerUT extends Specification {
 
     def "should throw 400 when contracts not registered" (){
         given:
-            def version = new ServiceVersion("service", "version")
-            serviceContractsRepository.findOne(version) >> Optional.empty()
+            def serviceId = new ServiceId("service", "version")
+            serviceContractsRepository.findOne(serviceId) >> Optional.empty()
             def controller = new ValidationController(judgeD, serviceContractsRepository, [validator1, validator2] as List)
         when:
             controller.validateAgainstEnvironments(["service:version"] as List, "some-env")
         then:
-            1 * serviceContractsRepository.findOne(version) >> Optional.empty()
+            1 * serviceContractsRepository.findOne(serviceId) >> Optional.empty()
             thrown RequestValidationException
 
     }

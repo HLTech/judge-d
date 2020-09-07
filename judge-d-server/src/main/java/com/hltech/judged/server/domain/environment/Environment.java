@@ -1,5 +1,6 @@
 package com.hltech.judged.server.domain.environment;
 
+import com.hltech.judged.server.domain.ServiceId;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -23,17 +24,17 @@ public class Environment {
             .collect(Collectors.toUnmodifiableSet());
     }
 
-    public Set<Service> getServices(String spaceName) {
+    public Set<ServiceId> getServices(String spaceName) {
        return spaces.stream()
            .filter(space -> space.getName().equals(spaceName))
            .findAny()
-           .map(Space::getServices)
+           .map(Space::getServiceIds)
            .orElse(new HashSet<>());
     }
 
-    public Set<Service> getAllServices() {
+    public Set<ServiceId> getAllServices() {
         return spaces.stream()
-            .flatMap(space -> space.getServices().stream())
+            .flatMap(space -> space.getServiceIds().stream())
             .collect(Collectors.toUnmodifiableSet());
     }
 }

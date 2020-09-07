@@ -3,7 +3,7 @@ package com.hltech.judged.server.interfaces.rest.environment;
 import com.google.common.collect.ImmutableSet;
 import com.hltech.judged.server.domain.environment.Environment;
 import com.hltech.judged.server.domain.environment.EnvironmentRepository;
-import com.hltech.judged.server.domain.environment.Service;
+import com.hltech.judged.server.domain.ServiceId;
 import com.hltech.judged.server.domain.environment.Space;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -75,11 +75,11 @@ public class EnvironmentController {
         Set<Space> spaces = new HashSet<>();
         for (String spaceName : supportedSpaces) {
             if (agentSpace.equals(spaceName)) {
-                Set<Service> services = serviceForms.stream()
-                    .map(sf -> new Service(sf.getName(), sf.getVersion()))
+                Set<ServiceId> serviceIds = serviceForms.stream()
+                    .map(sf -> new ServiceId(sf.getName(), sf.getVersion()))
                     .collect(toSet());
 
-                spaces.add(new Space(spaceName, services));
+                spaces.add(new Space(spaceName, serviceIds));
             } else {
                 spaces.add(new Space(spaceName, environment.getServices(spaceName)));
             }
