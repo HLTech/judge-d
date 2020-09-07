@@ -1,15 +1,8 @@
 package com.hltech.judged.server.interfaces.rest.validation;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import com.hltech.judged.server.domain.JudgeDApplicationService;
 import com.hltech.judged.server.domain.ServiceId;
-import com.hltech.judged.server.domain.contracts.ServiceContracts;
-import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
-import com.hltech.judged.server.domain.validation.EnvironmentValidatorResult;
-import com.hltech.judged.server.domain.validation.InterfaceContractValidator;
 import com.hltech.judged.server.interfaces.rest.RequestValidationException;
-import com.hltech.judged.server.interfaces.rest.ResourceNotFoundException;
 import com.hltech.judged.server.interfaces.rest.environment.ServiceDto;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -21,8 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.hltech.judged.server.interfaces.rest.validation.Converters.toDtos;
 import static java.util.stream.Collectors.toList;
@@ -32,8 +25,6 @@ import static java.util.stream.Collectors.toList;
 public class ValidationController {
 
     private final JudgeDApplicationService judgeD;
-    private final ServiceContractsRepository serviceContractsRepository;
-    private final List<InterfaceContractValidator<?, ?>> validators;
 
     @GetMapping(value = "/environment-compatibility-report", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get validation report for contract between set of services and given environment as if those services were first deployed", nickname = "Validate services against environment")
@@ -46,7 +37,7 @@ public class ValidationController {
         @RequestParam("services") List<String> services,
         @RequestParam("environment") String environment
     ) {
-        List<ServiceContracts> validatedServiceContracts = services.stream()
+        List<ServiceId> serviceIds = services.stream()
             .map(service -> {
                 if (service.contains(":") && service.indexOf(":") == service.lastIndexOf(":")) {
                     String[] serviceNameAndVersion = service.split(":");
@@ -55,30 +46,15 @@ public class ValidationController {
                     throw new RequestValidationException();
                 }
             })
-            .map(serviceContractsRepository::findOne)
-            .map(o -> o.orElseThrow(RequestValidationException::new))
-            .collect(toList());
+            .collect(Collectors.toUnmodifiableList());
 
-        Multimap<ServiceId, EnvironmentValidatorResult> validationResults = HashMultimap.create();
-        this.validators
-            .forEach(validator ->
-                judgeD.validatedServicesAgainstEnvironment(
-                    validatedServiceContracts,
-                    environment,
-                    validator
-                )
-                    .forEach(validationResults::put)
-            );
-
-        return validationResults.asMap()
+        return judgeD.validatedServicesAgainstEnvironment(serviceIds, environment).asMap()
             .entrySet()
             .stream()
-            .map(e -> {
-                return BatchValidationReportDto.builder()
-                    .service(ServiceDto.builder().name(e.getKey().getName()).version(e.getKey().getVersion()).build())
-                    .validationReports(toDtos(e.getKey(), e.getValue()))
-                    .build();
-            })
+            .map(e -> BatchValidationReportDto.builder()
+                .service(ServiceDto.builder().name(e.getKey().getName()).version(e.getKey().getVersion()).build())
+                .validationReports(toDtos(e.getKey(), e.getValue()))
+                .build())
             .collect(toList());
     }
 
@@ -95,17 +71,7 @@ public class ValidationController {
         @RequestParam("environment") List<String> environments
     ) {
         ServiceId serviceId = new ServiceId(name, version);
-        ServiceContracts validatedServiceContracts = this.serviceContractsRepository.findOne(serviceId)
-            .orElseThrow(ResourceNotFoundException::new);
 
-        Collection<EnvironmentValidatorResult> collect = this.validators.stream()
-            .map(validator ->
-                this.judgeD.validateServiceAgainstEnvironments(
-                    validatedServiceContracts,
-                    environments,
-                    validator
-                ))
-            .collect(toList());
-        return toDtos(serviceId, collect);
+        return toDtos(serviceId, judgeD.validateServiceAgainstEnvironments(serviceId, environments));
     }
 }
