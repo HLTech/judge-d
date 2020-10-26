@@ -1,6 +1,9 @@
 package com.hltech.judged.agent.consul;
 
-import com.ecwid.consul.v1.ConsulClient;
+import com.ecwid.consul.v1.catalog.CatalogClient;
+import com.ecwid.consul.v1.catalog.CatalogServicesRequest;
+import com.ecwid.consul.v1.health.HealthClient;
+import com.ecwid.consul.v1.health.HealthServicesRequest;
 import com.hltech.judged.agent.ServiceLocator;
 import lombok.RequiredArgsConstructor;
 
@@ -15,20 +18,23 @@ public class ConsulTagBasedServiceLocator implements ServiceLocator {
     private static final String VERSION_TAG_PREFIX = "version=";
     private static final String TAG_SEPARATOR = "=";
 
-    private final ConsulClient consulAgentClient;
+    private final CatalogClient catalogConsulClient;
+    private final HealthClient healthConsulClient;
 
     @Override
     public Set<ServiceLocator.Service> locateServices() {
-        return consulAgentClient.getAgentServices().getValue().values().stream()
-            .filter(service -> hasVersionTag(service.getTags()))
-            .map(this::toJudgeService)
+        return catalogConsulClient.getCatalogServices(CatalogServicesRequest.newBuilder().build())
+            .getValue().entrySet().stream()
+            .filter(services -> hasVersionTag(services.getValue()))
+            .filter(it -> isHealthy(it.getKey()))
+            .map(services -> toJudgeService(services.getKey(), services.getValue()))
             .collect(Collectors.toSet());
     }
 
-    private ServiceLocator.Service toJudgeService(com.ecwid.consul.v1.agent.model.Service service) {
+    private ServiceLocator.Service toJudgeService(String serviceName, List<String> tags) {
         return new ServiceLocator.Service(
-            service.getService(),
-            extractVersionFromTags(service.getTags())
+            serviceName,
+            extractVersionFromTags(tags)
         );
     }
 
@@ -50,5 +56,10 @@ public class ConsulTagBasedServiceLocator implements ServiceLocator {
 
     private boolean isVersionTag(String tag) {
         return tag.contains(VERSION_TAG_PREFIX);
+    }
+
+    private boolean isHealthy(String serviceName) {
+        HealthServicesRequest request = HealthServicesRequest.newBuilder().setPassing(true).build();
+        return healthConsulClient.getHealthServices(serviceName, request).getValue().size() > 0;
     }
 }
