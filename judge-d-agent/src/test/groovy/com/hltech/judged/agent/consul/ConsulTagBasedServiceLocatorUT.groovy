@@ -1,64 +1,65 @@
 package com.hltech.judged.agent.consul
 
 import com.ecwid.consul.transport.HttpResponse
-import com.ecwid.consul.v1.ConsulClient
 import com.ecwid.consul.v1.Response
-import com.ecwid.consul.v1.agent.model.Service
+import com.ecwid.consul.v1.catalog.CatalogClient
+import com.ecwid.consul.v1.health.HealthClient
+import com.ecwid.consul.v1.health.HealthServicesRequest
+import com.ecwid.consul.v1.health.model.HealthService
 import spock.lang.Specification
 import spock.lang.Subject
 
 class ConsulTagBasedServiceLocatorUT extends Specification {
 
-    def consulClient = Mock(ConsulClient)
+    def catalogConsulClientMock = Mock(CatalogClient)
+    def healthConsulClientMock = Mock(HealthClient)
 
     @Subject
-    def consulTagBasedServiceLocator = new ConsulTagBasedServiceLocator(consulClient)
+    def consulTagBasedServiceLocator = new ConsulTagBasedServiceLocator(catalogConsulClientMock, healthConsulClientMock)
 
-    def 'Should find all services registered in consul having tag \'version=someVerion\' '() {
-        given: 'Services having version tag'
-            def servicesWithVersionTag = []
-            3.times { servicesWithVersionTag.add(randomServiceWithVersionTag) }
+    def 'Should find all services registered in consul having tag \'version=someVersion\' and being healthy'() {
+        given: 'Map with service names and tag list including version tag'
+            def servicesWithVersionTag = [:] as Map
+            3.times { servicesWithVersionTag.put((randomString), ["version=${randomString}" as String]) }
 
-        and: 'Services without version tag'
-            def servicesWithoutVersionTag = []
-            3.times { servicesWithoutVersionTag.add(getRandomServiceWithVersionTag(randomString, [])) }
+        and: 'Map with service names and tag list without version tag'
+            def servicesWithoutVersionTag = [:]
+            3.times { servicesWithoutVersionTag.put((randomString), []) }
 
-        and: 'Mock consulClient to return services having version tag'
+        and: 'Mock catalogConsulClient to return services having version tag'
             def allServices = servicesWithVersionTag + servicesWithoutVersionTag
-            consulClient.getAgentServices() >> new Response(allServices.collectEntries { [(it.service): it] }, httpOkResponse)
+            catalogConsulClientMock.getCatalogServices(_) >> new Response(allServices, httpOkResponse)
 
-        when:
-            def services = consulTagBasedServiceLocator.locateServices()
+        and: 'Mock healthConsulClientMock to return health services for single service having version tag'
+            def healthyServiceWithVersionTagName = servicesWithVersionTag.keySet().first() as String
+                healthConsulClientMock.getHealthServices(healthyServiceWithVersionTagName, _ as HealthServicesRequest) >>
+                    new Response([getHealthService(healthyServiceWithVersionTagName)], httpOkResponse)
 
-        then:
-            services.size() == 3
-            services.forEach { service ->
-                assert servicesWithVersionTag.find { it.service == service.name && it.tags.first().split("version=")[1] == service.version }
-            }
-    }
-
-    def 'When more than one services with the same name found should return the first randomly selected'() {
-        given: 'Services having version tag'
-            def servicesWithVersionTag = []
-            3.times { servicesWithVersionTag.add(getRandomServiceWithVersionTag('service')) }
-
-        and: 'Mock consulClient to return services having version tag'
-            consulClient.getAgentServices() >> new Response(servicesWithVersionTag.collectEntries { [(it.service): it] }, httpOkResponse)
+        and: 'Mock healthConsulClientMock to return empty list for rest of services with version'
+            healthConsulClientMock.getHealthServices(servicesWithVersionTag.keySet()[1], _ as HealthServicesRequest) >> new Response([], httpOkResponse)
+            healthConsulClientMock.getHealthServices(servicesWithVersionTag.keySet()[2], _ as HealthServicesRequest) >> new Response([], httpOkResponse)
 
         when:
             def services = consulTagBasedServiceLocator.locateServices()
 
         then:
             services.size() == 1
+            with(services.first()) {
+                name == healthyServiceWithVersionTagName
+                version == servicesWithVersionTag.get(healthyServiceWithVersionTagName).first().split('=')[1]
+            }
     }
 
     private static getRandomString() {
         UUID.randomUUID().toString()
     }
 
-    private static Service getRandomServiceWithVersionTag(String serviceName = randomString,
-                                                          List<String> tags = ["version=${randomString}" as String]) {
-        new Service(id: "${serviceName}-${randomString}" as String, service: serviceName, tags: tags)
+    private static HealthService getHealthService(String serviceName) {
+        def serviceWithServiceName = new HealthService.Service()
+        serviceWithServiceName.service = serviceName
+        def healthService = new HealthService()
+        healthService.service = serviceWithServiceName
+        healthService
     }
 
     private static HttpResponse getHttpOkResponse() {

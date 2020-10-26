@@ -17,8 +17,8 @@ public interface ServiceLocator {
     @EqualsAndHashCode
     class Service {
 
-        private String name;
-        private String version;
+        private final String name;
+        private final String version;
 
     }
 
