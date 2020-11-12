@@ -43,6 +43,12 @@ class InMemoryServiceContractsRepository implements ServiceContractsRepository {
     }
 
     @Override
+    Optional<String> findCapabilityByServiceIdProtocol(ServiceId serviceId, String protocol) {
+        return Optional.ofNullable(storage.get(serviceId))
+            .flatMap {sc -> sc.getMappedCapabilities(protocol, {it -> it})}
+    }
+
+    @Override
     List<String> getServiceNames() {
         return storage.keySet()
             .stream()

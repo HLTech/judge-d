@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -98,6 +99,20 @@ public class ContractsController {
     public ServiceContractsDto getContracts(@PathVariable(name = "serviceName") String serviceName, @PathVariable(name = "version") String version) {
         return mapper.toDto(this.serviceContractsRepository.findOne(new ServiceId(serviceName, version)).orElseThrow(ResourceNotFoundException::new));
     }
+
+    @GetMapping(value = "services/{serviceName}/versions/{version:.+}/capabilities/{protocol}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin()
+    @ApiOperation(value = "Get capabilities of a version of a service for a protocol", nickname = "get capabilities by protocol")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Failure")})
+    public String getCapabilities( @PathVariable String serviceName, @PathVariable String version, @PathVariable(name = "protocol") String protocol) {
+        return this.serviceContractsRepository
+            .findCapabilityByServiceIdProtocol(new ServiceId(serviceName, version), protocol)
+            .orElseThrow(ResourceNotFoundException::new);
+   }
+
 
     @PostMapping(value = "services/{serviceName}/versions/{version:.+}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Register contracts for a version of a service", nickname = "register contracts")
