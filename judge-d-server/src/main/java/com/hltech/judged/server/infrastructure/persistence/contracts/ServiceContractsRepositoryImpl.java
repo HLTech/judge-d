@@ -34,6 +34,14 @@ public class ServiceContractsRepositoryImpl implements ServiceContractsRepositor
     }
 
     @Override
+    public Optional<String> findCapabilityByServiceIdProtocol(ServiceId serviceId, String protocol) {
+        return serviceContractsTupleRepository
+            .findById_NameAndId_Version(serviceId.getName(), serviceId.getVersion())
+            .map(this::toServiceContracts)
+            .flatMap(s -> s.getMappedCapabilities(protocol, w -> w));
+    }
+
+    @Override
     public String getService(String name) {
         return serviceContractsTupleRepository.findById_Name(name).stream()
             .map(ServiceContractsTuple::getName)

@@ -13,6 +13,8 @@ public interface ServiceContractsRepository {
 
     List<ServiceContracts> findAllByServiceName(String serviceName);
 
+    Optional<String> findCapabilityByServiceIdProtocol(ServiceId serviceId, String protocol);
+
     String getService(String name);
 
     List<String> getServiceNames();

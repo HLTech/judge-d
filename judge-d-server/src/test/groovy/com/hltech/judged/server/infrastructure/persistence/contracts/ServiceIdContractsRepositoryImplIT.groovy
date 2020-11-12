@@ -17,7 +17,7 @@ import javax.persistence.NoResultException
 
 import static java.util.function.Function.identity
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
-import static wiremock.org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["management.port=0"])
 @ActiveProfiles("test-integration")
@@ -88,5 +88,18 @@ class ServiceIdContractsRepositoryImplIT extends Specification {
             thrown NoResultException
     }
 
+    def 'should return rest capabilities for given protocol'() {
+        given:
+        def serviceName = randomAlphabetic(10)
+        def version = randomAlphabetic(5)
+        def capabilities = [new Capability("protocol", new Contract("capabilities", "application/json"))]
+        def s1 = repository.persist(new ServiceContracts(new ServiceId(serviceName, version), capabilities, []))
+
+        when:
+        def protocol = repository.findCapabilityByServiceIdProtocol(new ServiceId(serviceName, version), "protocol");
+        then:
+        protocol.isPresent()
+        protocol.get() == 'capabilities'
+    }
 
 }
