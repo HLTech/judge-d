@@ -92,14 +92,16 @@ class ServiceIdContractsRepositoryImplIT extends Specification {
         given:
         def serviceName = randomAlphabetic(10)
         def version = randomAlphabetic(5)
-        def capabilities = [new Capability("protocol", new Contract("capabilities", "application/json"))]
+        def capabilities = [new Capability("protocol", new Contract("capabilities", MediaType.APPLICATION_JSON_VALUE))]
         def s1 = repository.persist(new ServiceContracts(new ServiceId(serviceName, version), capabilities, []))
 
         when:
-        def protocol = repository.findCapabilityByServiceIdProtocol(new ServiceId(serviceName, version), "protocol");
+        def capability = repository.findCapabilityByServiceIdProtocol(new ServiceId(serviceName, version), "protocol");
         then:
-        protocol.isPresent()
-        protocol.get() == 'capabilities'
+        capability.isPresent()
+        capability.get().value == 'capabilities'
+        capability.get().mimeType == MediaType.APPLICATION_JSON_VALUE
+
     }
 
 }

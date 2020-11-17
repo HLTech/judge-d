@@ -151,18 +151,20 @@ class ContractsControllerIT extends Specification {
         def serviceName = randomAlphabetic(10)
         def version = '1.19.0_078c802'
         def protocol = 'protocol'
+        def serviceCapabilities = new ServiceContractsForm(
+            ['protocol': new ServiceContractsForm.ContractForm( 'capabilities',  MediaType.TEXT_PLAIN_VALUE)], [:])
         mockMvc.perform(
             post(serviceNameVersionUrl(), serviceName, version)
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(randomServiceContractFormWithExpectationsAndCapabilities()))
+                .content(objectMapper.writeValueAsString(serviceCapabilities))
         ).andReturn().getResponse()
         when:
         def response = mockMvc.perform(
             get('/contracts/services/{serviceName}/versions/{version}/capabilities/{protocol}', serviceName, version, protocol)
         ).andReturn().getResponse()
         then:
-        response.getStatus() == 200
-        response.getContentType().contains("application/json")
+        response.status == 200
+        response.contentType.contains(MediaType.TEXT_PLAIN_VALUE)
         response.getContentAsString() == 'capabilities'
     }
 

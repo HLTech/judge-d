@@ -1,6 +1,7 @@
 package com.hltech.judged.server.interfaces.rest.contracts;
 
 import com.hltech.judged.server.domain.ServiceId;
+import com.hltech.judged.server.domain.contracts.Contract;
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
 import com.hltech.judged.server.interfaces.rest.ResourceNotFoundException;
@@ -10,6 +11,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,10 +24,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.persistence.Entity;
 import javax.persistence.NoResultException;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/contracts")
@@ -100,19 +104,19 @@ public class ContractsController {
         return mapper.toDto(this.serviceContractsRepository.findOne(new ServiceId(serviceName, version)).orElseThrow(ResourceNotFoundException::new));
     }
 
-    @GetMapping(value = "services/{serviceName}/versions/{version:.+}/capabilities/{protocol}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "services/{serviceName}/versions/{version:.+}/capabilities/{protocol}", produces = MediaType.ALL_VALUE)
     @CrossOrigin()
     @ApiOperation(value = "Get capabilities of a version of a service for a protocol", nickname = "get capabilities by protocol")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
-    public String getCapabilities( @PathVariable String serviceName, @PathVariable String version, @PathVariable(name = "protocol") String protocol) {
-        return this.serviceContractsRepository
+    public ResponseEntity<String> getCapabilities(@PathVariable String serviceName, @PathVariable String version, @PathVariable(name = "protocol") String protocol) {
+        final Contract contract = this.serviceContractsRepository
             .findCapabilityByServiceIdProtocol(new ServiceId(serviceName, version), protocol)
             .orElseThrow(ResourceNotFoundException::new);
-   }
-
+        return ResponseEntity.ok().contentType(MediaType.valueOf(contract.getMimeType())).body(contract.getValue());
+    }
 
     @PostMapping(value = "services/{serviceName}/versions/{version:.+}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Register contracts for a version of a service", nickname = "register contracts")
