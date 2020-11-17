@@ -7,12 +7,14 @@ import com.hltech.judged.server.domain.contracts.Expectation;
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -34,11 +36,11 @@ public class ServiceContractsRepositoryImpl implements ServiceContractsRepositor
     }
 
     @Override
-    public Optional<String> findCapabilityByServiceIdProtocol(ServiceId serviceId, String protocol) {
+    public Optional<Contract> findCapabilityByServiceIdProtocol(ServiceId serviceId, String protocol) {
         return serviceContractsTupleRepository
             .findById_NameAndId_Version(serviceId.getName(), serviceId.getVersion())
-            .map(this::toServiceContracts)
-            .flatMap(s -> s.getMappedCapabilities(protocol, w -> w));
+            .map(sc -> sc.getCapabilitiesPerProtocol().get(protocol))
+            .map(tuple -> new Contract(tuple.getValue(), tuple.getMimeType()));
     }
 
     @Override
@@ -70,7 +72,7 @@ public class ServiceContractsRepositoryImpl implements ServiceContractsRepositor
     }
 
     private Map<ServiceContractsTuple.ProviderProtocolTuple, ServiceContractsTuple.ContractTuple>
-        toExpectations(ServiceContracts serviceContracts) {
+    toExpectations(ServiceContracts serviceContracts) {
         return serviceContracts.getExpectations().stream()
             .collect(Collectors.toMap(
                 expectation -> new ServiceContractsTuple.ProviderProtocolTuple(
