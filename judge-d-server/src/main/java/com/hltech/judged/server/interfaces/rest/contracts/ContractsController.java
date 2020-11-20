@@ -105,7 +105,6 @@ public class ContractsController {
     }
 
     @GetMapping(value = "services/{serviceName}/versions/{version:.+}/capabilities/{protocol}", produces = MediaType.ALL_VALUE)
-    @CrossOrigin()
     @ApiOperation(value = "Get capabilities of a version of a service for a protocol", nickname = "get capabilities by protocol")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = ServiceContractsDto.class),
