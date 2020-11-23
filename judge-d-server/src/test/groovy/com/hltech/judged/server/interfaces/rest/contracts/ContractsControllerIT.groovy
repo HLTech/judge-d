@@ -168,25 +168,12 @@ class ContractsControllerIT extends Specification {
         response.getContentAsString() == 'capabilities'
     }
 
-    def 'cors configuration to allow using get capabilities url as input for web applications presenting swagger specs' () {
-        when:
-        def response = mockMvc.perform(options("/contracts/services/{serviceName}/versions/{version}/capabilities/{protocol}", "1", "2", "rest" )
-            .header("Access-Control-Request-Method", "GET")
-            .header("Origin", "http:\\www.someurl.com")
-        ).andReturn().getResponse()
-        then:
-        response.getStatus() == 200
-
-    }
-
     ServiceContractsForm randomServiceContractFormWithExpectationsAndCapabilities() {
         return new ServiceContractsForm(
             ['protocol': new ServiceContractsForm.ContractForm( 'capabilities',  MediaType.APPLICATION_JSON_VALUE)],
             ['some-other-provider': ['protocol': new ServiceContractsForm.ContractForm( 'expectations', MediaType.APPLICATION_JSON_VALUE)]]
         )
     }
-
-
 
     @TestConfiguration
     static class TestConfig extends com.hltech.judged.server.config.BeanFactory {
