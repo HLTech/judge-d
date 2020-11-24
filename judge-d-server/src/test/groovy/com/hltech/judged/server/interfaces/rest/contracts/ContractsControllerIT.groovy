@@ -175,6 +175,17 @@ class ContractsControllerIT extends Specification {
         )
     }
 
+    def 'cors configuration to allow using get capabilities url as input for web applications presenting swagger specs' () {
+        when:
+        def response = mockMvc.perform(options("/contracts/services/{serviceName}/versions/{version}/capabilities/{protocol}", "1", "2", "rest" )
+            .header("Access-Control-Request-Method", "GET")
+            .header("Origin", "http://localhost")
+        ).andReturn().getResponse()
+        then:
+        response.getStatus() == 200
+
+    }
+
     @TestConfiguration
     static class TestConfig extends com.hltech.judged.server.config.BeanFactory {
 
