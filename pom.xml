@@ -102,7 +102,7 @@
                     <configuration>
                         <testSources>
                             <testSource>
-                                <directory>${project.basedir}/src/test/groovy</directory>
+                                <directory>${project.basedir}/src/test</directory>
                                 <includes>
                                     <include>**/*.groovy</include>
                                 </includes>
@@ -137,6 +137,8 @@
                         <includes>
                             <include>**/*IT.java</include>
                             <include>**/*IT.groovy</include>
+                            <include>**/*FT.java</include>
+                            <include>**/*FT.groovy</include>
                         </includes>
                     </configuration>
                     <executions>

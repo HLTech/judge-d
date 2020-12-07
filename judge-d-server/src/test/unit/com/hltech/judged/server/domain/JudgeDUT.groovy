@@ -19,7 +19,7 @@ import spock.lang.Subject
 
 import static org.assertj.core.util.Lists.newArrayList
 
-class JudgeDUT extends Specification {
+class RestContractValidatorUT extends Specification {
 
     def serviceContractsRepository = new InMemoryServiceContractsRepository()
     def environmentRepository = new InMemoryEnvironmentRepository()
