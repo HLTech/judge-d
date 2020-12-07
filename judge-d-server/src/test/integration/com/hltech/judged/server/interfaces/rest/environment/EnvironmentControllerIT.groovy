@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.hltech.judged.server.config.BeanFactory
 import com.hltech.judged.server.domain.JudgeDApplicationService
 import com.hltech.judged.server.domain.contracts.InMemoryServiceContractsRepository
-import com.hltech.judged.server.domain.contracts.ServiceContractsRepository
 import com.hltech.judged.server.domain.environment.EnvironmentRepository
 import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
 import org.springframework.beans.factory.annotation.Autowired
