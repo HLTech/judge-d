@@ -2,8 +2,6 @@ package com.hltech.judged.agent
 
 import spock.lang.Specification
 
-import static ServiceLocator.*
-
 class UpdateServicesTaskUT extends Specification {
 
     UpdateServicesTask task;
@@ -17,7 +15,7 @@ class UpdateServicesTaskUT extends Specification {
 
     def "UpdateServices"() {
         setup:
-            locator.locateServices() >> [new Service("service1", "1.0"),new Service("service2", "1.0")]
+            locator.locateServices() >> [new ServiceLocator.Service("service1", "1.0"), new ServiceLocator.Service("service2", "1.0")]
         when:
             task.updateServices()
         then:
