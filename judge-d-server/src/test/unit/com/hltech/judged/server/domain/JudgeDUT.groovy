@@ -1,6 +1,5 @@
 package com.hltech.judged.server.domain
 
-
 import com.hltech.judged.server.domain.contracts.Capability
 import com.hltech.judged.server.domain.contracts.Contract
 import com.hltech.judged.server.domain.contracts.Expectation
@@ -12,14 +11,13 @@ import com.hltech.judged.server.domain.environment.Space
 import com.hltech.judged.server.domain.validation.InterfaceContractValidator
 import com.hltech.judged.server.domain.validation.ping.PingContractValidator
 import com.hltech.judged.server.interfaces.rest.ResourceNotFoundException
-import com.hltech.judged.server.interfaces.rest.environment.ServiceDto
 import org.springframework.http.MediaType
 import spock.lang.Specification
 import spock.lang.Subject
 
 import static org.assertj.core.util.Lists.newArrayList
 
-class RestContractValidatorUT extends Specification {
+class JudgeDUT extends Specification {
 
     def serviceContractsRepository = new InMemoryServiceContractsRepository()
     def environmentRepository = new InMemoryEnvironmentRepository()
