@@ -12,6 +12,7 @@ import io.fabric8.kubernetes.client.Config
 import io.fabric8.kubernetes.client.KubernetesClient
 import io.fabric8.kubernetes.client.server.mock.KubernetesMockServer
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
@@ -29,6 +30,9 @@ import static org.awaitility.Awaitility.await
 @SpringBootTest
 @ActiveProfiles(["test", "kubernetes"])
 class K8sServiceLocatorFT extends Specification {
+
+    @Value('${hltech.contracts.judge-d.updateServices.initialDelay}')
+    Long updateServicesInitialDelay
 
     @Shared
     KubernetesMockServer k8sServer
@@ -102,7 +106,7 @@ class K8sServiceLocatorFT extends Specification {
 
 
         expect: "update services message is sent with expected services names and versions"
-            await().atMost(15, TimeUnit.SECONDS).until({ wireMockRule.getServeEvents().requests.size() == 1 })
+            await().atMost(updateServicesInitialDelay + 5000, TimeUnit.MILLISECONDS).until({ wireMockRule.getServeEvents().requests.size() == 1 })
             wireMockRule.verify(1, putRequestedFor(urlPathMatching("/environments/test")).withRequestBody(equalToJson(expectedRequestBody, true, false)))
     }
 

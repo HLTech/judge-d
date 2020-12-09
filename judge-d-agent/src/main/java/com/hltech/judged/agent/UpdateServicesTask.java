@@ -31,7 +31,10 @@ public class UpdateServicesTask {
         this.publisher = publisher;
     }
 
-    @Scheduled(fixedDelay = 5_000, initialDelay = 10_000)
+    @Scheduled(
+        fixedDelayString = "${hltech.contracts.judge-d.updateServices.fixedDelay}",
+        initialDelayString = "${hltech.contracts.judge-d.updateServices.initialDelay}"
+    )
     public void updateServices() {
         log.debug("Searching for available services...");
         Set<ServiceLocator.Service> serviceForms = serviceLocator.locateServices();
