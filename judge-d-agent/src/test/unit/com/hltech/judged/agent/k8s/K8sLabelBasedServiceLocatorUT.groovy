@@ -65,7 +65,7 @@ class K8sLabelBasedServiceLocatorUT extends Specification {
             services.find {it.name == "s1"} .version == "1"
     }
 
-    def 'should find only inlucded pods' (){
+    def 'should find only included pods' (){
         given:
             def serviceLocator = new K8sLabelBasedServiceLocator(kubernetesClient, label, newHashSet(), newHashSet("included"))
 
