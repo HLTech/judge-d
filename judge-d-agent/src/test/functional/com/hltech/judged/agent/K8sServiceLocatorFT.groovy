@@ -51,6 +51,10 @@ class K8sServiceLocatorFT extends Specification {
         wireMockRule.start()
     }
 
+    def cleanupSpec() {
+        wireMockRule.stop()
+    }
+
     def "should send update services message with expected names and versions"() {
         given: "expected namespaces"
             k8sServer.expect().get().withPath("/api/v1/namespaces")
