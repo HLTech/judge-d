@@ -35,7 +35,7 @@ class JPAEnvironmentRepositoryIT extends Specification {
             noExceptionThrown()
     }
 
-    def 'should overwrite what was persisted before'() {
+    def 'should overwrite what was persisted before - multiple environments'() {
         given:
             def environment1 = repository.persist(new Environment(
                 'environmentName',
@@ -52,6 +52,35 @@ class JPAEnvironmentRepositoryIT extends Specification {
                 name == environment1.name
                 allServices.size() == 1
             }
+    }
+
+    def 'should get persisted environment with multiple spaces'() {
+        given:
+        def firstSpace = new Space('a', [new ServiceId('serviceName1', 'serviceVersion1')] as Set)
+
+        and:
+        def secondSpace = new Space('b', [
+            new ServiceId('serviceName2', 'serviceVersion2'),
+            new ServiceId('serviceName3', 'serviceVersion3'),
+            new ServiceId('serviceName4', 'serviceVersion4')
+        ] as Set)
+
+        and:
+        def thirdSpace = new Space('def', [new ServiceId('serviceName5', 'serviceVersion5')] as Set)
+
+        and:
+        def environment = new Environment('environmentName', [firstSpace, secondSpace, thirdSpace] as Set)
+
+        when:
+        repository.persist(environment)
+
+        then:
+        def storedEnvironment = repository.get('environmentName')
+        storedEnvironment.name == 'environmentName'
+        storedEnvironment.spaces.size() == 3
+        storedEnvironment.spaces.contains(firstSpace)
+        storedEnvironment.spaces.contains(secondSpace)
+        storedEnvironment.spaces.contains(thirdSpace)
     }
 
     def 'should retrieve names'() {
