@@ -57,6 +57,7 @@ public class JPAEnvironmentRepository implements EnvironmentRepository {
                     .findAny();
 
                 if (foundSpace.isPresent()) {
+                    spaces.remove(foundSpace.get());
                     Set<ServiceId> serviceIds = new HashSet<>(foundSpace.get().getServiceIds());
                     serviceIds.add(new ServiceId(serviceVersion.getName(), serviceVersion.getVersion()));
 
