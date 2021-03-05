@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 
 @WebMvcTest(EnvironmentController.class)
-@ActiveProfiles("test-integration")
+@ActiveProfiles("test")
 class EnvironmentControllerIT extends Specification {
 
     @Autowired

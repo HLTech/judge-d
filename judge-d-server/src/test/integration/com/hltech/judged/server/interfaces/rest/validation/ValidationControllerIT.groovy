@@ -28,7 +28,7 @@ import spock.lang.Specification
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 
 @WebMvcTest(ValidationController.class)
-@ActiveProfiles("test-integration")
+@ActiveProfiles("test")
 class ValidationControllerIT extends Specification {
 
     @Autowired

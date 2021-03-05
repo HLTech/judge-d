@@ -13,7 +13,7 @@ import spock.lang.Specification
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 
 @WebMvcTest(InterrelationshipController.class)
-@ActiveProfiles("test-integration")
+@ActiveProfiles("test")
 class InterrelationshipControllerIT extends Specification {
 
     @Autowired

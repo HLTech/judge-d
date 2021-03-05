@@ -26,11 +26,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>io.github.openfeign</groupId>
             <artifactId>feign-core</artifactId>
             <version>9.6.0</version>

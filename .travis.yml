@@ -7,6 +7,9 @@ cache:
   directories:
     - $HOME/.m2
 
+services:
+  - docker
+
 jobs:
   include:
     - stage: build with maven & generate reports
