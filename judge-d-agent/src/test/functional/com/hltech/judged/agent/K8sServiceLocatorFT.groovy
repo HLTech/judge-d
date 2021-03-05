@@ -14,6 +14,7 @@ import io.fabric8.kubernetes.client.server.mock.KubernetesMockServer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
@@ -29,6 +30,7 @@ import static org.awaitility.Awaitility.await
 
 @SpringBootTest
 @ActiveProfiles(["test", "kubernetes"])
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class K8sServiceLocatorFT extends Specification {
 
     @Value('${hltech.contracts.judge-d.updateServices.initialDelay}')

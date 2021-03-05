@@ -3,6 +3,7 @@ package com.hltech.judged.agent
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 
@@ -20,6 +21,7 @@ import static org.awaitility.Awaitility.await
 
 @SpringBootTest
 @ActiveProfiles(["test", "consul"])
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class ConsulServiceLocatorFT extends Specification {
 
     @Value('${hltech.contracts.judge-d.updateServices.initialDelay}')
