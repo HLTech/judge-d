@@ -20,7 +20,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["management.port=0"])
-@ActiveProfiles("test-integration")
+@ActiveProfiles("test")
 @Transactional
 class ServiceIdContractsRepositoryImplIT extends Specification {
 

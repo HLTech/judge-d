@@ -12,7 +12,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["management.port=0"])
-@ActiveProfiles("test-integration")
+@ActiveProfiles("test")
 class JPAEnvironmentRepositoryIT extends Specification {
 
     @Autowired

@@ -15,7 +15,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 
 @WebMvcTest(ContractsController.class)
-@ActiveProfiles("test-integration")
+@ActiveProfiles("test")
 class ContractsControllerIT extends Specification {
 
     @Autowired
@@ -50,6 +50,7 @@ class ContractsControllerIT extends Specification {
 
     def 'should return 200 and json when create a service contracts'() {
         when: 'rest validatePacts url is hit'
+            println objectMapper.writeValueAsString(randomServiceContractFormWithExpectationsAndCapabilities())
             def serviceName = randomAlphabetic(10)
             def version = '1.0'
             def response = mockMvc.perform(
