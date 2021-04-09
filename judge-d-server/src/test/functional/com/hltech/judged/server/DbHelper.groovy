@@ -5,7 +5,6 @@ import groovy.sql.Sql
 import java.util.concurrent.TimeUnit
 import static org.awaitility.Awaitility.await
 
-
 class DbHelper {
 
     static ALL_TABLE_NAMES = ['capabilities', 'databasechangelog', 'databasechangeloglock', 'environments',
@@ -27,6 +26,14 @@ class DbHelper {
 
     def fetchServiceContracts() {
         sql.rows("select * from service_contracts" as String)
+    }
+
+    def fetchServiceVersions() {
+        sql.rows("select * from service_versions" as String)
+    }
+
+    def fetchEnvironments() {
+        sql.rows("select * from environments" as String)
     }
 
     def clearTables() {

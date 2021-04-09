@@ -4,6 +4,8 @@ import io.restassured.RestAssured
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.test.context.jdbc.Sql
 
+import static com.hltech.judged.server.FileHelper.loadFromFileAndFormat
+
 @FunctionalTest
 class ContractsControllerFT extends PostgresDatabaseSpecification {
 
@@ -25,12 +27,12 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
                         "rest":{"value":"${capabilities.replace('"','\\"')}","mimeType":"application/json"}
                     },
                     "expectations":{
-                        "test-provider":{"rest":{"value":"${expectations.replace('"','\\"')}","mimeType":"application/json"}}
+                        "test-service":{"rest":{"value":"${expectations.replace('"','\\"')}","mimeType":"application/json"}}
                     }
                 }
                 """)
                 .when()
-                    .post("/contracts/services/test-provider/versions/'1.0'")
+                    .post("/contracts/services/test-service/versions/'1.0'")
                 .then()
                     .statusCode(200)
                     .contentType("application/json")
@@ -41,14 +43,14 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
             capabilitiesFromResponse['mimeType'] == "application/json"
             capabilitiesFromResponse['value'] == capabilities
 
-            def expectationsFromResponse = response['expectations']['test-provider']['rest']
+            def expectationsFromResponse = response['expectations']['test-service']['rest']
             expectationsFromResponse['mimeType'] == "application/json"
             expectationsFromResponse['value'] == expectations
 
         and:
             def capabilitiesFromDb = dbHelper.fetchCapabilities()
             capabilitiesFromDb.size() == 1
-            capabilitiesFromDb[0]['service_name'] == 'test-provider'
+            capabilitiesFromDb[0]['service_name'] == 'test-service'
             capabilitiesFromDb[0]['service_version'] == "'1.0'"
             capabilitiesFromDb[0]['protocol'] == "rest"
             capabilitiesFromDb[0]['mime_type'] == "application/json"
@@ -56,7 +58,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
 
             def expectationsFromDb = dbHelper.fetchExpectations()
             capabilitiesFromDb.size() == 1
-            expectationsFromDb[0]['service_name'] == 'test-provider'
+            expectationsFromDb[0]['service_name'] == 'test-service'
             expectationsFromDb[0]['service_version'] == "'1.0'"
             expectationsFromDb[0]['protocol'] == "rest"
             expectationsFromDb[0]['mime_type'] == "application/json"
@@ -64,7 +66,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
 
             def serviceContractsFromDb = dbHelper.fetchServiceContracts()
             serviceContractsFromDb.size() == 1
-            serviceContractsFromDb[0]['name'] == 'test-provider'
+            serviceContractsFromDb[0]['name'] == 'test-service'
             serviceContractsFromDb[0]['version'] == "'1.0'"
     }
 
@@ -79,20 +81,20 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
                 .port(serverPort)
                 .contentType("application/json")
                 .when()
-                .get("/contracts/services/test-provider/versions/'1.0'")
+                .get("/contracts/services/test-service/versions/'1.0'")
                 .then()
                 .statusCode(200)
                 .contentType("application/json")
                 .extract().body().jsonPath().getMap('$')
 
         then:
-            response['name'] == 'test-provider'
+            response['name'] == 'test-service'
             response['version'] == "'1.0'"
             def capabilitiesFromResponse = response['capabilities']['rest']
             capabilitiesFromResponse['mimeType'] == "application/json"
             capabilitiesFromResponse['value'] == capabilities
 
-            def expectationsFromResponse = response['expectations']['test-provider']['rest']
+            def expectationsFromResponse = response['expectations']['test-service']['rest']
             expectationsFromResponse['mimeType'] == "application/json"
             expectationsFromResponse['value'] == expectations
     }
@@ -104,7 +106,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
                 .port(serverPort)
                 .contentType("application/json")
                 .when()
-                .get("/contracts/services/test-provider/versions/'9.9'")
+                .get("/contracts/services/test-service/versions/'9.9'")
                 .then()
                 .statusCode(404)
                 .contentType("application/json")
@@ -125,7 +127,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
 
         then:
             contracts.size() == 4
-            contracts.containsAll(["test-provider", "test-provider2", "test-provider3", "test-provider4"])
+            contracts.containsAll(["test-service", "test-provider2", "test-provider3", "test-provider4"])
 
         where:
             path << ["/contracts", "/contracts/services"]
@@ -138,7 +140,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
                 .port(serverPort)
                 .contentType("application/json")
                 .when()
-                .get("/contracts/services/test-provider/versions")
+                .get("/contracts/services/test-service/versions")
                 .then()
                 .statusCode(200)
                 .contentType("application/json")
@@ -176,7 +178,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
                 .port(serverPort)
                 .contentType("application/json")
                 .when()
-                .get("/contracts/services/test-provider/versions/'1.0'/capabilities/rest")
+                .get("/contracts/services/test-service/versions/'1.0'/capabilities/rest")
                 .then()
                 .statusCode(200)
                 .contentType("application/json")
@@ -193,7 +195,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
                 .port(serverPort)
                 .contentType("application/json")
                 .when()
-                .get("/contracts/services/test-provider/versions/'1.0'/capabilities/jms")
+                .get("/contracts/services/test-service/versions/'1.0'/capabilities/jms")
                 .then()
                 .statusCode(404)
                 .contentType("application/json")
@@ -206,14 +208,14 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
                 .port(serverPort)
                 .contentType("application/json")
                 .when()
-                .get("/contracts/services/test-provider")
+                .get("/contracts/services/test-service")
                 .then()
                 .statusCode(200)
                 .contentType("text/plain;charset=UTF-8")
                 .extract().body().asString()
 
         then:
-            response == "test-provider"
+            response == "test-service"
     }
 
     @Sql('ContractsControllerFT.GeRegisteredServices.sql')
@@ -227,9 +229,4 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
                 .then()
                 .statusCode(404)
     }
-
-    def loadFromFileAndFormat(String filePath) {
-        new File("src/test/resources/$filePath").text.replaceAll('\n','').replaceAll('\r','')
-    }
-
 }
