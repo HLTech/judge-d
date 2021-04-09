@@ -35,7 +35,7 @@ class InterrelationshipControllerFT extends PostgresDatabaseSpecification {
         then:
             response['environment'] == 'TEST'
             response['serviceContracts'][0]['name'] == 'test-service'
-            response['serviceContracts'][0]['version'] == "'1.0'"
+            response['serviceContracts'][0]['version'] == "1.0"
             response['serviceContracts'][0]['capabilities']['rest']['mimeType'] == "application/json"
             response['serviceContracts'][0]['capabilities']['rest']['value'] == capabilities
             response['serviceContracts'][0]['expectations']['test-service']['rest']['mimeType'] == "application/json"

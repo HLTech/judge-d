@@ -32,7 +32,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
                 }
                 """)
                 .when()
-                    .post("/contracts/services/test-service/versions/'1.0'")
+                    .post("/contracts/services/test-service/versions/1.0")
                 .then()
                     .statusCode(200)
                     .contentType("application/json")
@@ -51,7 +51,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
             def capabilitiesFromDb = dbHelper.fetchCapabilities()
             capabilitiesFromDb.size() == 1
             capabilitiesFromDb[0]['service_name'] == 'test-service'
-            capabilitiesFromDb[0]['service_version'] == "'1.0'"
+            capabilitiesFromDb[0]['service_version'] == "1.0"
             capabilitiesFromDb[0]['protocol'] == "rest"
             capabilitiesFromDb[0]['mime_type'] == "application/json"
             capabilitiesFromDb[0]['value'] == capabilities
@@ -59,7 +59,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
             def expectationsFromDb = dbHelper.fetchExpectations()
             capabilitiesFromDb.size() == 1
             expectationsFromDb[0]['service_name'] == 'test-service'
-            expectationsFromDb[0]['service_version'] == "'1.0'"
+            expectationsFromDb[0]['service_version'] == "1.0"
             expectationsFromDb[0]['protocol'] == "rest"
             expectationsFromDb[0]['mime_type'] == "application/json"
             expectationsFromDb[0]['value'] == expectations
@@ -67,7 +67,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
             def serviceContractsFromDb = dbHelper.fetchServiceContracts()
             serviceContractsFromDb.size() == 1
             serviceContractsFromDb[0]['name'] == 'test-service'
-            serviceContractsFromDb[0]['version'] == "'1.0'"
+            serviceContractsFromDb[0]['version'] == "1.0"
     }
 
     @Sql('ContractsControllerFT.GeRegisteredContracts.sql')
@@ -81,7 +81,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
                 .port(serverPort)
                 .contentType("application/json")
                 .when()
-                .get("/contracts/services/test-service/versions/'1.0'")
+                .get("/contracts/services/test-service/versions/1.0")
                 .then()
                 .statusCode(200)
                 .contentType("application/json")
@@ -89,7 +89,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
 
         then:
             response['name'] == 'test-service'
-            response['version'] == "'1.0'"
+            response['version'] == "1.0"
             def capabilitiesFromResponse = response['capabilities']['rest']
             capabilitiesFromResponse['mimeType'] == "application/json"
             capabilitiesFromResponse['value'] == capabilities
@@ -106,7 +106,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
                 .port(serverPort)
                 .contentType("application/json")
                 .when()
-                .get("/contracts/services/test-service/versions/'9.9'")
+                .get("/contracts/services/test-service/versions/'9.9")
                 .then()
                 .statusCode(404)
                 .contentType("application/json")
@@ -148,7 +148,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
 
         then:
             versions.size() == 4
-            versions.containsAll(["'1.0'", "'1.2'", "'2.0'", "'3.0'"])
+            versions.containsAll(["1.0", "1.2", "2.0", "3.0"])
     }
 
     @Sql('ContractsControllerFT.GetVersions.sql')
@@ -178,7 +178,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
                 .port(serverPort)
                 .contentType("application/json")
                 .when()
-                .get("/contracts/services/test-service/versions/'1.0'/capabilities/rest")
+                .get("/contracts/services/test-service/versions/1.0/capabilities/rest")
                 .then()
                 .statusCode(200)
                 .contentType("application/json")

@@ -21,11 +21,11 @@ class EnvironmentControllerFT extends PostgresDatabaseSpecification {
                 .body("""[
                     {
                         "name": "test1",
-                        "version": "'1.0'"
+                        "version": "1.0"
                     },
                     {
                         "name": "test2",
-                        "version": "'1.3'"
+                        "version": "1.3"
                     }
                 ]""")
                 .when()
@@ -38,7 +38,7 @@ class EnvironmentControllerFT extends PostgresDatabaseSpecification {
             def serviceVersions = dbHelper.fetchServiceVersions()
             serviceVersions.any {
                 it['name'] == 'test1' &&
-                it['version'] == "'1.0'" &&
+                it['version'] == "1.0" &&
                 it['environment_name'] == environmentName &&
                 it['space'] == 'default'
             }
@@ -57,11 +57,11 @@ class EnvironmentControllerFT extends PostgresDatabaseSpecification {
                 .body("""[
                     {
                         "name": "test-service-1",
-                        "version": "'1.0'"
+                        "version": "1.0"
                     },
                     {
                         "name": "test-service-2",
-                        "version": "'1.3'"
+                        "version": "1.3"
                     }
                 ]""")
                 .when()
@@ -74,13 +74,13 @@ class EnvironmentControllerFT extends PostgresDatabaseSpecification {
             def serviceVersions = dbHelper.fetchServiceVersions()
             serviceVersions.any {
                 it['name'] == 'test-service-1' &&
-                it['version'] == "'1.0'" &&
+                it['version'] == "1.0" &&
                 it['environment_name'] == environmentName &&
                 it['space'] == space
             }
             serviceVersions.any {
                 it['name'] == 'test-service-2' &&
-                it['version'] == "'1.3'" &&
+                it['version'] == "1.3" &&
                 it['environment_name'] == environmentName &&
                 it['space'] == space
             }
@@ -137,11 +137,11 @@ class EnvironmentControllerFT extends PostgresDatabaseSpecification {
         then:
             response.any{
                 it['name'] == "test-service-1" &&
-                it['version'] == "'1.0'"
+                it['version'] == "1.0"
             }
             response.any{
                 it['name'] == "test-service-2" &&
-                it['version'] == "'2.0'"
+                it['version'] == "2.0"
             }
     }
 
