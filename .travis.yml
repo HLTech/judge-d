@@ -10,6 +10,10 @@ cache:
 services:
   - docker
 
+before_install:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker pull postgres:9.6.12
+  -
 jobs:
   include:
     - stage: build with maven & generate reports
