@@ -11,7 +11,7 @@ services:
   - docker
 
 before_install:
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - echo "$DOCKER_PASSWORD_NEW" | docker login -u "$DOCKER_USERNAME_NEW" --password-stdin
   - docker pull postgres:9.6.12
   -
 jobs:
@@ -29,7 +29,7 @@ jobs:
       script:
         - mvn validate docker:build@build-docker -P docker-app -f ./judge-d-server/pom.xml
         - echo "Pushing to docker registry"
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - echo "$DOCKER_PASSWORD_NEW" | docker login -u "$DOCKER_USERNAME_NEW" --password-stdin
         - docker push hltech/judge-d
         - echo "Pushing to heroku registry"
         - docker login -u _ -p "$HEROKU_API_KEY" registry.heroku.com
@@ -43,5 +43,5 @@ jobs:
       if: branch = master AND NOT type IN (pull_request)
       script:
         - mvn validate docker:build@build-docker -P docker-app -f ./judge-d-agent/pom.xml
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - echo "$DOCKER_PASSWORD_NEW" | docker login -u "$DOCKER_USERNAME_NEW" --password-stdin
         - docker push hltech/judge-d-agent
