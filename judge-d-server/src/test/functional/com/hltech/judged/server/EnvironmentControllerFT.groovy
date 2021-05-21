@@ -42,6 +42,12 @@ class EnvironmentControllerFT extends PostgresDatabaseSpecification {
                 it['environment_name'] == environmentName &&
                 it['space'] == 'default'
             }
+            serviceVersions.any {
+                it['name'] == 'test2' &&
+                it['version'] == "1.3" &&
+                it['environment_name'] == environmentName &&
+                it['space'] == 'default'
+            }
     }
 
     def "should update environment and replace namespace"() {
@@ -83,6 +89,47 @@ class EnvironmentControllerFT extends PostgresDatabaseSpecification {
                 it['version'] == "1.3" &&
                 it['environment_name'] == environmentName &&
                 it['space'] == space
+            }
+    }
+
+    @Sql("EnvironmentControllerFT.sql")
+    def "should update service version and replace namespace for one service"() {
+        given:
+            def environmentName = 'TEST1'
+            def space = 'testSpace'
+
+        when:
+            RestAssured.given()
+                .port(serverPort)
+                .contentType("application/json")
+                .header('X-JUDGE-D-AGENT-SPACE', space)
+                .body("""[
+                    {
+                        "name": "test-service-1",
+                        "version": "3.0"
+                    }
+                ]""")
+                .when()
+                .put("/environments/${environmentName}")
+                .then()
+                .statusCode(200)
+
+        then:
+            dbHelper.fetchEnvironments()[0]['name'] == environmentName
+            def serviceVersions = dbHelper.fetchServiceVersions().findAll {
+                it['environment_name'] == environmentName
+            }
+            serviceVersions.any {
+                it['name'] == 'test-service-1' &&
+                it['version'] == "3.0" &&
+                it['environment_name'] == environmentName &&
+                it['space'] == space
+            }
+            serviceVersions.any {
+                it['name'] == 'test-service-2' &&
+                it['version'] == "2.0" &&
+                it['environment_name'] == environmentName &&
+                it['space'] == 'default'
             }
     }
 
