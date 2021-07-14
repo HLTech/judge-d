@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.experimental.Delegate;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,22 +16,15 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.toMap;
 
 @Getter
-@AllArgsConstructor
 @ToString
 @EqualsAndHashCode
+@AllArgsConstructor
 public class ServiceContracts {
 
+    @Delegate
     private final ServiceId id;
     private final List<Capability> capabilities;
     private final List<Expectation> expectations;
-
-    public String getName() {
-        return this.id.getName();
-    }
-
-    public String getVersion() {
-        return this.id.getVersion();
-    }
 
     public <C> Optional<C> getMappedCapabilities(String communicationInterface, Function<String, C> deserializer) {
         return this.capabilities.stream()

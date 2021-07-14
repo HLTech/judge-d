@@ -24,12 +24,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.persistence.Entity;
 import javax.persistence.NoResultException;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/contracts")
@@ -38,14 +36,13 @@ import static org.springframework.http.ResponseEntity.ok;
 public class ContractsController {
 
     private final ServiceContractsRepository serviceContractsRepository;
-    private final ContractsMapper mapper;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get registered contracts", nickname = "get names of services")
     @ApiResponses(value = {
         @ApiResponse(code = 302, message = "Found")
     })
-    public RedirectView getServicesEndpointDescription()  {
+    public RedirectView getServicesEndpointDescription() {
         return new RedirectView("contracts/services", true);
     }
 
@@ -101,7 +98,7 @@ public class ContractsController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
     public ServiceContractsDto getContracts(@PathVariable(name = "serviceName") String serviceName, @PathVariable(name = "version") String version) {
-        return mapper.toDto(this.serviceContractsRepository.findOne(new ServiceId(serviceName, version)).orElseThrow(ResourceNotFoundException::new));
+        return ServiceContractsDto.fromDomain(this.serviceContractsRepository.findOne(new ServiceId(serviceName, version)).orElseThrow(ResourceNotFoundException::new));
     }
 
     @GetMapping(value = "services/{serviceName}/versions/{version:.+}/capabilities/{protocol}", produces = MediaType.ALL_VALUE)
@@ -125,12 +122,8 @@ public class ContractsController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Failure")})
     public ServiceContractsDto registerContract(@PathVariable(name = "serviceName") String serviceName, @PathVariable(name = "version") String version, @RequestBody ServiceContractsForm form) {
-        return mapper.toDto(this.serviceContractsRepository.persist(
-            new ServiceContracts(
-                new ServiceId(serviceName, version),
-                mapper.mapCapabilitiesForm(form.getCapabilities()),
-                mapper.mapExpectationsForm(form.getExpectations())
-            )
-        ));
+        return ServiceContractsDto.fromDomain(
+            this.serviceContractsRepository.persist(form.toDomain(serviceName, version))
+        );
     }
 }
