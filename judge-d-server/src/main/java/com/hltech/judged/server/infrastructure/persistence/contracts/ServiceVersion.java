@@ -12,15 +12,15 @@ import java.io.Serializable;
 
 import static lombok.AccessLevel.PROTECTED;
 
-@Embeddable
-@ToString
 @Getter
+@ToString
+@Embeddable
+@MappedSuperclass
 @EqualsAndHashCode
 @AllArgsConstructor
-@NoArgsConstructor(access = PROTECTED)
 @Access(AccessType.FIELD)
-@MappedSuperclass
-public class ServiceVersion implements Serializable {
+@NoArgsConstructor(access = PROTECTED)
+class ServiceVersion implements Serializable {
     private String name;
     private String version;
 }

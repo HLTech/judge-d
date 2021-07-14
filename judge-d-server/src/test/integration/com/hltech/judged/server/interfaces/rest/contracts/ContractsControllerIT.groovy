@@ -17,8 +17,8 @@ import spock.lang.Specification
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 
-@WebMvcTest(ContractsController.class)
 @ActiveProfiles("test")
+@WebMvcTest(ContractsController.class)
 class ContractsControllerIT extends Specification {
 
     @Autowired

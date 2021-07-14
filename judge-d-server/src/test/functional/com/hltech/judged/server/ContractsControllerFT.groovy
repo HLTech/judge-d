@@ -4,7 +4,10 @@ import io.restassured.RestAssured
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.test.context.jdbc.Sql
 
+import java.time.Instant
+
 import static com.hltech.judged.server.FileHelper.loadFromFileAndFormat
+import static java.time.temporal.ChronoUnit.MILLIS
 
 @FunctionalTest
 class ContractsControllerFT extends PostgresDatabaseSpecification {
@@ -39,7 +42,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
                     .extract().body().jsonPath().getMap('$')
 
         then:
-            def capabilitiesFromResponse = response['capabilities']['rest']
+                        def capabilitiesFromResponse = response['capabilities']['rest']
             capabilitiesFromResponse['mimeType'] == "application/json"
             capabilitiesFromResponse['value'] == capabilities
 
@@ -47,6 +50,8 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
             expectationsFromResponse['mimeType'] == "application/json"
             expectationsFromResponse['value'] == expectations
 
+        and:
+            response['publicationTime']
         and:
             def capabilitiesFromDb = dbHelper.fetchCapabilities()
             capabilitiesFromDb.size() == 1
@@ -68,6 +73,7 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
             serviceContractsFromDb.size() == 1
             serviceContractsFromDb[0]['name'] == 'test-service'
             serviceContractsFromDb[0]['version'] == "1.0"
+            serviceContractsFromDb[0]['publication_time'].toInstant().truncatedTo( MILLIS ) == Instant.parse(response['publicationTime']).truncatedTo( MILLIS )
     }
 
     @Sql('ContractsControllerFT.GeRegisteredContracts.sql')

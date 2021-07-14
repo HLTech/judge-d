@@ -65,7 +65,8 @@ public class ServiceContractsRepositoryImpl implements ServiceContractsRepositor
         return new ServiceContractsTuple(
             new ServiceVersion(serviceContracts.getId().getName(), serviceContracts.getId().getVersion()),
             toCapabilities(serviceContracts),
-            toExpectations(serviceContracts)
+            toExpectations(serviceContracts),
+            serviceContracts.getPublicationTime()
         );
     }
 
@@ -99,7 +100,8 @@ public class ServiceContractsRepositoryImpl implements ServiceContractsRepositor
         return new ServiceContracts(
             new ServiceId(serviceContractsTuple.getId().getName(), serviceContractsTuple.getId().getVersion()),
             toCapabilities(serviceContractsTuple),
-            toExpectations(serviceContractsTuple)
+            toExpectations(serviceContractsTuple),
+            serviceContractsTuple.getPublicationTime()
         );
     }
 

@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.Set;
 
 @Data
-public class InterrelationshipDto {
+class InterrelationshipDto {
 
     private final String environment;
     private final Set<ServiceContractsDto> serviceContracts;

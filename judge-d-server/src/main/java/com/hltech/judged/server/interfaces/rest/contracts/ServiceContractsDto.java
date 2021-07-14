@@ -6,6 +6,7 @@ import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,12 +23,15 @@ public class ServiceContractsDto {
     private final Map<String, ContractDto> capabilities;
     private final Map<String, Map<String, ContractDto>> expectations;
 
+    private final Instant publicationTime;
+
     public static ServiceContractsDto fromDomain(ServiceContracts serviceContracts) {
         return new ServiceContractsDto(
             serviceContracts.getName(),
             serviceContracts.getVersion(),
             mapCapabilitiesToDto(serviceContracts.getCapabilities()),
-            mapExpectationsToDto(serviceContracts.getExpectations())
+            mapExpectationsToDto(serviceContracts.getExpectations()),
+            serviceContracts.getPublicationTime()
         );
     }
 
