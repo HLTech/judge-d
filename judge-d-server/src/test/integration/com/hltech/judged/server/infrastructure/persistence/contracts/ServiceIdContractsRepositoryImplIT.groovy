@@ -40,6 +40,7 @@ class ServiceIdContractsRepositoryImplIT extends Specification {
         then:
             retrieved.get().id.name == 'provider'
             retrieved.get().id.version == '1.0'
+            retrieved.get().publicationTime == serviceContracts.publicationTime
             retrieved.isPresent()
             with(retrieved.get()) {
                 getMappedCapabilities("ping", identity()).get() == "654321"
@@ -90,18 +91,15 @@ class ServiceIdContractsRepositoryImplIT extends Specification {
 
     def 'should return rest capabilities for given protocol'() {
         given:
-        def serviceName = randomAlphabetic(10)
-        def version = randomAlphabetic(5)
-        def capabilities = [new Capability("protocol", new Contract("capabilities", MediaType.APPLICATION_JSON_VALUE))]
-        def s1 = repository.persist(new ServiceContracts(new ServiceId(serviceName, version), capabilities, []))
-
+            def serviceName = randomAlphabetic(10)
+            def version = randomAlphabetic(5)
+            def capabilities = [new Capability("protocol", new Contract("capabilities", MediaType.APPLICATION_JSON_VALUE))]
+            repository.persist(new ServiceContracts(new ServiceId(serviceName, version), capabilities, []))
         when:
-        def capability = repository.findCapabilityByServiceIdProtocol(new ServiceId(serviceName, version), "protocol");
+            def capability = repository.findCapabilityByServiceIdProtocol(new ServiceId(serviceName, version), "protocol");
         then:
-        capability.isPresent()
-        capability.get().value == 'capabilities'
-        capability.get().mimeType == MediaType.APPLICATION_JSON_VALUE
-
+            capability.isPresent()
+            capability.get().value == 'capabilities'
+            capability.get().mimeType == MediaType.APPLICATION_JSON_VALUE
     }
-
 }

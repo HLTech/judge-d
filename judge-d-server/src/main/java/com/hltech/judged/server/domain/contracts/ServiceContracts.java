@@ -1,7 +1,6 @@
 package com.hltech.judged.server.domain.contracts;
 
 import com.hltech.judged.server.domain.ServiceId;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -17,14 +16,28 @@ import static java.util.stream.Collectors.toMap;
 
 @Getter
 @ToString
-@EqualsAndHashCode
-@AllArgsConstructor
+@EqualsAndHashCode(exclude = "publicationTime")
 public class ServiceContracts {
 
     @Delegate
     private final ServiceId id;
     private final List<Capability> capabilities;
     private final List<Expectation> expectations;
+    private final Instant publicationTime;
+
+    public ServiceContracts(ServiceId id, List<Capability> capabilities, List<Expectation> expectations) {
+        this.id = id;
+        this.capabilities = capabilities;
+        this.expectations = expectations;
+        this.publicationTime = Instant.now();
+    }
+
+    public ServiceContracts(ServiceId id, List<Capability> capabilities, List<Expectation> expectations, Instant publicationTime) {
+        this.id = id;
+        this.capabilities = capabilities;
+        this.expectations = expectations;
+        this.publicationTime = publicationTime;
+    }
 
     public <C> Optional<C> getMappedCapabilities(String communicationInterface, Function<String, C> deserializer) {
         return this.capabilities.stream()

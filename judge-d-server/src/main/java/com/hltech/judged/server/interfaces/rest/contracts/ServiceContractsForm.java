@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Data
-public class ServiceContractsForm {
+class ServiceContractsForm {
 
     //<protocol, contract>
     private final Map<String, ContractForm> capabilities;
@@ -49,7 +49,7 @@ public class ServiceContractsForm {
     }
 
     @Data
-    public static class ContractForm implements Serializable {
+    static class ContractForm implements Serializable {
         private final String value;
         private final String mimeType;
     }

@@ -7,10 +7,10 @@
    http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <include file="/db/changelog/db.changelog-0.1.xml"/>
-    <include file="/db/changelog/db.changelog-0.2.xml"/>
-    <include file="/db/changelog/db.changelog-0.3.xml"/>
-    <include file="/db/changelog/db.changelog-0.4.xml"/>
-    <include file="/db/changelog/db.changelog-0.5.xml"/>
-
+    <changeSet id="add publication time to service contract" author="Pawel Wlodarczyk">
+        <addColumn tableName="SERVICE_CONTRACTS">
+            <column name="PUBLICATION_TIME" type="TIMESTAMP" defaultValueDate="NOW()" />
+        </addColumn>
+        <addNotNullConstraint tableName="SERVICE_CONTRACTS" columnName="PUBLICATION_TIME" columnDataType="TIMESTAMP" />
+    </changeSet>
 </databaseChangeLog>
