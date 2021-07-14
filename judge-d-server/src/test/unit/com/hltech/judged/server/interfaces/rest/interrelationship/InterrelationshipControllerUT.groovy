@@ -9,7 +9,6 @@ import com.hltech.judged.server.domain.environment.Environment
 import com.hltech.judged.server.domain.environment.EnvironmentRepository
 import com.hltech.judged.server.domain.ServiceId
 import com.hltech.judged.server.domain.environment.Space
-import com.hltech.judged.server.interfaces.rest.contracts.ContractsMapper
 import com.hltech.judged.server.interfaces.rest.contracts.ServiceContractsDto
 import spock.lang.Specification
 import spock.lang.Subject
@@ -20,10 +19,8 @@ class InterrelationshipControllerUT extends Specification {
 
     def serviceContractsRepository = Mock(ServiceContractsRepository)
 
-    def contractsMapper = new ContractsMapper()
-
     @Subject
-    def controller = new InterrelationshipController(environmentRepository, serviceContractsRepository, contractsMapper)
+    def controller = new InterrelationshipController(environmentRepository, serviceContractsRepository)
 
     def "should return 200 when getting interrelationship for any environment"() {
         given:

@@ -59,7 +59,7 @@ public class ServiceContractsDto {
     }
 
     @Data
-    private static class ContractDto implements Serializable {
+    static class ContractDto implements Serializable {
         private final String value;
         private final String mimeType;
     }

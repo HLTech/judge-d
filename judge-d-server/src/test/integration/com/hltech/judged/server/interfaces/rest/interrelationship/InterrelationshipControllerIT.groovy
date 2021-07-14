@@ -2,6 +2,11 @@ package com.hltech.judged.server.interfaces.rest.interrelationship
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.hltech.judged.server.config.BeanFactory
+import com.hltech.judged.server.domain.contracts.InMemoryServiceContractsRepository
+import com.hltech.judged.server.domain.contracts.ServiceContractsRepository
+import com.hltech.judged.server.domain.environment.EnvironmentRepository
+import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -20,7 +25,7 @@ class InterrelationshipControllerIT extends Specification {
     ObjectMapper objectMapper
 
     @Autowired
-    com.hltech.judged.server.domain.environment.EnvironmentRepository environmentRepository
+    EnvironmentRepository environmentRepository
 
     @Autowired
     MockMvc mockMvc
@@ -38,21 +43,16 @@ class InterrelationshipControllerIT extends Specification {
     }
 
     @TestConfiguration
-    static class TestConfig extends com.hltech.judged.server.config.BeanFactory {
+    static class TestConfig extends BeanFactory {
 
         @Bean
-        com.hltech.judged.server.domain.environment.EnvironmentRepository environmentRepository() {
-            return new com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository()
+        EnvironmentRepository environmentRepository() {
+            return new InMemoryEnvironmentRepository()
         }
 
         @Bean
-        com.hltech.judged.server.domain.contracts.ServiceContractsRepository serviceContractsRepository() {
-            return new com.hltech.judged.server.domain.contracts.InMemoryServiceContractsRepository()
-        }
-
-        @Bean
-        com.hltech.judged.server.interfaces.rest.contracts.ContractsMapper contractsMapper() {
-            return new com.hltech.judged.server.interfaces.rest.contracts.ContractsMapper()
+        ServiceContractsRepository serviceContractsRepository() {
+            return new InMemoryServiceContractsRepository()
         }
     }
 }

@@ -5,7 +5,6 @@ import com.hltech.judged.server.interfaces.rest.contracts.ServiceContractsDto;
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
 import com.hltech.judged.server.domain.environment.EnvironmentRepository;
-import com.hltech.judged.server.interfaces.rest.contracts.ContractsMapper;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -26,7 +25,6 @@ public class InterrelationshipController {
 
     private final EnvironmentRepository environmentRepository;
     private final ServiceContractsRepository serviceContractsRepository;
-    private final ContractsMapper contractsMapper;
 
     @CrossOrigin
     @GetMapping(value = "/interrelationship/{environment}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -39,7 +37,7 @@ public class InterrelationshipController {
 
         Set<ServiceContractsDto> serviceContractsSet =  environmentRepository.get(env).getAllServices().stream()
             .map(this::getServiceContracts)
-            .map(contractsMapper::toDto)
+            .map(ServiceContractsDto::fromDomain)
             .collect(Collectors.toSet());
 
         return new InterrelationshipDto(env, serviceContractsSet);

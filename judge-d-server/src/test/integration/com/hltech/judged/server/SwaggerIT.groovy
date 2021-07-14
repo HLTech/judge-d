@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.hltech.judged.server.domain.JudgeDApplicationService
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository
 import com.hltech.judged.server.domain.environment.EnvironmentRepository
-import com.hltech.judged.server.interfaces.rest.contracts.ContractsMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -30,9 +29,6 @@ class SwaggerIT extends Specification {
 
     @MockBean
     private ServiceContractsRepository serviceContractsRepository
-
-    @MockBean
-    private ContractsMapper contractsMapper
 
     @MockBean
     private EnvironmentRepository environmentRepository
