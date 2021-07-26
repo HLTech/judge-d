@@ -1,10 +1,10 @@
 package com.hltech.judged.server.domain.environment;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface EnvironmentRepository {
-
-    Environment get(String environmentName);
+    Optional<Environment> find(String environmentName);
 
     Environment persist(Environment environment);
 

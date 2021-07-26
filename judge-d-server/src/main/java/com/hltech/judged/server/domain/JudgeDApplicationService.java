@@ -40,7 +40,9 @@ public class JudgeDApplicationService {
     public void overwriteEnvironment(String environmentName, String agentSpace, Set<ServiceId> serviceIds) {
         String space = firstNonNull(agentSpace, DEFAULT_NAMESPACE);
 
-        Environment environment = environmentRepository.get(environmentName);
+        Environment environment = environmentRepository.find(environmentName)
+            .orElse(new Environment(environmentName, new HashSet<>()));
+
         Set<String> supportedSpaces = ImmutableSet.<String>builder()
             .addAll(environment.getSpaceNames())
             .add(space)
@@ -64,6 +66,8 @@ public class JudgeDApplicationService {
 
         ServiceContracts validatedServiceContracts = this.serviceContractsRepository.findOne(serviceId)
             .orElseThrow(ResourceNotFoundException::new);
+
+
 
         return this.validators.stream()
             .map(validator ->
@@ -104,8 +108,8 @@ public class JudgeDApplicationService {
         InterfaceContractValidator<C, E> validator
     ) {
         List<ServiceContracts> environmentContracts = environments.stream()
-            .flatMap(env -> this.environmentRepository.get(env).getAllServices().stream())
-            .map(service -> this.serviceContractsRepository.findOne(new ServiceId(service.getName(), service.getVersion())))
+            .flatMap(envName -> getServicesIds(envName).stream())
+            .map(this.serviceContractsRepository::findOne)
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(toList());
@@ -119,8 +123,7 @@ public class JudgeDApplicationService {
         InterfaceContractValidator<C, E> validator
     ){
         // find contracts on given env
-        List<ServiceContracts> environmentContracts = this.environmentRepository.get(env).getAllServices()
-            .stream()
+        List<ServiceContracts> environmentContracts = getServicesIds(env).stream()
             .map(service -> this.serviceContractsRepository.findOne(new ServiceId(service.getName(), service.getVersion())))
             .filter(Optional::isPresent)
             .map(Optional::get)
@@ -143,5 +146,11 @@ public class JudgeDApplicationService {
             hashMap.put(sc.getId(), getValidatorResult(sc, environmentContracts, validator));
         }
         return hashMap;
+    }
+
+    private Set<ServiceId> getServicesIds(String environmentName) {
+        return this.environmentRepository.find(environmentName)
+            .map(Environment::getAllServices)
+            .orElse(new HashSet<>());
     }
 }

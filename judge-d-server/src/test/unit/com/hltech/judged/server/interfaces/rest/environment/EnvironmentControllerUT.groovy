@@ -28,7 +28,7 @@ class EnvironmentControllerUT extends Specification {
             names == [environment.name] as Set
     }
 
-    def 'should return empty list of services when get services giveen no such environment was saved before'() {
+    def 'should return empty list of services when no such environment was saved before'() {
         when:
             def services = environmentController.getEnvironment("some-environment")
         then:

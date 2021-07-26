@@ -27,9 +27,9 @@ public class ServiceContractsRepositoryImpl implements ServiceContractsRepositor
     }
 
     @Override
-    public Optional<ServiceContracts> findOne(ServiceId serviceVersion) {
+    public Optional<ServiceContracts> findOne(ServiceId serviceId) {
         return serviceContractsTupleRepository
-            .findById_NameAndId_Version(serviceVersion.getName(), serviceVersion.getVersion())
+            .findById_NameAndId_Version(serviceId.getName(), serviceId.getVersion())
             .map(this::toServiceContracts);
     }
 

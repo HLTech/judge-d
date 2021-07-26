@@ -1,6 +1,7 @@
 package com.hltech.judged.server.interfaces.rest.interrelationship;
 
 import com.hltech.judged.server.domain.ServiceId;
+import com.hltech.judged.server.domain.environment.Environment;
 import com.hltech.judged.server.interfaces.rest.contracts.ServiceContractsDto;
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,8 +36,7 @@ public class InterrelationshipController {
         @ApiResponse(code = 500, message = "Failure")
     })
     public InterrelationshipDto getInterrelationship (@PathVariable("environment") String env) {
-
-        Set<ServiceContractsDto> serviceContractsSet =  environmentRepository.get(env).getAllServices().stream()
+        Set<ServiceContractsDto> serviceContractsSet = getServicesIds(env).stream()
             .map(this::getServiceContracts)
             .map(ServiceContractsDto::fromDomain)
             .collect(Collectors.toSet());
@@ -50,5 +51,11 @@ public class InterrelationshipController {
                     new ServiceId(serviceId.getName(), serviceId.getVersion()),
                     new ArrayList<>(),
                     new ArrayList<>()));
+    }
+
+    private Set<ServiceId> getServicesIds(String environmentName) {
+        return this.environmentRepository.find(environmentName)
+            .map(Environment::getAllServices)
+            .orElse(new HashSet<>());
     }
 }
