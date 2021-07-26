@@ -30,9 +30,9 @@ class EnvironmentControllerUT extends Specification {
 
     def 'should return empty list of services when no such environment was saved before'() {
         when:
-            def services = environmentController.getEnvironment("some-environment")
+            def services = environmentController.getEnvironment("some-environment").getBody()
         then:
-            services.isEmpty()
+            !services
     }
 
     def 'should return list of services from and environment given it was saved before'() {
@@ -44,7 +44,8 @@ class EnvironmentControllerUT extends Specification {
             )
             environmentRepository.persist(environment)
         when:
-            def services = environmentController.getEnvironment(environment.name)
+            def services = environmentController.getEnvironment(environment.name).getBody()
+
         then:
             services == [new ServiceDto(service.name, service.version)] as List
     }

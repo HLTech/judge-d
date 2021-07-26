@@ -31,7 +31,7 @@ public class ValidationController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = BatchValidationReportDto.class, responseContainer = "list"),
         @ApiResponse(code = 500, message = "Failure"),
-        @ApiResponse(code = 404, message = "Service not found")
+        @ApiResponse(code = 404, message = "Service or environment not found")
     })
     public List<BatchValidationReportDto> validateAgainstEnvironments(
         @RequestParam("services") List<String> services,

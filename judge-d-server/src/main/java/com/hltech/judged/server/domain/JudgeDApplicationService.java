@@ -67,8 +67,6 @@ public class JudgeDApplicationService {
         ServiceContracts validatedServiceContracts = this.serviceContractsRepository.findOne(serviceId)
             .orElseThrow(ResourceNotFoundException::new);
 
-
-
         return this.validators.stream()
             .map(validator ->
                 validateServiceAgainstEnvironments(
@@ -149,8 +147,9 @@ public class JudgeDApplicationService {
     }
 
     private Set<ServiceId> getServicesIds(String environmentName) {
-        return this.environmentRepository.find(environmentName)
-            .map(Environment::getAllServices)
-            .orElse(new HashSet<>());
+        var environment = this.environmentRepository.find(environmentName)
+            .orElseThrow(ResourceNotFoundException::new);
+
+        return environment.getAllServices();
     }
 }

@@ -50,8 +50,6 @@ class InterrelationshipControllerFT extends PostgresDatabaseSpecification {
                 .when()
                 .get("/interrelationship/NOT_EXISTS")
                 .then()
-                .statusCode(200)
-                .contentType("application/json")
-                .extract().body().jsonPath().getMap('$')
+                .statusCode(404)
     }
 }

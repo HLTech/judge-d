@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.hltech.judged.server.config.BeanFactory
 import com.hltech.judged.server.domain.JudgeDApplicationService
 import com.hltech.judged.server.domain.contracts.InMemoryServiceContractsRepository
+import com.hltech.judged.server.domain.environment.Environment
 import com.hltech.judged.server.domain.environment.EnvironmentRepository
 import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
+import com.hltech.judged.server.domain.environment.Space
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -24,12 +26,23 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 class EnvironmentControllerIT extends Specification {
 
     @Autowired
+    InMemoryEnvironmentRepository environmentRepository
+
+    @Autowired
     ObjectMapper objectMapper
 
     @Autowired
     MockMvc mockMvc
 
-    def "getServices test hits the URL and parses JSON output"() {
+    def cleanup() {
+        environmentRepository.storage.clear()
+    }
+
+    def "get on not existing environment should end up with status 200"() {
+        given:
+            def environment = new Environment('SIT', new HashSet<Space>())
+            environmentRepository.persist(environment)
+
         when: 'rest validatePacts url is hit'
             def response = mockMvc.perform(
                 get('/environments/SIT')
@@ -52,6 +65,16 @@ class EnvironmentControllerIT extends Specification {
             ).andReturn().response
         then:
             response.status == 200
+    }
+
+    def 'get on not existing environment should end up with status 404'() {
+        when:
+            def response = mockMvc.perform(
+                get('/environments/unknown')
+                    .accept("application/json")
+            ).andReturn().getResponse()
+        then:
+            response.status == 404
     }
 
     private ServiceForm randomServiceForm() {

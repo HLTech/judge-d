@@ -2,6 +2,7 @@ package com.hltech.judged.server.interfaces.rest.interrelationship;
 
 import com.hltech.judged.server.domain.ServiceId;
 import com.hltech.judged.server.domain.environment.Environment;
+import com.hltech.judged.server.interfaces.rest.ResourceNotFoundException;
 import com.hltech.judged.server.interfaces.rest.contracts.ServiceContractsDto;
 import com.hltech.judged.server.domain.contracts.ServiceContracts;
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,9 +33,10 @@ public class InterrelationshipController {
     @ApiOperation(value = "Get interrelationship between services in given environment", nickname = "Validate against environment")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = InterrelationshipDto.class),
+        @ApiResponse(code = 404, message = "Not found"),
         @ApiResponse(code = 500, message = "Failure")
     })
-    public InterrelationshipDto getInterrelationship (@PathVariable("environment") String env) {
+    public InterrelationshipDto getInterrelationship(@PathVariable("environment") String env) {
         Set<ServiceContractsDto> serviceContractsSet = getServicesIds(env).stream()
             .map(this::getServiceContracts)
             .map(ServiceContractsDto::fromDomain)
@@ -56,6 +57,6 @@ public class InterrelationshipController {
     private Set<ServiceId> getServicesIds(String environmentName) {
         return this.environmentRepository.find(environmentName)
             .map(Environment::getAllServices)
-            .orElse(new HashSet<>());
+            .orElseThrow(ResourceNotFoundException::new);
     }
 }
