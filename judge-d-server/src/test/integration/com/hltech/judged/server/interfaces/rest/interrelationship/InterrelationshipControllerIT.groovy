@@ -65,6 +65,15 @@ class InterrelationshipControllerIT extends Specification {
                 .andExpect(MockMvcResultMatchers.jsonPath('$.serviceContracts[0].publicationTime').exists())
     }
 
+    def "should return 404 when getting interrelationship for not existing environment"() {
+        expect: 'rest validatePacts url is hit'
+            def response = mockMvc.perform(
+                get(new URI('/interrelationship/unknown'))
+                    .accept("application/json")
+            )
+                .andExpect(status().isNotFound())
+    }
+
     def createServiceContracts(def name, def version) {
         new ServiceContracts(
             new ServiceId(name, version),

@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -44,11 +44,13 @@ public class EnvironmentController {
     @ApiOperation(value = "Get services from the environment", nickname = "Get Services")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = ServiceDto.class, responseContainer = "list"),
+        @ApiResponse(code = 404, message = "Not found"),
         @ApiResponse(code = 500, message = "Failure")})
-    public List<ServiceDto> getEnvironment(@PathVariable("name") String name) {
+    public ResponseEntity<List<ServiceDto>> getEnvironment(@PathVariable("name") String name) {
         return environmentRepository.find(name)
             .map(this::getServices)
-            .orElse(new ArrayList<>());
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
     private List<ServiceDto> getServices(Environment env) {

@@ -11,8 +11,10 @@ import com.hltech.judged.server.domain.contracts.Expectation
 import com.hltech.judged.server.domain.contracts.InMemoryServiceContractsRepository
 import com.hltech.judged.server.domain.contracts.ServiceContracts
 import com.hltech.judged.server.domain.contracts.ServiceContractsRepository
+import com.hltech.judged.server.domain.environment.Environment
 import com.hltech.judged.server.domain.environment.EnvironmentRepository
 import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
+import com.hltech.judged.server.domain.environment.Space
 import com.hltech.judged.server.domain.validation.InterfaceContractValidator
 import com.hltech.judged.server.domain.validation.ping.PingContractValidator
 import com.hltech.judged.server.interfaces.rest.environment.ServiceDto
@@ -35,18 +37,27 @@ class ValidationControllerIT extends Specification {
     ObjectMapper objectMapper
 
     @Autowired
-    ServiceContractsRepository serviceContractsRepository
+    InMemoryServiceContractsRepository serviceContractsRepository
+
+    @Autowired
+    InMemoryEnvironmentRepository environmentRepository
 
     @Autowired
     MockMvc mockMvc
 
+    def cleanup() {
+        environmentRepository.storage.clear()
+        serviceContractsRepository.storage.clear()
+    }
+
     def "should return 200 when validate given all went fine"() {
         given:
-            serviceContractsRepository.persist(new ServiceContracts(
-                new ServiceId('service-name', '1.0'),
-                [],
-                []
-            ))
+            def serviceId = new ServiceId('service-name', '1.0')
+            def serviceContracts = new ServiceContracts(serviceId, [], [])
+            serviceContractsRepository.persist(serviceContracts)
+        and:
+            environmentRepository.persist(new Environment('SIT', [new Space(Environment.DEFAULT_NAMESPACE, [serviceId] as Set)] as Set))
+            environmentRepository.persist(new Environment('UAT', [new Space(Environment.DEFAULT_NAMESPACE, [serviceId] as Set)] as Set))
         when: 'rest validatePacts url is hit'
             def response = mockMvc.perform(
                 get(new URI('/environment-compatibility-report/service-name:1.0?environment=SIT&environment=UAT'))
@@ -59,6 +70,33 @@ class ValidationControllerIT extends Specification {
     }
 
     def "should return 404 when validate service contracts against env given contracts have not been registered"() {
+        given:
+            serviceContractsRepository.persist(new ServiceContracts(
+                new ServiceId('service-name', '1.0'),
+                [],
+                []
+            ))
+        and:
+            environmentRepository.persist(new Environment('SIT', [new Space(Environment.DEFAULT_NAMESPACE, [] as Set)] as Set))
+            environmentRepository.persist(new Environment('UAT', [new Space(Environment.DEFAULT_NAMESPACE, [] as Set)] as Set))
+        when: 'rest validatePacts url is hit'
+            def response = mockMvc.perform(
+                get(new URI('/environment-compatibility-report/service-name:1.0?environment=SIT&environment=UAT'))
+                    .accept("application/json")
+            ).andReturn().getResponse()
+        then: 'controller returns validation response in json'
+            response.getStatus() == 200
+            response.getContentType().contains("application/json")
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<ServiceDto>>() {}) != null
+    }
+
+    def "should return 404 when validate service contracts against not existing environment"() {
+        given:
+            serviceContractsRepository.persist(new ServiceContracts(
+                new ServiceId('service-name', '1.0'),
+                [],
+                []
+            ))
         when: 'rest validatePacts url is hit'
             def response = mockMvc.perform(
                 get(new URI('/environment-compatibility-report/other-service:1.0?environment=SIT&environment=UAT'))
@@ -90,6 +128,9 @@ class ValidationControllerIT extends Specification {
                 [],
                 [new Expectation('provider', 'ping', new Contract('123456', MediaType.APPLICATION_JSON_VALUE))]
             ))
+        and:
+            environmentRepository.persist(new Environment('SIT', [new Space(Environment.DEFAULT_NAMESPACE, [] as Set)] as Set))
+            environmentRepository.persist(new Environment('UAT', [new Space(Environment.DEFAULT_NAMESPACE, [] as Set)] as Set))
         when: 'rest validatePacts url is hit'
             def response = mockMvc.perform(
                 get(new URI('/environment-compatibility-report?services=provider:2.0&services=consumer:2.0&environment=SIT'))
