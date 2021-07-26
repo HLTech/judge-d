@@ -26,7 +26,7 @@ class JPAEnvironmentRepositoryIT extends Specification {
         when:
             repository.persist(environment)
         then:
-            def persistedEnvironment = repository.get(environment.name)
+            def persistedEnvironment = repository.find(environment.name).get()
             persistedEnvironment.name == environment.name
             persistedEnvironment.allServices[0].name == service.name
             persistedEnvironment.allServices[0].version == service.version
@@ -48,7 +48,7 @@ class JPAEnvironmentRepositoryIT extends Specification {
         when:
             repository.persist(environment2)
         then:
-            repository.get(environment1.name).with {
+            repository.find(environment1.name).get().with {
                 name == environment1.name
                 allServices.size() == 1
             }
@@ -75,7 +75,7 @@ class JPAEnvironmentRepositoryIT extends Specification {
         repository.persist(environment)
 
         then:
-        def storedEnvironment = repository.get('environmentName')
+        def storedEnvironment = repository.find('environmentName').get()
         storedEnvironment.name == 'environmentName'
         storedEnvironment.spaces.size() == 3
         storedEnvironment.spaces.contains(firstSpace)
@@ -106,7 +106,7 @@ class JPAEnvironmentRepositoryIT extends Specification {
         when:
             repository.persist(environment1)
         then:
-            repository.get(environment1.name).with {
+            repository.find(environment1.name).get().with {
                 name == environment1.name
                 allServices.size() == 2
             }

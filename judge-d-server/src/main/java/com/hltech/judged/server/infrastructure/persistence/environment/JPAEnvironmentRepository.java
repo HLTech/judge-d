@@ -7,6 +7,7 @@ import com.hltech.judged.server.domain.environment.Space;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -30,10 +31,9 @@ public class JPAEnvironmentRepository implements EnvironmentRepository {
     }
 
     @Override
-    public Environment get(String name) {
+    public Optional<Environment> find(String name) {
         return springDataEnvironmentRepository.findById(name)
-            .map(this::toEnvironment)
-            .orElse(new Environment(name, new HashSet<>()));
+            .map(this::toEnvironment);
     }
 
     private EnvironmentTuple toEnvironmentTuple(Environment environment) {

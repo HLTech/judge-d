@@ -27,7 +27,7 @@ class JudgeDUT extends Specification {
     @Subject
     def judgeD = new JudgeDApplicationService(environmentRepository, serviceContractsRepository, [contractValidator, mockedValidator])
 
-    def 'validate expectations against environment without provider'() {
+    def 'should validate expectations against environment without provider'() {
         given:
             def consumer = serviceContractsRepository.persist(new ServiceContracts(
                 new ServiceId('validated-consumer', '1.0'),
@@ -46,7 +46,7 @@ class JudgeDUT extends Specification {
             evrs[0].getExpectationValidationResults().size() == 1
     }
 
-    def 'validate expectations against environment with provider'() {
+    def 'should validate expectations against environment with provider'() {
         given:
             def consumer = serviceContractsRepository.persist(new ServiceContracts(
                 new ServiceId('validated-consumer', '1.0'),
@@ -64,7 +64,7 @@ class JudgeDUT extends Specification {
 
     }
 
-    def 'validate capabilities against environment with consumer'() {
+    def 'should validate capabilities against environment with consumer'() {
         given:
             def provider = serviceContractsRepository.persist(new ServiceContracts(
                 new ServiceId('provider-x', '1.0'),
@@ -86,7 +86,7 @@ class JudgeDUT extends Specification {
             evrs[0].getExpectationValidationResults().size() == 0
     }
 
-    def 'validate capabilities against environment without a consumer'() {
+    def 'should validate capabilities against environment without a consumer'() {
         given:
             def provider = serviceContractsRepository.persist(new ServiceContracts(
                 new ServiceId('provider-x', '1.0'),
@@ -103,7 +103,7 @@ class JudgeDUT extends Specification {
             evrs[0].getExpectationValidationResults().size() == 0
     }
 
-    def 'validate capabilities against multiple environments'() {
+    def 'should validate capabilities against multiple environments'() {
         given:
             def provider = serviceContractsRepository.persist(new ServiceContracts(
                 new ServiceId('provider-x', '1.0'),
@@ -131,7 +131,7 @@ class JudgeDUT extends Specification {
             evrs[0].getExpectationValidationResults().size() == 0
     }
 
-    def 'validate contracts of set of services against empty environment'() {
+    def 'should validate contracts of set of services against empty environment'() {
         given:
             def provider = serviceContractsRepository.persist(new ServiceContracts(
                 new ServiceId('provider', '1.0'),
@@ -154,7 +154,7 @@ class JudgeDUT extends Specification {
 
     }
 
-    def 'validate contracts of set of services against env containing all services but with different version'() {
+    def 'should validate contracts of set of services against env containing all services but with different version'() {
         given:
             def providerOld = serviceContractsRepository.persist(new ServiceContracts(
                 new ServiceId('provider', '1.0'),
@@ -204,30 +204,28 @@ class JudgeDUT extends Specification {
             def sv1 = new ServiceId("service1", "version1")
             def sv2 = new ServiceId("service2", "version2")
 
+        when:
             judgeD.overwriteEnvironment("env", null, [sv1] as Set)
             judgeD.overwriteEnvironment("env", "space", [sv2] as Set)
 
-        when:
-            def environment = environmentRepository.get("env")
-
         then:
-            environment.allServices.size() == 2
+            environmentRepository.find("env").get().allServices.size() == 2
     }
 
-    def 'should override dfault space only given additional non-empty space exists and both are overwriten'(){
+    def 'should override default space only given additional non-empty space exists and both are overwritten'(){
         given:
             def sv1 = new ServiceId("service1", "version1")
             def sv2 = new ServiceId("service2", "version2")
             def sv3 = new ServiceId("service3", "version3")
 
+        when:
             judgeD.overwriteEnvironment("env", null, [sv1] as Set)
             judgeD.overwriteEnvironment("env", null, [sv2] as Set)
             judgeD.overwriteEnvironment("env", "space", [sv3] as Set)
 
-        when:
-            def environment = environmentRepository.get("env")
-
         then:
+            def environment = environmentRepository.find("env").get()
+
             environment.allServices.size() == 2
             environment.allServices.any{
                 it.name == "service2" && it.version == "version2"

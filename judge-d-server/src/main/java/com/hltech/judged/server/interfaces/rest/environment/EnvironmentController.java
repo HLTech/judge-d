@@ -1,6 +1,7 @@
 package com.hltech.judged.server.interfaces.rest.environment;
 
 import com.hltech.judged.server.domain.JudgeDApplicationService;
+import com.hltech.judged.server.domain.environment.Environment;
 import com.hltech.judged.server.domain.environment.EnvironmentRepository;
 import com.hltech.judged.server.domain.ServiceId;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -44,8 +46,13 @@ public class EnvironmentController {
         @ApiResponse(code = 200, message = "Success", response = ServiceDto.class, responseContainer = "list"),
         @ApiResponse(code = 500, message = "Failure")})
     public List<ServiceDto> getEnvironment(@PathVariable("name") String name) {
-        return environmentRepository.get(name).getAllServices()
-            .stream()
+        return environmentRepository.find(name)
+            .map(this::getServices)
+            .orElse(new ArrayList<>());
+    }
+
+    private List<ServiceDto> getServices(Environment env) {
+        return env.getAllServices().stream()
             .map(sv -> new ServiceDto(sv.getName(), sv.getVersion()))
             .collect(toList());
     }
