@@ -3,7 +3,6 @@ package com.hltech.judged.server.interfaces.rest.validation;
 import com.hltech.judged.server.domain.JudgeDApplicationService;
 import com.hltech.judged.server.domain.ServiceId;
 import com.hltech.judged.server.interfaces.rest.RequestValidationException;
-import com.hltech.judged.server.interfaces.rest.environment.ServiceDto;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;

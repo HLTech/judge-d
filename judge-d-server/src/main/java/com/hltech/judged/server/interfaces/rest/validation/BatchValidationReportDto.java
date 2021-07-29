@@ -1,6 +1,5 @@
 package com.hltech.judged.server.interfaces.rest.validation;
 
-import com.hltech.judged.server.interfaces.rest.environment.ServiceDto;
 import lombok.Builder;
 import lombok.Data;
 
