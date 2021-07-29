@@ -39,14 +39,21 @@ class EnvironmentControllerUT extends Specification {
         def service = new ServiceId("service", "version")
         given:
             def environment = new Environment(
-                randomAlphabetic(10),
+                'abc',
                 [new Space('def', [service] as Set)] as Set
             )
             environmentRepository.persist(environment)
         when:
-            def services = environmentController.getEnvironment(environment.name).getBody()
+            def receivedEnvironment = environmentController.getEnvironment(environment.name).getBody()
 
         then:
-            services == [new ServiceDto(service.name, service.version)] as List
+            receivedEnvironment ==
+                new EnvironmentDto(
+                    'abc',
+                    [new EnvironmentDto.SpaceDto(
+                        'def',
+                        [new EnvironmentDto.SpaceDto.ServiceDto(service.name, service.version)] as Set
+                    )] as Set
+                )
     }
 }

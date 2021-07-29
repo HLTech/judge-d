@@ -1,6 +1,5 @@
 package com.hltech.judged.server.interfaces.rest.environment
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hltech.judged.server.config.BeanFactory
 import com.hltech.judged.server.domain.JudgeDApplicationService
@@ -38,7 +37,7 @@ class EnvironmentControllerIT extends Specification {
         environmentRepository.storage.clear()
     }
 
-    def "get on not existing environment should end up with status 200"() {
+    def "get on not existing environment should end up with status 200 and an environment without any space"() {
         given:
             def environment = new Environment('SIT', new HashSet<Space>())
             environmentRepository.persist(environment)
@@ -51,7 +50,9 @@ class EnvironmentControllerIT extends Specification {
         then: 'controller returns validation response in json'
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<ServiceDto>>() {}) != null
+            def responseBody = objectMapper.readValue(response.getContentAsString(), EnvironmentDto)
+            responseBody.name == 'SIT'
+            responseBody.spaces.size() == 0
     }
 
     def 'update environment hits the url and receives 200'() {

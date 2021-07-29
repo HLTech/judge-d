@@ -17,7 +17,8 @@ import com.hltech.judged.server.domain.environment.InMemoryEnvironmentRepository
 import com.hltech.judged.server.domain.environment.Space
 import com.hltech.judged.server.domain.validation.InterfaceContractValidator
 import com.hltech.judged.server.domain.validation.ping.PingContractValidator
-import com.hltech.judged.server.interfaces.rest.environment.ServiceDto
+import com.hltech.judged.server.interfaces.rest.environment.EnvironmentDto
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -66,7 +67,7 @@ class ValidationControllerIT extends Specification {
         then: 'controller returns validation response in json'
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<ServiceDto>>() {}) != null
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<EnvironmentDto.SpaceDto.ServiceDto>>() {}) != null
     }
 
     def "should return 404 when validate service contracts against env given contracts have not been registered"() {
@@ -87,7 +88,7 @@ class ValidationControllerIT extends Specification {
         then: 'controller returns validation response in json'
             response.getStatus() == 200
             response.getContentType().contains("application/json")
-            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<ServiceDto>>() {}) != null
+            objectMapper.readValue(response.getContentAsString(), new TypeReference<List<EnvironmentDto.SpaceDto.ServiceDto>>() {}) != null
     }
 
     def "should return 404 when validate service contracts against not existing environment"() {
