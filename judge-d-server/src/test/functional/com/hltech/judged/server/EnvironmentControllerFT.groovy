@@ -1,5 +1,6 @@
 package com.hltech.judged.server
 
+import com.hltech.judged.server.interfaces.rest.environment.EnvironmentDto
 import io.restassured.RestAssured
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.test.context.jdbc.Sql
@@ -171,7 +172,7 @@ class EnvironmentControllerFT extends PostgresDatabaseSpecification {
         given:
             def environmentName = 'TEST1'
         when:
-            def response = RestAssured.given()
+            def environment = RestAssured.given()
                 .port(serverPort)
                 .contentType("application/json")
                 .when()
@@ -179,33 +180,53 @@ class EnvironmentControllerFT extends PostgresDatabaseSpecification {
                 .then()
                 .statusCode(200)
                 .contentType("application/json")
-                .extract().body().jsonPath().getList('$')
+                .extract().body().jsonPath().getObject('$', EnvironmentDto)
 
         then:
-            response.any{
+            environment.name == environmentName
+            environment.spaces.size() == 1
+            environment.spaces[0].name == 'default'
+            environment.spaces[0].services.size() == 2
+            environment.spaces[0].services.any{
                 it['name'] == "test-service-1" &&
                 it['version'] == "1.0"
             }
-            response.any{
+            environment.spaces[0].services.any{
                 it['name'] == "test-service-2" &&
                 it['version'] == "2.0"
             }
     }
 
     @Sql("EnvironmentControllerFT.sql")
-    def "should return empty list when there are no services for selected environment"() {
+    def "should return no spaces when there are no services for selected environment"() {
+        given:
+            def environmentName = 'TEST3'
+
         when:
+            def environment = RestAssured.given()
+                .port(serverPort)
+                .contentType("application/json")
+                .when()
+                .get("/environments/${environmentName}")
+                .then()
+                .statusCode(200)
+                .contentType("application/json")
+                .extract().body().jsonPath().getObject('$', EnvironmentDto)
+
+        then:
+            environment.name == environmentName
+            environment.spaces.size() == 0
+    }
+
+    @Sql("EnvironmentControllerFT.sql")
+    def "should return 404 status when there is no such environment as specified in the request"() {
+        expect:
             def response = RestAssured.given()
                 .port(serverPort)
                 .contentType("application/json")
                 .when()
-                .get("/environments/TEST3")
+                .get("/environments/UNKNOWN")
                 .then()
-                .statusCode(200)
-                .contentType("application/json")
-                .extract().body().jsonPath().getList('$')
-
-        then:
-            response.size() == 0
+                .statusCode(404)
     }
 }

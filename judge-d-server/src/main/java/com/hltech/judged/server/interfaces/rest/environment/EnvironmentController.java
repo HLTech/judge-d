@@ -4,6 +4,7 @@ import com.hltech.judged.server.domain.JudgeDApplicationService;
 import com.hltech.judged.server.domain.environment.Environment;
 import com.hltech.judged.server.domain.environment.EnvironmentRepository;
 import com.hltech.judged.server.domain.ServiceId;
+import com.hltech.judged.server.domain.environment.Space;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -17,11 +18,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.hltech.judged.server.domain.environment.Environment.DEFAULT_NAMESPACE;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 @RestController
@@ -43,20 +43,14 @@ public class EnvironmentController {
     @GetMapping(value = "environments/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get services from the environment", nickname = "Get Services")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = ServiceDto.class, responseContainer = "list"),
+        @ApiResponse(code = 200, message = "Success", response = EnvironmentDto.SpaceDto.ServiceDto.class, responseContainer = "list"),
         @ApiResponse(code = 404, message = "Not found"),
         @ApiResponse(code = 500, message = "Failure")})
-    public ResponseEntity<List<ServiceDto>> getEnvironment(@PathVariable("name") String name) {
+    public ResponseEntity<EnvironmentDto> getEnvironment(@PathVariable("name") String name) {
         return environmentRepository.find(name)
-            .map(this::getServices)
+            .map(this::map)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
-    }
-
-    private List<ServiceDto> getServices(Environment env) {
-        return env.getAllServices().stream()
-            .map(sv -> new ServiceDto(sv.getName(), sv.getVersion()))
-            .collect(toList());
     }
 
     @PutMapping(
@@ -77,5 +71,30 @@ public class EnvironmentController {
             .collect(toSet());
 
         judgeD.overwriteEnvironment(name, agentSpace, serviceIds);
+    }
+
+    private EnvironmentDto map(Environment env) {
+        return new EnvironmentDto(
+            env.getName(),
+            env.getSpaces().stream()
+                .map(this::map)
+                .collect(Collectors.toSet())
+        );
+    }
+
+    private EnvironmentDto.SpaceDto map(Space space) {
+        return new EnvironmentDto.SpaceDto(
+            space.getName(),
+            space.getServiceIds().stream()
+                .map(this::map)
+                .collect(Collectors.toSet())
+        );
+    }
+
+    private EnvironmentDto.SpaceDto.ServiceDto map(ServiceId service) {
+        return new EnvironmentDto.SpaceDto.ServiceDto(
+            service.getName(),
+            service.getVersion()
+        );
     }
 }
