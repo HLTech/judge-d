@@ -1,16 +1,13 @@
 package com.hltech.judged.server
 
-import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.core.importer.ImportOption
 import com.tngtech.archunit.junit.AnalyzeClasses
-import com.tngtech.archunit.junit.ArchTest;
-import com.tngtech.archunit.junit.ArchUnitRunner
+import com.tngtech.archunit.junit.ArchTest
 import com.tngtech.archunit.lang.ArchRule
-import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
-import org.junit.runner.RunWith
+import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
 
-@RunWith(value = ArchUnitRunner)
 @AnalyzeClasses(packagesOf = App.class, importOptions = ImportOption.DoNotIncludeTests.class)
 class ArchUnitUT {
     private static final DOMAIN_PACKAGE = '..domain..'
