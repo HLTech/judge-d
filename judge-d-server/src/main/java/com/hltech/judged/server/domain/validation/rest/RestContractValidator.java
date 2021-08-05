@@ -19,7 +19,7 @@ import static java.util.function.Function.identity;
 
 public class RestContractValidator extends InterfaceContractValidator<String, RequestResponsePact> {
 
-    public static final String COMMUNICATION_INTERFACE = "rest";
+    private static final String COMMUNICATION_INTERFACE = "rest";
 
     public RestContractValidator() {
         super(COMMUNICATION_INTERFACE);
@@ -36,7 +36,7 @@ public class RestContractValidator extends InterfaceContractValidator<String, Re
                 interaction -> swaggerValidator.validate(of(interaction.getRequest()), PactResponse.of(interaction.getResponse()))
             ));
 
-        List<InteractionValidationResult> collect = validationReports
+        return validationReports
             .entrySet()
             .stream()
             .map(e -> {
@@ -44,17 +44,15 @@ public class RestContractValidator extends InterfaceContractValidator<String, Re
                 if (validationReport.hasErrors()) {
                     return fail(
                         e.getKey().getDescription(),
-                        validationReport.getMessages().stream().map(
-                            message -> message.getMessage()
-                        ).collect(Collectors.toList())
+                        validationReport.getMessages().stream()
+                            .map(ValidationReport.Message::getMessage)
+                            .collect(Collectors.toList())
                     );
                 } else {
                     return success(e.getKey().getDescription());
                 }
             })
             .collect(Collectors.toList());
-
-        return collect;
     }
 
     @Override
