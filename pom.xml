@@ -32,7 +32,6 @@
         <springBootVersion>2.5.3</springBootVersion>
         <springCloudVersion>3.0.3</springCloudVersion>
         <feignVersion>11.6</feignVersion>
-        <hystrixVersion>2.2.9.RELEASE</hystrixVersion>
         <archunitVersion>0.20.1</archunitVersion>
         <vauntVersion>1.0.28</vauntVersion>
         <awaitilityVersion>4.1.0</awaitilityVersion>
