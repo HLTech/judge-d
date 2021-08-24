@@ -7,6 +7,7 @@ import lombok.ToString;
 import lombok.experimental.Delegate;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +38,14 @@ public class ServiceContracts {
         this.capabilities = capabilities;
         this.expectations = expectations;
         this.publicationTime = publicationTime;
+    }
+
+    public static ServiceContracts withEmptyContracts(ServiceId id) {
+        return new ServiceContracts(
+            id,
+            new ArrayList<>(),
+            new ArrayList<>(),
+            null);
     }
 
     public <C> Optional<C> getMappedCapabilities(String communicationInterface, Function<String, C> deserializer) {

@@ -6,14 +6,14 @@ import org.springframework.test.context.jdbc.Sql
 
 import static com.hltech.judged.server.FileHelper.loadFromFileAndFormat
 
-@Sql
 @FunctionalTest
 class InterrelationshipControllerFT extends PostgresDatabaseSpecification {
 
     @LocalServerPort
     int serverPort
 
-    def "should get interrelationship for selected environment"() {
+    @Sql('InterrelationshipControllerFT.WithContracts.sql')
+    def 'should get interrelationship for selected environment for service with published contracts'() {
         given:
             def environmentName = 'TEST'
 
@@ -36,13 +36,39 @@ class InterrelationshipControllerFT extends PostgresDatabaseSpecification {
             response['environment'] == 'TEST'
             response['serviceContracts'][0]['name'] == 'test-service'
             response['serviceContracts'][0]['version'] == "1.0"
+            response['serviceContracts'][0]['publication-time']
             response['serviceContracts'][0]['capabilities']['rest']['mimeType'] == "application/json"
             response['serviceContracts'][0]['capabilities']['rest']['value'] == capabilities
             response['serviceContracts'][0]['expectations']['test-service']['rest']['mimeType'] == "application/json"
             response['serviceContracts'][0]['expectations']['test-service']['rest']['value'] == expectations
     }
 
-    def "should return 404 if get selected environment doesn't exists"() {
+    @Sql('InterrelationshipControllerFT.WithoutContracts.sql')
+    def 'should get interrelationship for selected environment for service without published contracts'() {
+        given:
+        def environmentName = 'TEST'
+
+        when:
+            def response = RestAssured.given()
+                .port(serverPort)
+                .contentType("application/json")
+                .when()
+                .get("/interrelationship/${environmentName}")
+                .then()
+                .statusCode(200)
+                .contentType("application/json")
+                .extract().body().jsonPath().getMap('$')
+
+        then:
+            response['environment'] == 'TEST'
+            response['serviceContracts'][0]['name'] == 'test-service'
+            response['serviceContracts'][0]['version'] == "1.0"
+            response['serviceContracts'][0]['publication-time'] == null
+            response['serviceContracts'][0]['capabilities']['rest']['value'] == []
+            response['serviceContracts'][0]['expectations']['test-service']['rest']['value'] == []
+    }
+
+    def 'should return 404 if get selected environment doesn`t exists'() {
         expect:
             RestAssured.given()
                 .port(serverPort)
