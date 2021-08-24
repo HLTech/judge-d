@@ -46,12 +46,8 @@ public class InterrelationshipController {
     }
 
     private ServiceContracts getServiceContracts(ServiceId serviceId) {
-        return serviceContractsRepository.findOne(new ServiceId(serviceId.getName(), serviceId.getVersion()))
-            .orElseGet(() ->
-                new ServiceContracts(
-                    new ServiceId(serviceId.getName(), serviceId.getVersion()),
-                    new ArrayList<>(),
-                    new ArrayList<>()));
+        return serviceContractsRepository.findOne(serviceId)
+            .orElseGet(() -> ServiceContracts.withEmptyContracts(serviceId));
     }
 
     private Set<ServiceId> getServicesIds(String environmentName) {
