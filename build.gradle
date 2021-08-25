@@ -1,0 +1,103 @@
+buildscript {
+    ext {
+        repos = {
+            gradlePluginPortal()
+            mavenCentral()
+        }
+        springBootVersion = '2.5.4'
+        springCloudVersion = '3.0.3'
+        lombokVersion = '1.18.20'
+        feignVersion = '11.6'
+        vauntVersion = '1.0.28'
+        jdbcVersion = '5.3.9'
+        liquidbaseVersion = '4.4.3'
+        openApiVersion = '1.5.10'
+        requestValidatorPactVersion = '2.19.4'
+        postgresVersion = '42.2.23'
+        kubernetesClientVersion = '3.2.0'
+        httpClientVersion = '4.5.13'
+        consulApiVersion = '1.4.5'
+        coverallsVersion = '2.12.0'
+        palantirDockerVersion = '0.27.0'
+        grgitVersion = '4.1.0'
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'com.github.kt3k.coveralls' version "${coverallsVersion}"
+    id "com.palantir.docker" version "${palantirDockerVersion}"
+    id 'org.ajoberstar.grgit' version "${grgitVersion}"
+}
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'jacoco'
+
+    compileJava {
+        options.release = 11
+    }
+
+    repositories(repos)
+
+    group = 'com.hltech.judged'
+    version = buildVersion()
+
+    jacoco {
+        toolVersion = "0.8.6"
+    }
+}
+
+subprojects {
+    apply plugin: 'groovy'
+    apply plugin: 'application'
+    apply plugin: 'com.palantir.docker'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    apply from: '../gradle/test.gradle'
+
+    jar {
+        enabled = false
+    }
+}
+
+bootJar {
+    enabled = false
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+coveralls {
+    sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
+    jacocoReportPath = "${buildDir}/reports/jacoco/codeCoverageReport/codeCoverageReport.xml"
+}
+
+task codeCoverageReport(type: JacocoReport) {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    subprojects.each {
+        sourceSets it.sourceSets.main
+    }
+
+    reports {
+        xml.enabled true
+        html.enabled true
+        csv.enabled false
+    }
+}
+
+codeCoverageReport.dependsOn {
+    subprojects*.test
+}
+
+def buildVersion() {
+    def baseVersion = 1
+
+    def commitsCount = grgit.log().size()
+    def lastCommit = grgit.head().abbreviatedId
+    return "${baseVersion}.${commitsCount}.0_${lastCommit}"
+}

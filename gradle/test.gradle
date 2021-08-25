@@ -1,0 +1,32 @@
+buildscript {
+    ext {
+        awaitilityVersion = '4.1.0'
+        testContainersVersion = '1.16.0'
+        restAssuredVersion = '4.4.0'
+        h2Version = '1.4.200'
+        spockVersion = '2.0-groovy-3.0'
+        groovyVersion = '3.0.8'
+        archutnitVersion = '0.20.1'
+        cglibVersion = '3.3.0'
+        pactGenVersion = '1.4.0'
+        kubernetesServerMockVersion = '3.2.0'
+    }
+}
+
+sourceSets {
+    test.groovy.srcDirs(
+        "src/test/unit",
+        "src/test/integration",
+        "src/test/functional"
+    )
+}
+
+idea {
+    module {
+        test
+    }
+}
+
+test {
+    useJUnitPlatform()
+}

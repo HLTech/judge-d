@@ -51,10 +51,10 @@ class InterrelationshipControllerIT extends Specification {
         expect: 'rest validatePacts url is hit'
             def response = mockMvc.perform(
                 get(new URI('/interrelationship/SIT'))
-                    .accept("application/json")
+                    .accept('application/json')
             )
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(content().contentType('application/json'))
                 .andExpect(MockMvcResultMatchers.jsonPath('$.environment').value('SIT'))
                 .andExpect(MockMvcResultMatchers.jsonPath('$.serviceContracts[0].name').value('1'))
                 .andExpect(MockMvcResultMatchers.jsonPath('$.serviceContracts[0].version').value('1'))

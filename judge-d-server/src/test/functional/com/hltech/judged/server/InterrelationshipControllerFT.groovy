@@ -36,7 +36,7 @@ class InterrelationshipControllerFT extends PostgresDatabaseSpecification {
             response['environment'] == 'TEST'
             response['serviceContracts'][0]['name'] == 'test-service'
             response['serviceContracts'][0]['version'] == "1.0"
-            response['serviceContracts'][0]['publication-time']
+            response['serviceContracts'][0]['publicationTime']
             response['serviceContracts'][0]['capabilities']['rest']['mimeType'] == "application/json"
             response['serviceContracts'][0]['capabilities']['rest']['value'] == capabilities
             response['serviceContracts'][0]['expectations']['test-service']['rest']['mimeType'] == "application/json"
@@ -46,7 +46,7 @@ class InterrelationshipControllerFT extends PostgresDatabaseSpecification {
     @Sql('InterrelationshipControllerFT.WithoutContracts.sql')
     def 'should get interrelationship for selected environment for service without published contracts'() {
         given:
-        def environmentName = 'TEST'
+            def environmentName = 'TEST'
 
         when:
             def response = RestAssured.given()
@@ -63,9 +63,9 @@ class InterrelationshipControllerFT extends PostgresDatabaseSpecification {
             response['environment'] == 'TEST'
             response['serviceContracts'][0]['name'] == 'test-service'
             response['serviceContracts'][0]['version'] == "1.0"
-            response['serviceContracts'][0]['publication-time'] == null
-            response['serviceContracts'][0]['capabilities']['rest']['value'] == []
-            response['serviceContracts'][0]['expectations']['test-service']['rest']['value'] == []
+            response['serviceContracts'][0]['publicationTime'] == null
+            response['serviceContracts'][0]['capabilities'].isEmpty()
+            response['serviceContracts'][0]['expectations'].isEmpty()
     }
 
     def 'should return 404 if get selected environment doesn`t exists'() {

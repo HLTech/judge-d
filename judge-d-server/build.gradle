@@ -1,0 +1,49 @@
+dependencies {
+    implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    implementation "io.github.openfeign:feign-core:${feignVersion}"
+    implementation "org.springframework.cloud:spring-cloud-context:${springCloudVersion}"
+
+    implementation "org.springframework:spring-jdbc:${jdbcVersion}"
+    implementation "org.liquibase:liquibase-core:${liquidbaseVersion}"
+    implementation "org.springdoc:springdoc-openapi-ui:${openApiVersion}"
+    implementation "com.atlassian.oai:swagger-request-validator-pact:${requestValidatorPactVersion}"
+    implementation "org.postgresql:postgresql:${postgresVersion}"
+    implementation "com.h2database:h2:${h2Version}"
+
+    implementation 'com.fasterxml.jackson.module:jackson-module-jsonSchema'
+    implementation 'com.fasterxml.jackson.core:jackson-core'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
+
+    implementation "com.hltech:vaunt-validator:${vauntVersion}"
+    implementation "com.hltech:vaunt-core:${vauntVersion}"
+
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.spockframework:spock-core:${spockVersion}"
+    testImplementation "org.spockframework:spock-spring:${spockVersion}"
+    testImplementation "org.codehaus.groovy:groovy-all:${groovyVersion}"
+    testImplementation "org.springframework.cloud:spring-cloud-contract-wiremock:${springCloudVersion}"
+
+    testImplementation "com.tngtech.archunit:archunit:${archutnitVersion}"
+    testImplementation "com.tngtech.archunit:archunit-junit5:${archutnitVersion}"
+    testImplementation "org.testcontainers:postgresql:${testContainersVersion}"
+    testImplementation "io.rest-assured:rest-assured:${restAssuredVersion}"
+    testImplementation "org.awaitility:awaitility:${awaitilityVersion}"
+}
+
+docker {
+    name "hltech/judge-d:${project.version}"
+    tag 'latest', "hltech/judge-d:latest"
+    dockerfile file('src/main/docker/Dockerfile')
+    files bootJar.archiveFile, 'src/main/docker/entrypoint.sh'
+    pull true
+    noCache true
+}

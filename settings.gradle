@@ -1,0 +1,3 @@
+rootProject.name = 'judge-d'
+include(':judge-d-server')
+include(':judge-d-agent')
