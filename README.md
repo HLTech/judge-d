@@ -219,8 +219,8 @@ For development you need:
 * [Java 11](https://openjdk.java.net/projects/jdk/11/)
 * [PostgreSQL](https://www.postgresql.org/)
 
-You can use your local Maven distribution, but there is maven wrapper included in project. To use it just type `./mvnw {command}`
-(for UNIX users) or `mvnw.cmd {command}` (for Windows users)
+You can use your local Gradle distribution, but there is gradle wrapper included in project. To use it just type `./gradlew {command}`
+(for UNIX users) or `gradlew.bat {command}` (for Windows users)
 
 
 ## Running
@@ -229,15 +229,15 @@ You can use your local Maven distribution, but there is maven wrapper included i
 To compile code, run tests and build jar files simply use
 
 ```
-mvn clean install
+gradlew clean build
 ```
 
 After that jar files will appear in target directories.
 
-To run application on your local machine you have to go to judge-d-server package and run it using mvn task:
+To run application on your local machine you have to go to judge-d-server package and run it using gradlew task:
 ```
 cd judge-d-server
-mvn spring-boot:run -D spring.profiles.active=dev
+gradlew bootRun --args='--spring.profiles.active=dev'
 ```
 
 To verify successful start you can go to the following url: _http://localhost:8080/v3/api-docs_.
@@ -261,9 +261,9 @@ can be defined in judge-d-server/compose-judge-d.yml file.
 
 ## Running tests <a name="RunningTests"></a>
 
-Tests are part of `mvn clean install` task - but if you'd like to only run tests (without building jar file) use
+Tests are part of `gradlew clean build` task - but if you'd like to only run tests (without building jar file) use
 ```
-mvn test
+gradlew clean test
 ```
 
 ## Deployment
@@ -287,7 +287,7 @@ See more about validation behaviours and levels [here](https://bitbucket.org/atl
 
 ## Built With <a name="BuiltWith"></a>
 
-* [Maven](https://maven.apache.org/) - Dependency Management
+* [Gradle](https://gradle.org/) - Dependency Management
 * [Docker](https://www.docker.com/) - Containerization engine
 
 ## Report generation <a name="ReportGeneration"></a>

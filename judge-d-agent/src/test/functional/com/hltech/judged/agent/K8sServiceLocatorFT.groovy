@@ -41,9 +41,6 @@ class K8sServiceLocatorFT extends Specification {
 
     static WireMockRule wireMockRule
 
-    @Autowired
-    KubernetesClient kubernetesClient
-
     def setupSpec() {
         k8sServer = new KubernetesMockServer()
         k8sServer.init()
@@ -57,6 +54,7 @@ class K8sServiceLocatorFT extends Specification {
         wireMockRule.stop()
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     def "should send update services message with expected names and versions"() {
         given: "expected namespaces"
             k8sServer.expect().get().withPath("/api/v1/namespaces")
