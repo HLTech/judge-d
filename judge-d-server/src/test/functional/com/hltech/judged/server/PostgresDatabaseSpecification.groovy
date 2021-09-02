@@ -2,7 +2,6 @@ package com.hltech.judged.server
 
 import groovy.sql.Sql
 import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.utility.DockerImageName
 import spock.lang.Specification
 
 abstract class PostgresDatabaseSpecification extends Specification {
