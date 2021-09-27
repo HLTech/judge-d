@@ -12,7 +12,7 @@ buildscript {
         jdbcVersion = '5.3.10'
         liquidbaseVersion = '4.4.3'
         openApiVersion = '1.5.10'
-        requestValidatorPactVersion = '2.19.4'
+        requestValidatorPactVersion = '2.19.5'
         postgresVersion = '42.2.24'
         kubernetesClientVersion = '3.2.0'
         httpClientVersion = '4.5.13'
