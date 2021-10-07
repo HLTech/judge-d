@@ -6,7 +6,7 @@ buildscript {
         }
         springBootVersion = '2.5.5'
         springCloudVersion = '3.0.4'
-        lombokVersion = '1.18.20'
+        lombokVersion = '1.18.22'
         feignVersion = '11.6'
         vauntVersion = '1.0.28'
         jdbcVersion = '5.3.10'
