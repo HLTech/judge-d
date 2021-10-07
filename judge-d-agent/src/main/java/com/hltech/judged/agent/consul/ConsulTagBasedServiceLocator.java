@@ -11,9 +11,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 @RequiredArgsConstructor
-public class ConsulTagBasedServiceLocator implements ServiceLocator {
+class ConsulTagBasedServiceLocator implements ServiceLocator {
 
     private static final String VERSION_TAG_PREFIX = "version=";
     private static final String TAG_SEPARATOR = "=";

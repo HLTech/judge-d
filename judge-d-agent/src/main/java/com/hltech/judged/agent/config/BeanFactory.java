@@ -30,20 +30,20 @@ import java.security.cert.X509Certificate;
 
 @Configuration
 @EnableScheduling
-public class BeanFactory {
+class BeanFactory {
 
     @Bean
-    public ObjectMapper objectMapper() {
+    ObjectMapper objectMapper() {
         return new ObjectMapper();
     }
 
     @Bean
-    public JudgeDPublisher judgeDEnvironmentPublisher(Feign feign, @Value("${hltech.contracts.judge-d.baseUrl}") String baseUrl) {
+    JudgeDPublisher judgeDEnvironmentPublisher(Feign feign, @Value("${hltech.contracts.judge-d.baseUrl}") String baseUrl) {
         return feign.newInstance(new Target.HardCodedTarget<>(JudgeDPublisher.class, baseUrl));
     }
 
     @Bean
-    public Feign feign(ObjectFactory<HttpMessageConverters> messageConverters, ObjectMapper objectMapper) throws KeyManagementException, NoSuchAlgorithmException {
+    Feign feign(ObjectFactory<HttpMessageConverters> messageConverters, ObjectMapper objectMapper) throws KeyManagementException, NoSuchAlgorithmException {
         SSLContext ctx = SSLContext.getInstance("TLS");
         ctx.init(null, new TrustManager[]{new TrustAllX509TrustManager()}, null);
         SSLSocketFactory trustingSSLSocketFactory = ctx.getSocketFactory();
@@ -81,5 +81,4 @@ public class BeanFactory {
             return null;
         }
     }
-
 }
