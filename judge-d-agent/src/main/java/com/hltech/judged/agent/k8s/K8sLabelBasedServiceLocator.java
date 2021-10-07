@@ -42,7 +42,9 @@ public class K8sLabelBasedServiceLocator implements ServiceLocator {
     @Override
     public Set<Service> locateServices() {
         List<String> namespacesToScan = kubernetesClient
-            .namespaces().list().getItems().stream().filter(excludedNamespacesFilter).filter(includedNamespacesFilter)
+            .namespaces().list().getItems().stream()
+            .filter(excludedNamespacesFilter)
+            .filter(includedNamespacesFilter)
             .map(n -> n.getMetadata().getName())
             .collect(toList());
 
@@ -69,7 +71,7 @@ public class K8sLabelBasedServiceLocator implements ServiceLocator {
                 imageVersion
             ));
         } else {
-            return Optional.<ServiceLocator.Service>empty();
+            return Optional.empty();
         }
     }
 

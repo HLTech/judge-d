@@ -1,7 +1,13 @@
 package com.hltech.judged.agent
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule
-import io.fabric8.kubernetes.api.model.*
+import io.fabric8.kubernetes.api.model.ContainerBuilder
+import io.fabric8.kubernetes.api.model.NamespaceListBuilder
+import io.fabric8.kubernetes.api.model.PodBuilder
+import io.fabric8.kubernetes.api.model.PodList
+import io.fabric8.kubernetes.api.model.PodListBuilder
+import io.fabric8.kubernetes.api.model.PodSpecBuilder
+import io.fabric8.kubernetes.api.model.PodStatusBuilder
 import io.fabric8.kubernetes.client.Config
 import io.fabric8.kubernetes.client.server.mock.KubernetesMockServer
 import org.springframework.beans.factory.annotation.Value
@@ -12,7 +18,11 @@ import spock.lang.Specification
 
 import java.util.concurrent.TimeUnit
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson
+import static com.github.tomakehurst.wiremock.client.WireMock.ok
+import static com.github.tomakehurst.wiremock.client.WireMock.put
+import static com.github.tomakehurst.wiremock.client.WireMock.putRequestedFor
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
 import static org.awaitility.Awaitility.await
 
 @SpringBootTest
@@ -44,23 +54,25 @@ class K8sServiceLocatorFT extends Specification {
     }
 
     def 'should send update services message with expected names and versions'() {
-        given: "expected namespaces"
+        given: 'expected namespaces'
             k8sServer.expect().get().withPath('/api/v1/namespaces')
                 .andReturn(200, new NamespaceListBuilder()
                     .addNewItem()
                     .withNewMetadata()
                     .withName('firstnamespace')
+                    .withLabels([:])
                     .endMetadata()
                     .and()
                     .addNewItem()
                     .withNewMetadata()
                     .withName('secondnamespace')
+                    .withLabels([:])
                     .endMetadata()
                     .and()
                     .build())
                 .always()
 
-        and: "expected pods"
+        and: 'expected pods'
             PodList expectedPodList = new PodListBuilder()
                 .withItems(
                     buildPod('firstnamespace', 1, '78d588f9cc'),
@@ -72,23 +84,23 @@ class K8sServiceLocatorFT extends Specification {
                 .andReturn(HttpURLConnection.HTTP_OK, expectedPodList)
                 .always()
 
-        and: "expected message to publish"
+        and: 'expected message to publish'
             def expectedRequestBody = '''
-                    [
-                        {
-                            "name": "test_app_1",
-                            "version": "78d588f9cc"
-                        },
-                        {
-                            "name": "test_app_2",
-                            "version": "54d576f9dh"
-                        },
-                        {
-                            "name": "test_app_3",
-                            "version": "98d500g9df"
-                        }
-                    ]
-                '''
+                        [
+                            {
+                                "name": "test_app_1",
+                                "version": "78d588f9cc"
+                            },
+                            {
+                                "name": "test_app_2",
+                                "version": "54d576f9dh"
+                            },
+                            {
+                                "name": "test_app_3",
+                                "version": "98d500g9df"
+                            }
+                        ]
+                    '''
 
             wireMockRule.stubFor(
                 put(urlPathMatching('/environments/test'))
@@ -106,6 +118,7 @@ class K8sServiceLocatorFT extends Specification {
         new PodBuilder().withNewMetadata()
             .withName("pod$index")
             .withNamespace(namespace)
+            .withLabels([:])
             .endMetadata()
             .withSpec(
                 new PodSpecBuilder().withContainers(
