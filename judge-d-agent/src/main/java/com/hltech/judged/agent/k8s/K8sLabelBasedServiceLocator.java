@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
-public class K8sLabelBasedServiceLocator implements ServiceLocator {
+class K8sLabelBasedServiceLocator implements ServiceLocator {
 
     private static final String EXCLUDE_FROM_JURISDICTION_LABEL = "exclude-from-judged-jurisdiction";
 
@@ -23,7 +23,7 @@ public class K8sLabelBasedServiceLocator implements ServiceLocator {
     private final Predicate<Namespace> excludedNamespacesFilter;
     private final Predicate<Namespace> includedNamespacesFilter;
 
-    public K8sLabelBasedServiceLocator(
+    K8sLabelBasedServiceLocator(
         KubernetesClient kubernetesClient,
         String requiredLabel,
         Set<String> excludedNamespaces,

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @Profile("consul")
 @RequiredArgsConstructor
-public class ConsulBeanFactory {
+class ConsulBeanFactory {
 
     @Value("${hltech.contracts.judge-d.consul-host}")
     private String consulUrl;

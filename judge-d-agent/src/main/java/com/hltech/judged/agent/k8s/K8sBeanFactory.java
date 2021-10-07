@@ -12,15 +12,15 @@ import java.util.Set;
 
 @Configuration
 @Profile("kubernetes")
-public class K8sBeanFactory {
+class K8sBeanFactory {
 
     @Bean
-    public KubernetesClient kubernetesClient() {
+    KubernetesClient kubernetesClient() {
         return new DefaultKubernetesClient();
     }
 
     @Bean
-    public ServiceLocator serviceLocator(
+    ServiceLocator serviceLocator(
         KubernetesClient kubernetesClient,
         @Value("${hltech.contracts.judge-d.requiredLabel}") String requiredLabel,
         @Value("${hltech.contracts.judge-d.excluded-namespaces:#{''}}") Set<String> excludedNamespaces,

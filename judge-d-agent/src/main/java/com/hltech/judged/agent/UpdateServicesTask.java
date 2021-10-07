@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 @Component
 public class UpdateServicesTask {
 
-    private String environment;
-    private String space;
-    private ServiceLocator serviceLocator;
-    private JudgeDPublisher publisher;
+    private final String environment;
+    private final String space;
+    private final ServiceLocator serviceLocator;
+    private final JudgeDPublisher publisher;
 
     @Autowired
-    public UpdateServicesTask(
+    UpdateServicesTask(
         @Value("${hltech.contracts.judge-d.environment}") String environment,
         @Value("${hltech.contracts.judge-d.space:default}") String space,
         ServiceLocator serviceLocator,
@@ -49,6 +49,4 @@ public class UpdateServicesTask {
     private static JudgeDPublisher.ServiceForm toForm(ServiceLocator.Service service) {
         return new JudgeDPublisher.ServiceForm(service.getName(), service.getVersion());
     }
-
-
 }
