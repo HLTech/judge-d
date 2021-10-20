@@ -11,7 +11,7 @@ buildscript {
         vauntVersion = '1.0.28'
         jdbcVersion = '5.3.11'
         liquidbaseVersion = '4.5.0'
-        openApiVersion = '1.5.11'
+        openApiVersion = '1.5.12'
         requestValidatorPactVersion = '2.20.0'
         postgresVersion = '42.3.0'
         kubernetesClientVersion = '5.9.0'
