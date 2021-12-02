@@ -10,7 +10,7 @@ buildscript {
         feignVersion = '11.7'
         vauntVersion = '1.0.28'
         jdbcVersion = '5.3.13'
-        liquidbaseVersion = '4.6.1'
+        liquidbaseVersion = '4.6.2'
         openApiVersion = '1.5.13'
         requestValidatorPactVersion = '2.22.0'
         postgresVersion = '42.3.1'
