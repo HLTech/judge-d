@@ -14,7 +14,7 @@ buildscript {
         openApiVersion = '1.6.3'
         requestValidatorPactVersion = '2.22.0'
         postgresVersion = '42.3.1'
-        kubernetesClientVersion = '5.11.1'
+        kubernetesClientVersion = '5.11.2'
         httpClientVersion = '4.5.13'
         consulApiVersion = '1.4.5'
         coverallsVersion = '2.12.0'
