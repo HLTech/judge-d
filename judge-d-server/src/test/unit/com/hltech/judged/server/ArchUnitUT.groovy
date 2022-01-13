@@ -19,7 +19,7 @@ class ArchUnitUT {
     private static final LOMBOK_PACKAGE = 'lombok..'
     private static final CORE_JAVA_PACKAGE = 'java..'
     private static final VAUNT_PACKAGE = 'com.hltech.vaunt..'
-    private static final PACT_MODEL_PACKAGE = 'au.com.dius.pact.model..'
+    private static final PACT_MODEL_PACKAGE = 'au.com.dius.pact.core.model..'
     private static final SWAGGER_PACT_VALIDATOR_PACKAGE = 'com.atlassian.oai.validator..'
     private static final GOOGLE_COMMON_PACKAGE = 'com.google.common..'
 
