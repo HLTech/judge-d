@@ -1,7 +1,8 @@
 package com.hltech.judged.server.domain.validation.rest;
 
-import au.com.dius.pact.model.RequestResponseInteraction;
-import au.com.dius.pact.model.RequestResponsePact;
+import au.com.dius.pact.core.model.DefaultPactReader;
+import au.com.dius.pact.core.model.RequestResponseInteraction;
+import au.com.dius.pact.core.model.RequestResponsePact;
 import com.atlassian.oai.validator.OpenApiInteractionValidator;
 import com.atlassian.oai.validator.pact.PactResponse;
 import com.atlassian.oai.validator.report.ValidationReport;
@@ -11,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static au.com.dius.pact.model.PactReader.loadPact;
 import static com.atlassian.oai.validator.pact.PactRequest.of;
 import static com.hltech.judged.server.domain.validation.InterfaceContractValidator.InteractionValidationResult.fail;
 import static com.hltech.judged.server.domain.validation.InterfaceContractValidator.InteractionValidationResult.success;
@@ -62,7 +62,7 @@ public class RestContractValidator extends InterfaceContractValidator<String, Re
 
     @Override
     public RequestResponsePact asExpectations(String rawExpectations) {
-        return (RequestResponsePact) loadPact(rawExpectations);
+        return (RequestResponsePact) DefaultPactReader.INSTANCE.loadPact(rawExpectations);
     }
 
 }

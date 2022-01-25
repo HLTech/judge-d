@@ -1,9 +1,9 @@
 package com.hltech.judged.server.domain.validation.rest
 
-import au.com.dius.pact.model.RequestResponsePact
+import au.com.dius.pact.core.model.DefaultPactReader
+import au.com.dius.pact.core.model.RequestResponsePact
 import spock.lang.Specification
 
-import static au.com.dius.pact.model.PactReader.loadPact
 import static com.google.common.io.ByteStreams.toByteArray
 import static com.hltech.judged.server.domain.validation.InterfaceContractValidator.InteractionValidationStatus.FAILED
 import static com.hltech.judged.server.domain.validation.InterfaceContractValidator.InteractionValidationStatus.OK
@@ -11,9 +11,9 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
 
 class RestContractValidatorUT extends Specification {
 
-    RestContractValidator validator = new RestContractValidator()
+    def validator = new RestContractValidator()
 
-    def "should convert rawExpectations to pact"() {
+    def 'should convert rawExpectations to pact'() {
         given:
             def pactAsString = new String(toByteArray(getClass().getResourceAsStream("/pact-frontend-to-backend-provider.json")))
         when:
@@ -23,7 +23,7 @@ class RestContractValidatorUT extends Specification {
 
     }
 
-    def "should return rawCapabilities as Capabilities"() {
+    def 'should return rawCapabilities as Capabilities'() {
         given:
             def rawCapabilities = randomAlphanumeric(100)
         when:
@@ -79,5 +79,9 @@ class RestContractValidatorUT extends Specification {
                     result.status == FAILED &&
                     result.errors.get(0) == "[Path '/0'] Object instance has properties which are not allowed by the schema: [\"gyyigi\"]"
             }
+    }
+
+    private def loadPact(Object pactAsString) {
+        DefaultPactReader.INSTANCE.loadPact(pactAsString)
     }
 }
