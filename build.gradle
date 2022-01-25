@@ -19,7 +19,7 @@ buildscript {
         consulApiVersion = '1.4.5'
         coverallsVersion = '2.12.0'
         palantirDockerVersion = '0.27.0'
-        grgitVersion = '4.1.0'
+        grgitVersion = '4.1.1'
     }
 }
 
