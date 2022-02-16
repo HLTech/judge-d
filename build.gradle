@@ -13,7 +13,7 @@ buildscript {
         liquidbaseVersion = '4.6.2'
         openApiVersion = '1.6.6'
         requestValidatorPactVersion = '2.22.0'
-        postgresVersion = '42.3.2'
+        postgresVersion = '42.3.3'
         kubernetesClientVersion = '5.12.1'
         httpClientVersion = '4.5.13'
         consulApiVersion = '1.4.5'
