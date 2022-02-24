@@ -4,7 +4,7 @@ buildscript {
             gradlePluginPortal()
             mavenCentral()
         }
-        springBootVersion = '2.6.3'
+        springBootVersion = '2.6.4'
         springCloudVersion = '3.1.1'
         lombokVersion = '1.18.22'
         feignVersion = '11.8'
