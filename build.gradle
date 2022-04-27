@@ -5,7 +5,7 @@ buildscript {
             mavenCentral()
         }
         springBootVersion = '2.6.7'
-        springCloudVersion = '3.1.1'
+        springCloudVersion = '3.1.2'
         lombokVersion = '1.18.24'
         feignVersion = '11.8'
         vauntVersion = '1.0.28'
