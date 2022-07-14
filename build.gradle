@@ -9,7 +9,7 @@ buildscript {
         lombokVersion = '1.18.24'
         feignVersion = '11.9'
         vauntVersion = '1.0.28'
-        jdbcVersion = '5.3.15'
+        jdbcVersion = '5.3.18'
         liquidbaseVersion = '4.6.2'
         openApiVersion = '1.6.9'
         requestValidatorPactVersion = '2.22.0'
