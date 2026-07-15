@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:alpine-slim
+FROM amazoncorretto:17-alpine
 
 WORKDIR /root
 ADD judge-d* /root/judge-d.jar
