@@ -12,7 +12,7 @@ import io.fabric8.kubernetes.api.model.PodList
 import io.fabric8.kubernetes.api.model.PodSpecBuilder
 import io.fabric8.kubernetes.api.model.PodStatusBuilder
 import io.fabric8.kubernetes.client.KubernetesClient
-import io.fabric8.kubernetes.client.dsl.FilterWatchListMultiDeletable
+import io.fabric8.kubernetes.client.dsl.AnyNamespaceOperation
 import io.fabric8.kubernetes.client.dsl.MixedOperation
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation
 import spock.lang.Specification
@@ -29,7 +29,7 @@ class K8sLabelBasedServiceLocatorUT extends Specification {
             def serviceLocator = new K8sLabelBasedServiceLocator(kubernetesClient, label, newHashSet('excluded'), newHashSet())
 
             def mixedOperation = Mock(MixedOperation)
-            def watchList = Mock(FilterWatchListMultiDeletable)
+            def watchList = Mock(AnyNamespaceOperation)
             def podList = new PodList('1.0', [
                 buildPod('s1', 'hltech/s1:1', 'default', [:]),
                 buildPod('s2', 'hltech/s2:2', 'excluded', [:]),
@@ -64,7 +64,7 @@ class K8sLabelBasedServiceLocatorUT extends Specification {
             def serviceLocator = new K8sLabelBasedServiceLocator(kubernetesClient, label, newHashSet(), newHashSet('included'))
 
             def mixedOperation = Mock(MixedOperation)
-            def watchList = Mock(FilterWatchListMultiDeletable)
+            def watchList = Mock(AnyNamespaceOperation)
             def podList = new PodList('1.0', [
                 buildPod('s1', 'hltech/s1:1', 'default', [:]),
                 buildPod('s2', 'hltech/s2:2', 'included', [:]),
@@ -108,7 +108,7 @@ class K8sLabelBasedServiceLocatorUT extends Specification {
             def service5Version = 'service6'
 
             def mixedOperation = Mock(MixedOperation)
-            def watchList = Mock(FilterWatchListMultiDeletable)
+            def watchList = Mock(AnyNamespaceOperation)
             def podList = new PodList('1.0', [
                 buildPod(service1Name, 'hltech/' + service1Name + ':' + service1Version, 'default', new HashMap<String, String>()),
                 buildPod(service2Name, 'hltech/' + service2Name + ':' + service2Version, 'default', new HashMap<String, String>()),

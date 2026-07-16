@@ -3,7 +3,7 @@ package com.hltech.judged.server.domain.contracts
 import com.google.common.collect.Maps
 import com.hltech.judged.server.domain.ServiceId
 
-import javax.persistence.NoResultException
+import jakarta.persistence.NoResultException
 
 class InMemoryServiceContractsRepository implements ServiceContractsRepository {
 

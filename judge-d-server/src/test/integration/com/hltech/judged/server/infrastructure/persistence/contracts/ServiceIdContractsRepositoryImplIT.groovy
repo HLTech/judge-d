@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 
-import javax.persistence.NoResultException
+import jakarta.persistence.NoResultException
 
 import static java.util.function.Function.identity
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT

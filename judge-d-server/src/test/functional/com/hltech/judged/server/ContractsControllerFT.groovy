@@ -1,10 +1,11 @@
 package com.hltech.judged.server
 
 import io.restassured.RestAssured
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.context.jdbc.Sql
 
 import java.time.Instant
+import java.time.ZoneOffset
 
 import static com.hltech.judged.server.FileHelper.loadFromFileAndFormat
 import static java.time.temporal.ChronoUnit.MILLIS
@@ -73,7 +74,9 @@ class ContractsControllerFT extends PostgresDatabaseSpecification {
             serviceContractsFromDb.size() == 1
             serviceContractsFromDb[0]['name'] == 'test-service'
             serviceContractsFromDb[0]['version'] == "1.0"
-            serviceContractsFromDb[0]['publication_time'].toInstant().truncatedTo( MILLIS ) == Instant.parse(response['publicationTime']).truncatedTo( MILLIS )
+            // Hibernate 6 stores Instant as UTC in the timestamp column; read the zone-naive
+            // java.sql.Timestamp back as UTC rather than the JVM default zone.
+            serviceContractsFromDb[0]['publication_time'].toLocalDateTime().toInstant( ZoneOffset.UTC ).truncatedTo( MILLIS ) == Instant.parse(response['publicationTime']).truncatedTo( MILLIS )
     }
 
     @Sql('ContractsControllerFT.GeRegisteredContracts.sql')

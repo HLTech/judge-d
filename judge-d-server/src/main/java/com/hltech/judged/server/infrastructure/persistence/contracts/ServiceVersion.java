@@ -3,10 +3,10 @@ package com.hltech.judged.server.infrastructure.persistence.contracts;
 
 import lombok.*;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Embeddable;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.MappedSuperclass;
 
 import java.io.Serializable;
 

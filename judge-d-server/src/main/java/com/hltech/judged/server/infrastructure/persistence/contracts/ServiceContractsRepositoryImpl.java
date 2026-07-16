@@ -9,7 +9,7 @@ import com.hltech.judged.server.domain.contracts.ServiceContractsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

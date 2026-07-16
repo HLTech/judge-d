@@ -7,7 +7,7 @@ import com.hltech.judged.server.domain.environment.Space;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;

@@ -14,7 +14,7 @@ class PostgresPropertiesInitializer implements ApplicationContextInitializer<Con
             .of("spring.datasource.url=${postgres.jdbcUrl}")
             .and("spring.datasource.username=${postgres.username}")
             .and("spring.datasource.password=${postgres.password}")
-            .and("spring.datasource.platform=postgres")
+            .and("spring.sql.init.platform=postgres")
             .applyTo(configurableApplicationContext)
     }
 }

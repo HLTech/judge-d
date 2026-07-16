@@ -1,8 +1,8 @@
 package com.hltech.judged.agent.k8s;
 
 import com.hltech.judged.agent.ServiceLocator;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +16,7 @@ class K8sBeanFactory {
 
     @Bean
     KubernetesClient kubernetesClient() {
-        return new DefaultKubernetesClient();
+        return new KubernetesClientBuilder().build();
     }
 
     @Bean

@@ -1,20 +1,21 @@
 dependencies {
     implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+    implementation platform("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}")
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    implementation "io.github.openfeign:feign-core:${feignVersion}"
-    implementation "org.springframework.cloud:spring-cloud-context:${springCloudVersion}"
+    implementation "io.github.openfeign:feign-core"
+    implementation "org.springframework.cloud:spring-cloud-context"
 
-    implementation "org.springframework:spring-jdbc:${jdbcVersion}"
-    implementation "org.liquibase:liquibase-core:${liquidbaseVersion}"
-    implementation "org.springdoc:springdoc-openapi-ui:${openApiVersion}"
+    implementation "org.springframework:spring-jdbc"
+    implementation "org.liquibase:liquibase-core"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
     implementation "com.atlassian.oai:swagger-request-validator-pact:${requestValidatorPactVersion}"
     implementation "org.postgresql:postgresql:${postgresVersion}"
-    implementation "com.h2database:h2:${h2Version}"
+    implementation "com.h2database:h2"
 
     implementation 'com.fasterxml.jackson.module:jackson-module-jsonSchema'
     implementation 'com.fasterxml.jackson.core:jackson-core'
@@ -29,8 +30,8 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.spockframework:spock-core:${spockVersion}"
     testImplementation "org.spockframework:spock-spring:${spockVersion}"
-    testImplementation "org.codehaus.groovy:groovy-all:${groovyVersion}"
-    testImplementation "org.springframework.cloud:spring-cloud-contract-wiremock:${springCloudVersion}"
+    testImplementation "org.apache.groovy:groovy-all:${groovyVersion}"
+    testImplementation "org.springframework.cloud:spring-cloud-contract-wiremock"
 
     testImplementation "com.tngtech.archunit:archunit:${archutnitVersion}"
     testImplementation "com.tngtech.archunit:archunit-junit5:${archutnitVersion}"
@@ -40,24 +41,3 @@ dependencies {
     testImplementation "org.awaitility:awaitility:${awaitilityVersion}"
 }
 
-// Testcontainers 2.x shades Jackson 2.19 but leaves jackson-annotations unshaded; Spring Boot 2.7
-// pins it to 2.13.5, which lacks JsonFormat.Feature.READ_UNKNOWN_ENUM_VALUES_* -> NoSuchFieldError
-// when docker-java parses /info. Align annotations to 2.19 on the test classpath only (eachDependency
-// runs after and overrides the io.spring.dependency-management pin).
-configurations.matching { it.name in ['testCompileClasspath', 'testRuntimeClasspath'] }.configureEach {
-    resolutionStrategy.eachDependency { details ->
-        if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-annotations') {
-            details.useVersion '2.19.0'
-            details.because 'Testcontainers 2.x shaded Jackson requires jackson-annotations >= 2.19'
-        }
-    }
-}
-
-docker {
-    name "hltech/judge-d:${project.version}"
-    tag 'latest', "hltech/judge-d:latest"
-    dockerfile file('src/main/docker/Dockerfile')
-    files bootJar.archiveFile, 'src/main/docker/entrypoint.sh'
-    pull true
-    noCache true
-}

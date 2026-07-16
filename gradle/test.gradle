@@ -2,14 +2,12 @@ buildscript {
     ext {
         awaitilityVersion = '4.1.0'
         testContainersVersion = '2.0.5'
-        restAssuredVersion = '4.4.0'
-        h2Version = '1.4.200'
-        spockVersion = '2.0-groovy-3.0'
-        groovyVersion = '3.0.21'
+        restAssuredVersion = '5.5.7'
+        spockVersion = '2.4-M7-groovy-4.0'
+        groovyVersion = '4.0.32'
         archutnitVersion = '0.20.1'
         cglibVersion = '3.3.0'
         pactGenVersion = '1.4.0'
-        kubernetesServerMockVersion = '3.2.0'
     }
 }
 

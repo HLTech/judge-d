@@ -2,7 +2,7 @@ package com.hltech.judged.server
 
 import com.hltech.judged.server.interfaces.rest.environment.EnvironmentDto
 import io.restassured.RestAssured
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.context.jdbc.Sql
 
 @FunctionalTest

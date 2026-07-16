@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;

@@ -1,16 +1,17 @@
 dependencies {
     implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+    implementation platform("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}")
 
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    implementation "org.springframework.cloud:spring-cloud-openfeign-core:${springCloudVersion}"
-    implementation "org.springframework.cloud:spring-cloud-commons:${springCloudVersion}"
-    implementation "org.springframework.cloud:spring-cloud-context:${springCloudVersion}"
+    implementation "org.springframework.cloud:spring-cloud-openfeign-core"
+    implementation "org.springframework.cloud:spring-cloud-commons"
+    implementation "org.springframework.cloud:spring-cloud-context"
 
-    implementation "io.github.openfeign:feign-core:${feignVersion}"
-    implementation "io.fabric8:kubernetes-client:${kubernetesClientVersion}"
+    implementation "io.github.openfeign:feign-core"
+    implementation "io.fabric8:kubernetes-client"
     implementation "org.apache.httpcomponents:httpclient:${httpClientVersion}"
     implementation "com.ecwid.consul:consul-api:${consulApiVersion}"
 
@@ -20,19 +21,10 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.spockframework:spock-core:${spockVersion}"
     testImplementation "org.spockframework:spock-spring:${spockVersion}"
-    testImplementation "org.codehaus.groovy:groovy-all:${groovyVersion}"
-    testImplementation "org.springframework.cloud:spring-cloud-contract-wiremock:${springCloudVersion}"
+    testImplementation "org.apache.groovy:groovy-all:${groovyVersion}"
+    testImplementation "org.springframework.cloud:spring-cloud-contract-wiremock"
     testImplementation "cglib:cglib-nodep:${cglibVersion}"
     testImplementation "com.hltech:pact-gen:${pactGenVersion}"
-    testImplementation "io.fabric8:kubernetes-server-mock:${kubernetesServerMockVersion}"
+    testImplementation "io.fabric8:kubernetes-server-mock"
     testImplementation "org.awaitility:awaitility:${awaitilityVersion}"
-}
-
-docker {
-    name "hltech/${project.name}:${project.version}"
-    tag 'latest', "hltech/${project.name}:latest"
-    dockerfile file('src/main/docker/Dockerfile')
-    files bootJar.archiveFile, 'src/main/docker/entrypoint.sh'
-    pull true
-    noCache true
 }
