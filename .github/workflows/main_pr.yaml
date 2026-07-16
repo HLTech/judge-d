@@ -1,0 +1,17 @@
+name: Main Branch and Pull Request CI/CD
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+
+jobs:
+  pipeline:
+    uses: catenda/github-shared-workflows/.github/workflows/java-service.yaml@main
+    with:
+      service-name: judge-d
+      java-version: 17
+      used-db: postgres
+      docker-smoke-test: false
+    secrets: inherit
