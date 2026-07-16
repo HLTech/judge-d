@@ -3,11 +3,13 @@ package com.hltech.judged.server
 import org.springframework.boot.test.util.TestPropertyValues
 import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
+import org.testcontainers.postgresql.PostgreSQLContainer
 
-class PostgresPropertiesInitializer extends PostgresDatabaseSpecification implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+class PostgresPropertiesInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
     @Override
     void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+        PostgreSQLContainer postgres = SharedContainers.POSTGRES
         TestPropertyValues
             .of("spring.datasource.url=${postgres.jdbcUrl}")
             .and("spring.datasource.username=${postgres.username}")
