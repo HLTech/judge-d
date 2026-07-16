@@ -34,9 +34,23 @@ dependencies {
 
     testImplementation "com.tngtech.archunit:archunit:${archutnitVersion}"
     testImplementation "com.tngtech.archunit:archunit-junit5:${archutnitVersion}"
-    testImplementation "org.testcontainers:postgresql:${testContainersVersion}"
+    testImplementation platform("org.testcontainers:testcontainers-bom:${testContainersVersion}")
+    testImplementation "org.testcontainers:testcontainers-postgresql"
     testImplementation "io.rest-assured:rest-assured:${restAssuredVersion}"
     testImplementation "org.awaitility:awaitility:${awaitilityVersion}"
+}
+
+// Testcontainers 2.x shades Jackson 2.19 but leaves jackson-annotations unshaded; Spring Boot 2.7
+// pins it to 2.13.5, which lacks JsonFormat.Feature.READ_UNKNOWN_ENUM_VALUES_* -> NoSuchFieldError
+// when docker-java parses /info. Align annotations to 2.19 on the test classpath only (eachDependency
+// runs after and overrides the io.spring.dependency-management pin).
+configurations.matching { it.name in ['testCompileClasspath', 'testRuntimeClasspath'] }.configureEach {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-annotations') {
+            details.useVersion '2.19.0'
+            details.because 'Testcontainers 2.x shaded Jackson requires jackson-annotations >= 2.19'
+        }
+    }
 }
 
 docker {

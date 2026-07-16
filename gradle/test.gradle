@@ -1,7 +1,7 @@
 buildscript {
     ext {
         awaitilityVersion = '4.1.0'
-        testContainersVersion = '1.16.0'
+        testContainersVersion = '2.0.5'
         restAssuredVersion = '4.4.0'
         h2Version = '1.4.200'
         spockVersion = '2.0-groovy-3.0'
